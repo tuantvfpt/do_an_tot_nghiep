@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\ChucVuController;
+use App\Http\Controllers\Api\PhongBanController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,14 +28,16 @@ Route::group(['prefix' => 'user'], function () {
     Route::post('delete/{id}', [UserController::class, 'delete'])->name('delete');
 });
 Route::group(['prefix' => 'phongban'], function () {
-    Route::get('getAll', [UserController::class, 'getAll'])->name('getAllUser.index');
-    Route::get('getUser/{id}', [UserController::class, 'getUser'])->name('getUser.index');
-    Route::post('update', [UserController::class, 'update'])->name('update.index');
-    Route::post('delete/{id}', [UserController::class, 'delete'])->name('delete.index');
+    Route::get('getAll', [PhongBanController::class, 'getAll'])->name('getAll');
+    Route::get('getphongban/{id}', [PhongBanController::class, 'getphongban'])->name('getphongban');
+    Route::post('createphongban', [PhongBanController::class, 'addSave'])->name('addSave');
+    Route::post('update/{id}', [PhongBanController::class, 'update'])->name('update');
+    Route::post('delete/{id}', [PhongBanController::class, 'delete'])->name('delete');
 });
 Route::group(['prefix' => 'chucvu'], function () {
-    Route::get('getAll', [UserController::class, 'getAll'])->name('getAllUser.index');
-    Route::get('getUser/{id}', [UserController::class, 'getUser'])->name('getUser.index');
-    Route::post('update/{id}', [UserController::class, 'update'])->name('update.index');
-    Route::post('delete/{id}', [UserController::class, 'delete'])->name('delete.index');
+    Route::get('getAll', [ChucVuController::class, 'getAll'])->name('getAll');
+    Route::get('getchucvu/{id}', [ChucVuController::class, 'getchucvu'])->name('getchucvu');
+    Route::post('createchucvu', [ChucVuController::class, 'addSave'])->name('addSave');
+    Route::post('update/{id}', [ChucVuController::class, 'update'])->name('update');
+    Route::post('delete/{id}', [ChucVuController::class, 'delete'])->name('delete');
 });

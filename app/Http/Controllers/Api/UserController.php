@@ -10,7 +10,6 @@ use App\Models\userInfo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Whoops\Run;
 
 class UserController extends Controller
 {

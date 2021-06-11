@@ -3,62 +3,87 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\chucvu;
 use Illuminate\Http\Request;
 
 class ChucVuController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function getAll()
     {
-        //
+        $chucvu = chucvu::all();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách chức vụ thành công',
+            'data' => $chucvu
+        ])->setStatusCode(200);
+    }
+    public function getchucvu($id, Request $request)
+    {
+        $chucvu = chucvu::find($id);
+        if ($chucvu) {
+            $chucvu->load('chucvu_userinfo');
+        }
+        return $chucvu ?
+            response()->json([
+                'status' => true,
+                'message' => 'Lấy thông tin chức vụ thành công',
+                'data' => $chucvu
+            ], 200) :
+            response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy chức vụ',
+            ], 200);
+    }
+    public function addSave(Request $request)
+    {
+
+        $chucvu = new chucvu();
+        $chucvu->ten_chuc_vu = $request->ten_chuc_vu;
+        $chucvu->save();
+        return  $chucvu ?
+            response()->json([
+                'status' => true,
+                'message' => 'Thêm chức vụ thành công',
+                'data' => $chucvu
+            ], 200) :
+            response()->json([
+                'status' => false,
+                'message' => 'thêm chúc vụ thất bại',
+            ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function update($id, Request $request)
     {
-        //
+
+        $chucvu = chucvu::find($id);
+        if ($chucvu) {
+            $chucvu->ten_chuc_vu = $request->ten_chuc_vu;
+            $chucvu->save();
+        }
+        return  $chucvu ?
+            response()->json([
+                'status' => true,
+                'message' => 'Sửa chức vụ thành công',
+                'data' => $chucvu
+            ], 200) :
+            response()->json([
+                'status' => false,
+                'message' => 'Sửa chức vụ thất bại',
+            ], 200);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function delete($id, Request $request)
     {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $chucvu = chucvu::destroy($id);
+        return $chucvu ?
+            response()->json([
+                'status' => true,
+                'message' => 'Xóa thành công',
+            ], 200) :
+            response()->json([
+                'status' => false,
+                'message' => 'Xóa thất bại',
+            ], 200);
     }
 }
