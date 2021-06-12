@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\ChucVuController;
+use App\Http\Controllers\Api\LichChamCong;
+use App\Http\Controllers\Api\LichChamCongController;
 use App\Http\Controllers\Api\PhongBanController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -40,4 +42,10 @@ Route::group(['prefix' => 'chucvu'], function () {
     Route::post('createchucvu', [ChucVuController::class, 'addSave'])->name('addSave');
     Route::post('update/{id}', [ChucVuController::class, 'update'])->name('update');
     Route::post('delete/{id}', [ChucVuController::class, 'delete'])->name('delete');
+});
+Route::group(['prefix' => 'lichchamcong'], function () {
+    Route::get('getAll', [LichChamCongController::class, 'getAll'])->name('getAll');
+    Route::get('getlichchamcong/{id}', [LichChamCongController::class, 'getlichchamcong'])->name('getlichchamcong');
+    Route::post('createlichchamcong', [LichChamCongController::class, 'addSave'])->name('addSave');
+    Route::post('update/{id}', [LichChamCongController::class, 'update'])->name('update');
 });

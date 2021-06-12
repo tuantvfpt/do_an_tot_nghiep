@@ -39,6 +39,7 @@ class ChucVuController extends Controller
 
         $chucvu = new chucvu();
         $chucvu->ten_chuc_vu = $request->ten_chuc_vu;
+        dd($chucvu);
         $chucvu->save();
         return  $chucvu ?
             response()->json([

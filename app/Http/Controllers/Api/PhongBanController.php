@@ -13,7 +13,7 @@ class PhongBanController extends Controller
         $phongban = phongban::all();
         return response()->json([
             'status' => true,
-            'message' => 'Lấy danh sách chức vụ thành công',
+            'message' => 'Lấy danh sách phòng ban thành công',
             'data' => $phongban
         ])->setStatusCode(200);
     }
@@ -26,7 +26,7 @@ class PhongBanController extends Controller
         return $phongban ?
             response()->json([
                 'status' => true,
-                'message' => 'Lấy thông tin chức vụ thành công',
+                'message' => 'Lấy thông tin phòng ban thành công',
                 'data' => $phongban
             ], 200) :
             response()->json([
@@ -43,7 +43,7 @@ class PhongBanController extends Controller
         return  $phongban ?
             response()->json([
                 'status' => true,
-                'message' => 'Thêm chức vụ thành công',
+                'message' => 'Thêm phòng ban thành công',
                 'data' => $phongban
             ], 200) :
             response()->json([
@@ -63,12 +63,12 @@ class PhongBanController extends Controller
         return  $phongban ?
             response()->json([
                 'status' => true,
-                'message' => 'Sửa chức vụ thành công',
+                'message' => 'Sửa phòng ban thành công',
                 'data' => $phongban
             ], 200) :
             response()->json([
                 'status' => false,
-                'message' => 'Sửa chức vụ thất bại',
+                'message' => 'Sửa phòng ban thất bại',
             ], 200);
     }
 
