@@ -32,7 +32,7 @@ class PhongBanController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'Không tìm thấy chức vụ',
-            ], 200);
+            ], 404);
     }
     public function addSave(Request $request)
     {
@@ -49,9 +49,8 @@ class PhongBanController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'thêm chúc vụ thất bại',
-            ], 200);
+            ], 404);
     }
-
     public function update($id, Request $request)
     {
 
@@ -69,7 +68,7 @@ class PhongBanController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'Sửa phòng ban thất bại',
-            ], 200);
+            ], 404);
     }
 
     public function delete($id, Request $request)
@@ -84,6 +83,6 @@ class PhongBanController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'Xóa thất bại',
-            ], 200);
+            ], 404);
     }
 }

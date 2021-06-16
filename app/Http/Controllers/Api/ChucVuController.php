@@ -32,14 +32,13 @@ class ChucVuController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'Không tìm thấy chức vụ',
-            ], 200);
+            ], 404);
     }
     public function addSave(Request $request)
     {
 
         $chucvu = new chucvu();
         $chucvu->ten_chuc_vu = $request->ten_chuc_vu;
-        dd($chucvu);
         $chucvu->save();
         return  $chucvu ?
             response()->json([
@@ -50,7 +49,7 @@ class ChucVuController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'thêm chúc vụ thất bại',
-            ], 200);
+            ], 404);
     }
 
     public function update($id, Request $request)
@@ -70,7 +69,7 @@ class ChucVuController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'Sửa chức vụ thất bại',
-            ], 200);
+            ], 404);
     }
 
     public function delete($id, Request $request)
@@ -85,6 +84,6 @@ class ChucVuController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'Xóa thất bại',
-            ], 200);
+            ], 404);
     }
 }

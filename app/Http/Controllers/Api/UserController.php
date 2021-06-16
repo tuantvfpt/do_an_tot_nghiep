@@ -36,7 +36,7 @@ class UserController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'Không tìm thấy user',
-            ], 200);
+            ], 404);
     }
     public function getlist()
     {
@@ -51,7 +51,7 @@ class UserController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'Lấy dữ liệu thất bại',
-            ], 200);
+            ], 404);
     }
     public function addSaveUser(Request $request)
     {
@@ -88,17 +88,15 @@ class UserController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'Sửa user thất bại',
-            ], 200);
+            ], 404);
     }
 
     public function update($id, Request $request)
     {
-
-        $userinfo = userInfo::find($id);
+        $users = User::find($id);
+        $userinfo = userInfo::where('user_id', $users->id)->first();
         if ($userinfo) {
             $userinfo->name = $request->name;
-            $userinfo->chuc_vu_id = $request->chuc_vu_id;
-            $userinfo->chuc_vu_id = $request->phong_ban_id;
             $userinfo->phone = $request->phone;
             if ($request->hasFile('avatar')) {
                 $file = $request->file('avatar');
@@ -106,7 +104,6 @@ class UserController extends Controller
                 $file->move("images", $newname);
                 $userinfo->avatar = "images/" . $newname;
             }
-            $userinfo->luong_co_ban = $request->luong_co_ban;
             $userinfo->save();
             $userinfo->load('getuser');
         }
@@ -119,7 +116,7 @@ class UserController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'Sửa user thất bại',
-            ], 200);
+            ], 404);
     }
 
     public function delete($id, Request $request)
@@ -134,6 +131,6 @@ class UserController extends Controller
             response()->json([
                 'status' => false,
                 'message' => 'Xóa thất bại',
-            ], 200);
+            ], 404);
     }
 }
