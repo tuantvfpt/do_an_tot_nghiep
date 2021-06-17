@@ -38,7 +38,7 @@ class ChucVuController extends Controller
     {
 
         $chucvu = new chucvu();
-        $chucvu->ten_chuc_vu = $request->ten_chuc_vu;
+        $chucvu->name = $request->name;
         $chucvu->save();
         return  $chucvu ?
             response()->json([
@@ -57,7 +57,7 @@ class ChucVuController extends Controller
 
         $chucvu = chucvu::find($id);
         if ($chucvu) {
-            $chucvu->ten_chuc_vu = $request->ten_chuc_vu;
+            $chucvu->name = $request->name;
             $chucvu->save();
         }
         return  $chucvu ?

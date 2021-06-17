@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ChucVuController;
 use App\Http\Controllers\Api\LichChamCong;
 use App\Http\Controllers\Api\LichChamCongController;
+use App\Http\Controllers\Api\LuongController;
 use App\Http\Controllers\Api\PhongBanController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -45,8 +46,12 @@ Route::group(['prefix' => 'chucvu'], function () {
 });
 Route::group(['prefix' => 'lichchamcong'], function () {
     Route::get('/', [LichChamCongController::class, 'getAll'])->name('getAll');
-    Route::get('/{id}', [LichChamCongController::class, 'getlichchamcong'])->name('getlichchamcong');
-    Route::post('create', [LichChamCongController::class, 'addSave'])->name('addSave');
+    Route::get('/{id}', [LichChamCongController::class, 'getdetail'])->name('getdetail');
+    Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
     Route::post('update/{id}', [LichChamCongController::class, 'update'])->name('update');
-    Route::get('luong/{id}', [LichChamCongController::class, 'luong'])->name('luong');
+});
+Route::group(['prefix' => 'luong'], function () {
+    Route::get('/', [LuongController::class, 'getAll'])->name('getAll');
+    Route::get('/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
+    Route::post('tinhluong', [LuongController::class, 'tinhluong'])->name('tinhluong');
 });

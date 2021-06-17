@@ -38,7 +38,7 @@ class PhongBanController extends Controller
     {
 
         $phongban = new phongban();
-        $phongban->ten_phong_ban = $request->ten_phong_ban;
+        $phongban->name = $request->name;
         $phongban->save();
         return  $phongban ?
             response()->json([
@@ -56,7 +56,7 @@ class PhongBanController extends Controller
 
         $phongban = phongban::find($id);
         if ($phongban) {
-            $phongban->ten_phong_ban = $request->ten_phong_ban;
+            $phongban->name = $request->name;
             $phongban->save();
         }
         return  $phongban ?

@@ -13,12 +13,12 @@ class CreateTongThuNhap extends Migration
      */
     public function up()
     {
-        Schema::create('tong_thu_nhap', function (Blueprint $table) {
+        Schema::create('total_salary', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->string('total_gross_salary');
-            $table->string('total_net_salary')->nullable();
+            $table->decimal('total_gross_salary', 10, 2);
+            $table->decimal('total_net_salary', 10, 2)->nullable();
             $table->integer('status');
             $table->date('date');
             $table->timestamps();

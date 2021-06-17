@@ -13,13 +13,13 @@ class CreateLichChamCong extends Migration
      */
     public function up()
     {
-        Schema::create('lich_cham_cong', function (Blueprint $table) {
+        Schema::create('Time_keep_Calendar', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->Time('check_in');
-            $table->Time('check_out');
-            $table->date('date');
+            $table->Time('time_of_check_in');
+            $table->Time('time_of_check_out');
+            $table->date('date_of_work');
             $table->integer('status');
             $table->timestamps();
         });

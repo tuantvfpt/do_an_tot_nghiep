@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateChucVu extends Migration
+class CreateBangThue extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,11 @@ class CreateChucVu extends Migration
      */
     public function up()
     {
-        Schema::create('Position', function (Blueprint $table) {
+        Schema::create('Tax', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('Tax_bracket');
+            $table->decimal('Taxable_income')->nullable();
+            $table->integer('Tax_percentage');
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ class CreateChucVu extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chuc_vu');
+        Schema::dropIfExists('bang_thue');
     }
 }

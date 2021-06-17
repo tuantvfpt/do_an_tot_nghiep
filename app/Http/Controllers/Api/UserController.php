@@ -64,9 +64,9 @@ class UserController extends Controller
         if ($users->id) {
             $userinfo = new userInfo();
             $userinfo->user_id = $users->id;
-            $userinfo->name = $request->name;
-            $userinfo->chuc_vu_id = $request->chuc_vu_id;
-            $userinfo->phong_ban_id = $request->phong_ban_id;
+            $userinfo->full_name = $request->full_name;
+            $userinfo->position_id = $request->position_id;
+            $userinfo->department_id = $request->department_id;
             $userinfo->phone = $request->phone;
             if ($request->hasFile('avatar')) {
                 $file = $request->file('avatar');
@@ -74,9 +74,9 @@ class UserController extends Controller
                 $file->move("images", $newname);
                 $userinfo->avatar = "images/" . $newname;
             }
-            $userinfo->luong_co_ban = $request->luong_co_ban;
-            $userinfo->ma_QR = $users->user_account . $users->id;
-            $userinfo->ngay_gia_nhap = Carbon::now('Asia/Ho_Chi_Minh');
+            $userinfo->Basic_salary = $request->Basic_salary;
+            $userinfo->Code_QR = $users->user_account . $users->id;
+            $userinfo->date_of_join = Carbon::now('Asia/Ho_Chi_Minh');
             $userinfo->save();
         }
         return $userinfo && $users ?
@@ -96,7 +96,7 @@ class UserController extends Controller
         $users = User::find($id);
         $userinfo = userInfo::where('user_id', $users->id)->first();
         if ($userinfo) {
-            $userinfo->name = $request->name;
+            $userinfo->full_name = $request->full_name;
             $userinfo->phone = $request->phone;
             if ($request->hasFile('avatar')) {
                 $file = $request->file('avatar');

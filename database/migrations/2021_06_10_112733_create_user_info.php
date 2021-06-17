@@ -17,17 +17,17 @@ class CreateUserInfo extends Migration
             $table->id();
 
             $table->unsignedBigInteger('user_id');
-            $table->string('name');
+            $table->string('full_name');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->unsignedBigInteger('chuc_vu_id');
-            $table->foreign('chuc_vu_id')->references('id')->on('chuc_vu');
-            $table->unsignedBigInteger('phong_ban_id');
-            $table->foreign('phong_ban_id')->references('id')->on('phong_ban');
+            $table->unsignedBigInteger('position_id');
+            $table->foreign('position_id')->references('id')->on('Position');
+            $table->unsignedBigInteger('department_id');
+            $table->foreign('department_id')->references('id')->on('Department');
             $table->integer('phone')->nullable();
             $table->string('avatar')->nullable();
-            $table->dateTime('ngay_gia_nhap')->nullable();
-            $table->integer('luong_co_ban')->nullable();
-            $table->string('ma_QR')->nullable();
+            $table->dateTime('date_of_join')->nullable();
+            $table->decimal('Basic_salary', 10, 2)->nullable();
+            $table->string('Code_QR')->nullable();
             $table->timestamps();
         });
     }
