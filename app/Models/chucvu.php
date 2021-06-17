@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class chucvu extends Model
 {
     use HasFactory;
-    protected $table = 'chuc_vu';
+    protected $table = 'position';
     public function chucvu_userinfo()
     {
-        return $this->hasMany(userInfo::class, 'chuc_vu_id');
+        return $this->hasMany(userInfo::class, 'position_id');
     }
 }

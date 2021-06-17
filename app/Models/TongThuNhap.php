@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class TongThuNhap extends Model
 {
     use HasFactory;
-    protected $table = 'tong_thu_nhap';
+    protected $table = 'total_salary';
 }

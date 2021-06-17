@@ -13,7 +13,7 @@ class CreateChucVu extends Migration
      */
     public function up()
     {
-        Schema::create('Position', function (Blueprint $table) {
+        Schema::create('position', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();

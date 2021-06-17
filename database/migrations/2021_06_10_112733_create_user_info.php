@@ -20,14 +20,14 @@ class CreateUserInfo extends Migration
             $table->string('full_name');
             $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('position_id');
-            $table->foreign('position_id')->references('id')->on('Position');
+            $table->foreign('position_id')->references('id')->on('position');
             $table->unsignedBigInteger('department_id');
-            $table->foreign('department_id')->references('id')->on('Department');
+            $table->foreign('department_id')->references('id')->on('department');
             $table->integer('phone')->nullable();
             $table->string('avatar')->nullable();
             $table->dateTime('date_of_join')->nullable();
-            $table->decimal('Basic_salary', 10, 2)->nullable();
-            $table->string('Code_QR')->nullable();
+            $table->float('basic_salary')->nullable();
+            $table->string('code_QR')->nullable();
             $table->timestamps();
         });
     }

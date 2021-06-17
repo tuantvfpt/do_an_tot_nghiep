@@ -16,7 +16,7 @@ class CreateBangThue extends Migration
         Schema::create('Tax', function (Blueprint $table) {
             $table->id();
             $table->string('Tax_bracket');
-            $table->decimal('Taxable_income')->nullable();
+            $table->float('Taxable_income')->nullable();
             $table->integer('Tax_percentage');
             $table->timestamps();
         });

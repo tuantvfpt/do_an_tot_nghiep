@@ -74,8 +74,8 @@ class UserController extends Controller
                 $file->move("images", $newname);
                 $userinfo->avatar = "images/" . $newname;
             }
-            $userinfo->Basic_salary = $request->Basic_salary;
-            $userinfo->Code_QR = $users->user_account . $users->id;
+            $userinfo->basic_salary = $request->basic_salary;
+            $userinfo->code_QR = $users->user_account . $users->id;
             $userinfo->date_of_join = Carbon::now('Asia/Ho_Chi_Minh');
             $userinfo->save();
         }

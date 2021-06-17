@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class BangThue extends Model
 {
     use HasFactory;
-    protected $table = 'bang_thue';
+    protected $table = 'tax';
 }

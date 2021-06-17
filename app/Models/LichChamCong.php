@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class LichChamCong extends Model
 {
     use HasFactory;
-    protected $table = 'lich_cham_cong';
+    protected $table = 'time_keep_calendar';
 }

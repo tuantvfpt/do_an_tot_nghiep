@@ -17,8 +17,8 @@ class CreateTongThuNhap extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->decimal('total_gross_salary', 10, 2);
-            $table->decimal('total_net_salary', 10, 2)->nullable();
+            $table->float('total_gross_salary');
+            $table->float('total_net_salary');
             $table->integer('status');
             $table->date('date');
             $table->timestamps();

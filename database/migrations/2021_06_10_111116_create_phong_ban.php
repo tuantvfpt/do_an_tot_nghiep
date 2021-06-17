@@ -13,7 +13,7 @@ class CreatePhongBan extends Migration
      */
     public function up()
     {
-        Schema::create('Department', function (Blueprint $table) {
+        Schema::create('department', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();

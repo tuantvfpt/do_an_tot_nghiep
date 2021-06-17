@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class phongban extends Model
 {
     use HasFactory;
-    protected $table = 'phong_ban';
+    protected $table = 'department';
     public function phongban_userinfo()
     {
-        return $this->hasMany(userInfo::class, 'chuc_vu_id');
+        return $this->hasMany(userInfo::class, 'department_id');
     }
 }
