@@ -9,8 +9,4 @@ class chucvu extends Model
 {
     use HasFactory;
     protected $table = 'position';
-    public function chucvu_userinfo()
-    {
-        return $this->hasMany(userInfo::class, 'position_id');
-    }
 }

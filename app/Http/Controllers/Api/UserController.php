@@ -13,10 +13,31 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function getAll()
+    public function __construct(User $users)
     {
-        $users = User::all();
-        $users->load('userinfo');
+        $this->users = $users;
+    }
+
+    public function getAll(Request $request)
+    {
+        $users = $this->users
+            ->leftJoin('department', 'department.id', '=', 'users.department_id')
+            ->leftJoin('position', 'position.id', '=', 'users.position_id')
+            ->leftJoin('user_info', 'user_info.user_id', '=', 'users.id');
+        // $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
+        if (!empty($request->keyword)) {
+            $users =  $users->Where(function ($query) use ($request) {
+                $query->Orwhere('user_info.full_name', 'like', "%" . $request->keyword . "%")
+                    ->Orwhere('email', 'like', "%" . $request->keyword . "%");
+            });
+        }
+        if (!empty($request->chucvu)) {
+            $users =  $users->where('department_id', $request->chucvu);
+        }
+        if (!empty($request->phongban)) {
+            $users = $users->where('position_id', $request->phongban);
+        }
+        $users = $users->paginate(($request->limit != null) ? $request->limit : 2);
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách user thành công',
@@ -59,14 +80,14 @@ class UserController extends Controller
         $users = new User();
         $users->user_account = $request->user_account;
         $users->email = $request->email;
+        $users->position_id = $request->position_id;
+        $users->department_id = $request->department_id;
         $users->password = Hash::make($request->password);
         $users->save();
         if ($users->id) {
             $userinfo = new userInfo();
             $userinfo->user_id = $users->id;
             $userinfo->full_name = $request->full_name;
-            $userinfo->position_id = $request->position_id;
-            $userinfo->department_id = $request->department_id;
             $userinfo->phone = $request->phone;
             if ($request->hasFile('avatar')) {
                 $file = $request->file('avatar');
@@ -94,8 +115,8 @@ class UserController extends Controller
     public function update($id, Request $request)
     {
         $users = User::find($id);
-        $userinfo = userInfo::where('user_id', $users->id)->first();
-        if ($userinfo) {
+        if (isset($users)) {
+            $userinfo = userInfo::where('user_id', $users->id)->first();
             $userinfo->full_name = $request->full_name;
             $userinfo->phone = $request->phone;
             if ($request->hasFile('avatar')) {
@@ -106,6 +127,11 @@ class UserController extends Controller
             }
             $userinfo->save();
             $userinfo->load('getuser');
+        } else {
+            return response()->json([
+                'status' => true,
+                'message' => 'Không tồn tại nhân viên này',
+            ], 404);
         }
         return  $userinfo ?
             response()->json([

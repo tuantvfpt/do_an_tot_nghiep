@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\BangThue;
+use App\Models\Prize_user;
 use App\Models\TongThuNhap;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LuongController extends Controller
 {
@@ -44,9 +46,19 @@ class LuongController extends Controller
         $checkthue30 = BangThue::where('Tax_percentage', 30)->first();
         $checkthue35 = BangThue::where('Tax_percentage', 35)->first();
         foreach ($getlist as $item) {
-
             $total_gross_salary = $item->total_gross_salary;
+            $prize = Prize_user::select(
+                DB::raw('prize_money')
+            )
+                ->join('prize', 'prize.id', '=', 'prize_user.prize_id')
+                ->where('user_id', $item->user_id)->wherebetween('date', [$startmonth, $endmonth])
+                ->get();
 
+            if ($prize) {
+                foreach ($prize as $prize) {
+                    $total_gross_salary += $prize->prize_money;
+                }
+            }
             if (($checkthue5->Taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue10->Taxable_income)) {
                 $tongluong = $total_gross_salary - (($total_gross_salary * $checkthue5->Tax_percentage) / 100);
             } elseif (($checkthue10->Taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue15->Taxable_income)) {

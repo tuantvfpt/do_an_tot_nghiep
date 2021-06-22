@@ -100,7 +100,6 @@ class LichChamCongController extends Controller
                         $tongtimecheckin += ($x + $b);
                     }
                     $tongtimelam = $tongtimecheckin / 3600;
-
                     $luongcoban = $checkluong->basic_salary;
                     $timecodinh = 8;
                     if (($tongtimelam - $timecodinh * 22) > 0) {

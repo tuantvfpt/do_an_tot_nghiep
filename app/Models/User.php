@@ -44,4 +44,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(userInfo::class, 'user_id');
     }
+    public function chucvu_userinfo()
+    {
+        return $this->belongsTo(chucvu::class, 'position_id');
+    }
+    public function phongban_userinfo()
+    {
+        return $this->belongsTo(phongban::class, 'position_id');
+    }
 }

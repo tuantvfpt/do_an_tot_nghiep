@@ -9,8 +9,4 @@ class phongban extends Model
 {
     use HasFactory;
     protected $table = 'department';
-    public function phongban_userinfo()
-    {
-        return $this->hasMany(userInfo::class, 'department_id');
-    }
 }
