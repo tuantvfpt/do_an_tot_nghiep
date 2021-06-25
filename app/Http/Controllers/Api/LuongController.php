@@ -7,6 +7,7 @@ use App\Models\BangThue;
 use App\Models\Prize_user;
 use App\Models\TongThuNhap;
 use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -33,6 +34,8 @@ class LuongController extends Controller
             'message' => 'Lấy chi tiết lương thấy bại',
         ])->setStatusCode(404);
     }
+
+
     public function tinhluong()
     {
         $startmonth = Carbon::now()->startOfMonth()->toDateString();
@@ -85,4 +88,28 @@ class LuongController extends Controller
             }
         }
     }
+    public function getSalary6Month(){
+        $currentDateTime = Carbon::now()->toDateString();
+        $newDateTime = Carbon::now()->subMonths(6)->toDateString();
+        $list6month  = TongThuNhap::select(
+            DB::raw('user_id')
+        )
+        ->join('users', 'users.id', '=', 'total_salary.user_id')
+        ->where('user_id','=', 1)->wherebetween('date', [ $newDateTime, $currentDateTime])
+        ->sum('total_salary.total_net_salary');
+        dd($list6month);
+    }
+    public function getSalary1year(){
+        $currentDateTime = Carbon::now()->startOfYear()->toDateString();
+        $newDateTime = Carbon::now()->endOfYear()->toDateString();
+        $list6month  = TongThuNhap::select(
+            DB::raw('user_id')
+        )
+        ->join('users', 'users.id', '=', 'total_salary.user_id')
+        ->where('user_id','=', 1)->wherebetween('date', [ $currentDateTime, $newDateTime ])
+        ->sum('total_salary.total_net_salary');
+        dd($list6month);
+    }
+
 }
+

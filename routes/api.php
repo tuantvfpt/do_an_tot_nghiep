@@ -52,6 +52,9 @@ Route::group(['prefix' => 'lichchamcong'], function () {
 });
 Route::group(['prefix' => 'luong'], function () {
     Route::get('/', [LuongController::class, 'getAll'])->name('getAll');
+    Route::get('6month', [LuongController::class, 'getSalary6Month'])->name('getSalary6Month');
+    Route::get('1year', [LuongController::class, 'getSalary1year'])->name('getSalary1year');
     Route::get('/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
     Route::post('tinhluong', [LuongController::class, 'tinhluong'])->name('tinhluong');
+
 });
