@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\CalendarLeaveController;
 use App\Http\Controllers\Api\ChucVuController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\LichChamCong;
 use App\Http\Controllers\Api\LichChamCongController;
 use App\Http\Controllers\Api\LuongController;
@@ -22,6 +24,9 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+Route::group(['prefix' => 'dashboard'], function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('getdata');
+});
 Route::group(['prefix' => 'user'], function () {
     Route::get('/', [UserController::class, 'getAll'])->name('getAllUser');
     Route::get('/{id}', [UserController::class, 'getUser'])->name('getUser');
@@ -54,4 +59,10 @@ Route::group(['prefix' => 'luong'], function () {
     Route::get('/', [LuongController::class, 'getAll'])->name('getAll');
     Route::get('/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
     Route::post('tinhluong', [LuongController::class, 'tinhluong'])->name('tinhluong');
+});
+Route::group(['prefix' => 'lichxinnghi'], function () {
+    Route::get('/', [LuongController::class, 'getAll'])->name('getAll');
+    // Route::get('/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
+    Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
+    Route::post('update_day', [CalendarLeaveController::class, 'update_day'])->name('update_day');
 });
