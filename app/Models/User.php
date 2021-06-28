@@ -52,4 +52,8 @@ class User extends Authenticatable
     {
         return $this->belongsTo(phongban::class, 'position_id');
     }
+    public function user_calendar()
+    {
+        return $this->hasMany(LichChamCong::class, 'user_id');
+    }
 }

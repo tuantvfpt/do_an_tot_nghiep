@@ -21,9 +21,11 @@ class UserController extends Controller
     public function getAll(Request $request)
     {
         $users = $this->users
+            ->select('user_info.full_name', 'users.email', 'department.name as name_department', 'position.name as name_position', 'user_info.avatar', 'users.user_account')
             ->leftJoin('department', 'department.id', '=', 'users.department_id')
             ->leftJoin('position', 'position.id', '=', 'users.position_id')
             ->leftJoin('user_info', 'user_info.user_id', '=', 'users.id');
+        dd($users->get());
         // $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
         if (!empty($request->keyword)) {
             $users =  $users->Where(function ($query) use ($request) {
@@ -47,7 +49,7 @@ class UserController extends Controller
     public function getUser($id, Request $request)
     {
         $users = User::find($id);
-        $users->load('userinfo');
+        $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
         return $users ?
             response()->json([
                 'status' => true,
@@ -145,10 +147,10 @@ class UserController extends Controller
             ], 404);
     }
 
-    public function delete($id, Request $request)
+    public function delete($id)
     {
         $userinfo = userInfo::where('user_id', $id)->delete();
-        $user = User::destroy($id);
+        $user = User::find($id)->delete();
         return $user && $userinfo ?
             response()->json([
                 'status' => true,
