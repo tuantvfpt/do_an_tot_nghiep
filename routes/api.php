@@ -57,14 +57,14 @@ Route::group(['prefix' => 'lichchamcong'], function () {
 });
 Route::group(['prefix' => 'luong'], function () {
     Route::get('/', [LuongController::class, 'getAll'])->name('getAll');
-    Route::get('6month', [LuongController::class, 'getSalary6Month'])->name('getSalary6Month');
-    Route::get('1year', [LuongController::class, 'getSalary1year'])->name('getSalary1year');
     Route::get('/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
     Route::post('tinhluong', [LuongController::class, 'tinhluong'])->name('tinhluong');
 });
 Route::group(['prefix' => 'lichxinnghi'], function () {
-    Route::get('/', [LuongController::class, 'getAll'])->name('getAll');
-    // Route::get('/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
+    Route::get('/', [CalendarLeaveController::class, 'getAll'])->name('getAll');
+    Route::get('user_leave', [CalendarLeaveController::class, 'get_lich_nghi'])->name('get_user_leave');
+    Route::get('comfig/{id}', [CalendarLeaveController::class, 'comfig'])->name('comfig');
+    Route::get('/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
     Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
     Route::post('update_day', [CalendarLeaveController::class, 'update_day'])->name('update_day');
 });

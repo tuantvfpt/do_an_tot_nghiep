@@ -82,8 +82,6 @@ class DashboardController extends Controller
         $data_user_di_muon = $get_user_di_lam->where('time_of_check_in', '>', $mocgio)->get();
 
         //data đi làm muộn
-
-
         //lay cac ngay trong thang
         $id = $request->id;
         $arrDay = [];

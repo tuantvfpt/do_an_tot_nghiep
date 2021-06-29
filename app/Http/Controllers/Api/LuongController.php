@@ -13,13 +13,30 @@ use Illuminate\Support\Facades\DB;
 
 class LuongController extends Controller
 {
-    public function getAll()
+    public function getAll(Request $request)
     {
-        $luong = TongThuNhap::all();
+        $luong = TongThuNhap::select('total_salary.*', 'user_info.full_name')
+            ->Join('users', 'total_salary.user_id', '=', 'users.id')
+            ->join('user_info', 'users.id', '=', 'user_info.user_id')
+            ->where('total_salary.deleted_at', null);
+        if (!empty($request->keyword)) {
+            $luong =  $luong->Where(function ($query) use ($request) {
+                $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
+            });
+        }
+        if (!empty($request->date)) {
+            $luong =  $luong->where('date', $request->date);
+        }
+        $luong = $luong->paginate(($request->limit != null) ? $request->limit : 5);
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách lương thành công thành công',
-            'data' => $luong
+            'data' => $luong->items(),
+            'meta' => [
+                'total'      => $luong->total(),
+                'perPage'    => $luong->perPage(),
+                'currentPage' => $luong->currentPage()
+            ]
         ])->setStatusCode(200);
     }
     public function getdetail($id)
