@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Calendar_leave;
 use App\Models\chucvu;
+use App\Models\company_mode;
+use App\Models\LichChamCong;
 use App\Models\phongban;
+use App\Models\Prize_user;
+use App\Models\TongThuNhap;
 use App\Models\User;
 use App\Models\userInfo;
 use Carbon\Carbon;
@@ -21,11 +26,11 @@ class UserController extends Controller
     public function getAll(Request $request)
     {
         $users = $this->users
-            ->select('user_info.full_name', 'users.email', 'department.name as name_department', 'position.name as name_position', 'user_info.avatar', 'users.user_account')
+            ->select('users.id', 'user_info.full_name', 'users.email', 'department.name as name_department', 'position.name as name_position', 'user_info.avatar', 'users.user_account')
             ->leftJoin('department', 'department.id', '=', 'users.department_id')
             ->leftJoin('position', 'position.id', '=', 'users.position_id')
-            ->leftJoin('user_info', 'user_info.user_id', '=', 'users.id');
-        dd($users->get());
+            ->leftJoin('user_info', 'user_info.user_id', '=', 'users.id')
+            ->where('user_info.deleted_at', null);
         // $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
         if (!empty($request->keyword)) {
             $users =  $users->Where(function ($query) use ($request) {
@@ -39,17 +44,24 @@ class UserController extends Controller
         if (!empty($request->phongban)) {
             $users = $users->where('position_id', $request->phongban);
         }
-        $users = $users->paginate(($request->limit != null) ? $request->limit : 2);
+        $users = $users->paginate(($request->limit != null) ? $request->limit : 5);
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách user thành công',
-            'data' => $users
+            'data' => $users->items(),
+            'meta' => [
+                'total'      => $users->total(),
+                'perPage'    => $users->perPage(),
+                'currentPage' => $users->currentPage()
+            ]
         ])->setStatusCode(200);
     }
     public function getUser($id, Request $request)
     {
         $users = User::find($id);
-        $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
+        if ($users) {
+            $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
+        }
         return $users ?
             response()->json([
                 'status' => true,
@@ -149,8 +161,18 @@ class UserController extends Controller
 
     public function delete($id)
     {
-        $userinfo = userInfo::where('user_id', $id)->delete();
-        $user = User::find($id)->delete();
+
+        $userinfo = userInfo::where('user_id', $id);
+        $calendar_for_leave = Calendar_leave::where('user_id', $id);
+        $company_mode = company_mode::where('user_id', $id);
+        $total_salary = TongThuNhap::where('user_id', $id);
+        $time_keep_calendar = LichChamCong::where('user_id', $id);
+        $prize_fine_user = Prize_user::where('user_id', $id);
+        $user = User::find($id);
+        if ($userinfo && $user) {
+            $userinfo->delete();
+            $user->delete();
+        }
         return $user && $userinfo ?
             response()->json([
                 'status' => true,
@@ -158,7 +180,7 @@ class UserController extends Controller
             ], 200) :
             response()->json([
                 'status' => false,
-                'message' => 'Xóa thất bại',
+                'message' => 'xóa thất bại',
             ], 404);
     }
 }
