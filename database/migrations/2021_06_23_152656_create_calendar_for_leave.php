@@ -15,7 +15,6 @@ class CreateCalendarForLeave extends Migration
     {
         Schema::create('calendar_for_leave', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->dateTime('time_start')->nullable();
@@ -24,6 +23,8 @@ class CreateCalendarForLeave extends Migration
             $table->string('note')->nullable();
             $table->integer('status')->nullable();
             $table->integer('mode_leave')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 

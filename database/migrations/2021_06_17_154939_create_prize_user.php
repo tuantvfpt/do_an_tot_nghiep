@@ -13,14 +13,16 @@ class CreatePrizeUser extends Migration
      */
     public function up()
     {
-        Schema::create('prize_user', function (Blueprint $table) {
+        Schema::create('prize_fine_user', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->unsignedBigInteger('prize_id');
-            $table->foreign('prize_id')->references('id')->on('prize');
+            $table->unsignedBigInteger('prize_fine_id');
+            $table->foreign('prize_fine_id')->references('id')->on('prize_fine');
             $table->date('date');
             $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 

@@ -15,13 +15,15 @@ class CreateCompanyMode extends Migration
     {
         Schema::create('company_mode', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->integer('total_day')->nullable();
             $table->integer('total_day_off')->nullable();
             $table->date('date')->nullable();
             $table->string('note')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 

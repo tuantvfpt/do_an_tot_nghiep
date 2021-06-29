@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Calendar_leave extends Model
 {
     use HasFactory;
+    use SoftDeletes;
+
     protected $table = 'calendar_for_leave';
 }

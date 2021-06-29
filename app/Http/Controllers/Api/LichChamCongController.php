@@ -22,7 +22,7 @@ class LichChamCongController extends Controller
      */
     public function getAll()
     {
-        $lich_cham_cong = LichChamCong::all();
+        $lich_cham_cong = LichChamCong::where('deleted_at', null)->get();
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',

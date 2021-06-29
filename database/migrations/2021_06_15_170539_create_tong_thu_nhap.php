@@ -17,11 +17,13 @@ class CreateTongThuNhap extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->float('total_gross_salary',11,2);
-            $table->float('total_net_salary',11,2);
-            $table->integer('status');
-            $table->date('date');
+            $table->float('total_gross_salary', 11, 2)->nullable();
+            $table->float('total_net_salary', 11, 2)->nullable();
+            $table->integer('status')->nullable();
+            $table->date('date')->nullable();
             $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 

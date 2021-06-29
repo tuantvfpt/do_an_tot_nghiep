@@ -87,8 +87,13 @@ class DashboardController extends Controller
         //lay cac ngay trong thang
         $id = $request->id;
         $arrDay = [];
-        $motnh = date('m');
-        $year = date('Y');
+        if ($request->date_time) {
+            $motnh = date('m', strtotime($request->date_time));
+            $year = date('Y', strtotime($request->date_time));
+        } else {
+            $motnh = date('6');
+            $year = date('Y');
+        }
         for ($day = 1; $day <= 31; $day++) {
             $time = mktime(12, 0, 0, $motnh, $day, $year);
             if (date('m', $time) == $motnh) {
@@ -97,28 +102,42 @@ class DashboardController extends Controller
         }
         $chunhat = 0;
         $thubay = 1;
-        $get_lich_lam = User::select('date_of_work', 'users.user_account')
-            ->join('time_keep_calendar', 'time_keep_calendar.user_id', '=', 'users.id')
-            ->whereMonth('date_of_work', date('m'))
-            ->whereYear('date_of_work', date('Y'))
-            ->where('user_id', 1)
-            ->get()->toArray();
-        $arr_lich_lam = [];
-        $arrX = [];
-        foreach ($arrDay as $day) {
-            $arrthu = explode('-', $day, 2);
-
-            foreach ($get_lich_lam as $key => $value) {
-                if ($value['date_of_work'] == $arrthu[1]) {
-                    $lich_lam = 'đi làm';
-                    break;
-                } elseif ($arrthu[0] == $chunhat || $arrthu[0] == $thubay) {
-                    $lich_lam = null;
+        $get_lich_lam = LichChamCong::select('date_of_work', 'users.user_account as name')
+            ->join('users', 'time_keep_calendar.user_id', '=', 'users.id')
+            ->whereMonth('date_of_work', $motnh)
+            ->whereYear('date_of_work', $year)
+            ->where(function ($query) use ($id) {
+                if ($id) {
+                    $query->where('user_id', $id);
                 } else {
-                    $lich_lam = 'vắng';
+                    $query->where('user_id', 3);
                 }
+            })
+            // ->where('user_id', $id)
+            // ->orwhere('user_id', Auth::user()->id)
+            ->get()->toArray();
+        $arr_lich_lam["total_di_lam"] = [];
+        $arrX = [];
+        if (count($get_lich_lam) > 0) {
+            foreach ($arrDay as $day) {
+                $arrthu = explode('-', $day, 2);
+
+                foreach ($get_lich_lam as $key => $value) {
+                    if ($value['date_of_work'] == $arrthu[1]) {
+                        $lich_lam = 'đi làm';
+                        break;
+                    } elseif ($arrthu[0] == $chunhat || $arrthu[0] == $thubay) {
+                        $lich_lam = null;
+                    } else {
+                        $lich_lam = 'vắng';
+                    }
+                    $arr_lich_lam['user'] = $value['name'];
+                }
+                $arr_lich_lam["total_di_lam"][] = $lich_lam;
+                $arr_lich_lam["ngay"][] = $arrthu[1];
             }
-            $arr_lich_lam[] = $lich_lam;
+        } else {
+            $error = "Không có dữ liệu";
         }
         return $arr_lich_lam || $data_user_di_muon || $data_user_di_som || $data_user || $data_salary || $dataBetween_salary || $data_user_in_position ?
             response()->json([
@@ -128,7 +147,7 @@ class DashboardController extends Controller
             ], 200) :
             response()->json([
                 'status' => false,
-                'message' => 'Không tìm thấy data',
+                'message' => $error,
             ], 404);
     }
 }

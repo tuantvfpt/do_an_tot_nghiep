@@ -13,11 +13,14 @@ class CreatePrize extends Migration
      */
     public function up()
     {
-        Schema::create('prize', function (Blueprint $table) {
+        Schema::create('prize_fine', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
             $table->float('prize_money', 11, 2)->nullable();
+            $table->float('fine_money', 11, 2)->nullable();
             $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 
