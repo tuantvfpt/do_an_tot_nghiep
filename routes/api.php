@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::group(['prefix' => 'dashboard'], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('getdata');
+    Route::get('/show_calendar', [DashboardController::class, 'show_lich'])->name('show_lich');
 });
 Route::group(['prefix' => 'user'], function () {
     Route::get('/', [UserController::class, 'getAll'])->name('getAllUser');
@@ -51,8 +52,7 @@ Route::group(['prefix' => 'chucvu'], function () {
 });
 Route::group(['prefix' => 'lichchamcong'], function () {
     Route::get('/', [LichChamCongController::class, 'getAll'])->name('getAll');
-    Route::get('/{id}', [LichChamCongController::class, 'getdetail'])->name('getdetail');
-    Route::get('show_calendar', [LichChamCongController::class, 'show_lich'])->name('show_lich');
+    Route::get('{id}', [LichChamCongController::class, 'getdetail'])->name('getdetail');
     Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
     Route::post('update/{id}', [LichChamCongController::class, 'update'])->name('update');
 });
