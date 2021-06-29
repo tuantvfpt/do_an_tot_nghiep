@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Calendar_leave;
 use App\Models\company_mode;
+use App\Models\LichChamCong;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -159,4 +160,6 @@ class CalendarLeaveController extends Controller
             'message' => 'Đăng kí không thành công',
         ], 404);
     }
+    //lấy tất cả dữ liệu đi lầm với nghỉ trong 1 tháng theo lich
+   
 }

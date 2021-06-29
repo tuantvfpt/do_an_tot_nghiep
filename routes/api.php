@@ -52,6 +52,7 @@ Route::group(['prefix' => 'chucvu'], function () {
 Route::group(['prefix' => 'lichchamcong'], function () {
     Route::get('/', [LichChamCongController::class, 'getAll'])->name('getAll');
     Route::get('/{id}', [LichChamCongController::class, 'getdetail'])->name('getdetail');
+    Route::get('show_calendar', [LichChamCongController::class, 'show_lich'])->name('show_lich');
     Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
     Route::post('update/{id}', [LichChamCongController::class, 'update'])->name('update');
 });
