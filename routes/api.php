@@ -8,8 +8,10 @@ use App\Http\Controllers\Api\LichChamCongController;
 use App\Http\Controllers\Api\LuongController;
 use App\Http\Controllers\Api\PhongBanController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -35,13 +37,16 @@ Route::group(['prefix' => 'user'], function () {
     Route::post('create', [UserController::class, 'addSaveUser'])->name('addUser');
     Route::post('delete/{id}', [UserController::class, 'delete'])->name('delete');
 });
-Route::group(['prefix' => 'phongban'], function () {
+
+
+Route::group(['prefix' => 'phongban','middleware' =>'auth'], function () {
     Route::get('/', [PhongBanController::class, 'getAll'])->name('getAll');
     Route::get('/{id}', [PhongBanController::class, 'getphongban'])->name('getphongban');
     Route::post('create', [PhongBanController::class, 'addSave'])->name('addSave');
     Route::post('update/{id}', [PhongBanController::class, 'update'])->name('update');
     Route::post('delete/{id}', [PhongBanController::class, 'delete'])->name('delete');
 });
+
 Route::group(['prefix' => 'chucvu'], function () {
     Route::get('/', [ChucVuController::class, 'getAll'])->name('getAll');
     Route::get('/{id}', [ChucVuController::class, 'getchucvu'])->name('getchucvu');
@@ -67,4 +72,17 @@ Route::group(['prefix' => 'lichxinnghi'], function () {
     // Route::get('/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
     Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
     Route::post('update_day', [CalendarLeaveController::class, 'update_day'])->name('update_day');
+});
+
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+
+], function ($router) {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::get('/user-profile', [AuthController::class, 'userProfile']);    
 });
