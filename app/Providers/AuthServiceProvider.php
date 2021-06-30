@@ -29,7 +29,7 @@ class AuthServiceProvider extends ServiceProvider
        
         Gate::define('view', function (User $user) {
             return $user->role_id == 1; //admin
-            dd($user);
+            // dd($user);
         });
         Gate::define('view/id', function (User $user) {
             return $user->role_id == 2; // admin,hr,user
