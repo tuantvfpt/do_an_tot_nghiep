@@ -116,7 +116,7 @@ class DashboardController extends Controller
     }
     public function show_lich(Request $request)
     {
-        $id = $request->id;
+        $id = Auth::user()->id;
         $arrDay = [];
         if ($request->date_time) {
             $motnh = date('m', strtotime($request->date_time));

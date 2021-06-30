@@ -56,7 +56,6 @@ class PhongBanController extends Controller
             return  response()->json([
                 'status' => false,
                 'message' => 'Bạn không được phép',
-
             ], 403);
         }
     }
@@ -90,16 +89,18 @@ class PhongBanController extends Controller
     public function delete($id, Request $request)
     {
         if (Gate::allows('delete')) {
-
             $phongban = phongban::destroy($id);
-            return response()->json([
+            return  $phongban ? response()->json([
                 'status' => true,
                 'message' => 'Xóa thành công',
-            ], 200);
+            ], 200) : response()->json([
+                'status' => false,
+                'message' => 'Xóa thất bại'
+            ], 403);
         } elseif (!Gate::allows('delete')) {
             return response()->json([
                 'status' => false,
-                'message' => 'Xóa thất bại',
+                'message' => 'Bạn không có quyền này'
             ], 403);
         }
     }
