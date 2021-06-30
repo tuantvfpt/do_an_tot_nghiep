@@ -14,7 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
-        'App\Console\Commands\update_mode_day_off'
+        'App\Console\Commands\update_mode_day_off',
+        'App\Console\Commands\update_salary_every_month'
     ];
 
     /**
@@ -26,7 +27,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('command:update_mode_day_off')->everyMinute();
+        $schedule->command('command:update_mode_day_off')->everyFiveMinutes();
+        $schedule->command('command:update_salary_every_month')->lastDayOfMonth('15:00');
     }
 
     /**

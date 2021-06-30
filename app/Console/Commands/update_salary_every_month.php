@@ -1,60 +1,48 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Console\Commands;
 
-use App\Http\Controllers\Controller;
 use App\Models\BangThue;
 use App\Models\Prize_user;
 use App\Models\TongThuNhap;
 use Carbon\Carbon;
-use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class LuongController extends Controller
+class update_salary_every_month extends Command
 {
-    public function getAll(Request $request)
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'command:update_salary_every_month';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Command description';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
     {
-        $luong = TongThuNhap::select('total_salary.*', 'user_info.full_name')
-            ->Join('users', 'total_salary.user_id', '=', 'users.id')
-            ->join('user_info', 'users.id', '=', 'user_info.user_id')
-            ->where('total_salary.deleted_at', null);
-        if (!empty($request->keyword)) {
-            $luong =  $luong->Where(function ($query) use ($request) {
-                $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
-            });
-        }
-        if (!empty($request->date)) {
-            $luong =  $luong->where('date', $request->date);
-        }
-        $luong = $luong->paginate(($request->limit != null) ? $request->limit : 5);
-        return response()->json([
-            'status' => true,
-            'message' => 'Lấy danh sách lương thành công thành công',
-            'data' => $luong->items(),
-            'meta' => [
-                'total'      => $luong->total(),
-                'perPage'    => $luong->perPage(),
-                'currentPage' => $luong->currentPage()
-            ]
-        ])->setStatusCode(200);
-    }
-    public function getdetail($id)
-    {
-        $luong = TongThuNhap::find($id);
-        return $luong ? response()->json([
-            'status' => true,
-            'message' => 'Lấy chi tiết lương thành công',
-            'data' => $luong
-        ])->setStatusCode(200) : response()->json([
-            'status' => false,
-            'message' => 'Lấy chi tiết lương thấy bại',
-        ])->setStatusCode(404);
+        parent::__construct();
     }
 
-
-    public function tinhluong()
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
     {
+
         $startmonth = Carbon::now()->startOfMonth()->toDateString();
         $endmonth = Carbon::now()->endOfMonth()->toDateString();
         $getlist = TongThuNhap::wherebetween('date', [$startmonth, $endmonth])->get();
@@ -109,27 +97,4 @@ class LuongController extends Controller
             }
         }
     }
-    // public function getSalary6Month(){
-    //     $currentDateTime = Carbon::now()->toDateString();
-    //     $newDateTime = Carbon::now()->subMonths(6)->toDateString();
-    //     $list6month  = TongThuNhap::select(
-    //         DB::raw('user_id')
-    //     )
-    //     ->join('users', 'users.id', '=', 'total_salary.user_id')
-    //     ->where('user_id','=', 1)->wherebetween('date', [ $newDateTime, $currentDateTime])
-    //     ->sum('total_salary.total_net_salary');
-    //     dd($list6month);
-    // }
-    // public function getSalary1year(){
-    //     $currentDateTime = Carbon::now()->startOfYear()->toDateString();
-    //     $newDateTime = Carbon::now()->endOfYear()->toDateString();
-    //     $list6month  = TongThuNhap::select(
-    //         DB::raw('user_id')
-    //     )
-    //     ->join('users', 'users.id', '=', 'total_salary.user_id')
-    //     ->where('user_id','=', 1)->wherebetween('date', [ $currentDateTime, $newDateTime ])
-    //     ->sum('total_salary.total_net_salary');
-    //     dd($list6month);
-    // }
-
 }

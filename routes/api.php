@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'dashboard'], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('getdata');
     Route::get('/show_calendar', [DashboardController::class, 'show_lich'])->name('show_lich');
+    Route::get('/get_user_late_early', [DashboardController::class, 'get_user_late_early'])->name('get_user_late_early');
 });
 Route::group(['prefix' => 'user'], function () {
     Route::get('/', [UserController::class, 'getAll'])->name('getAllUser');
