@@ -20,13 +20,30 @@ class LichChamCongController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAll()
+    public function getAll(Request $request)
     {
-        $lich_cham_cong = LichChamCong::where('deleted_at', null)->get();
+        $lich_cham_cong = LichChamCong::select('time_keep_calendar.*', 'user_info.full_name')
+            ->Join('users', 'time_keep_calendar.user_id', '=', 'users.id')
+            ->join('user_info', 'users.id', '=', 'user_info.user_id')
+            ->where('time_keep_calendar.deleted_at', null);
+        if (!empty($request->keyword)) {
+            $lich_cham_cong =  $lich_cham_cong->Where(function ($query) use ($request) {
+                $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
+            });
+        }
+        if (!empty($request->date)) {
+            $lich_cham_cong =  $lich_cham_cong->where('date', $request->date);
+        }
+        $lich_cham_cong = $lich_cham_cong->paginate(($request->limit != null) ? $request->limit : 5);
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',
-            'data' => $lich_cham_cong
+            'data' => $lich_cham_cong->items(),
+            'meta' => [
+                'total'      => $lich_cham_cong->total(),
+                'perPage'    => $lich_cham_cong->perPage(),
+                'currentPage' => $lich_cham_cong->currentPage()
+            ]
         ])->setStatusCode(200);
     }
     public function getdetail($id)
@@ -151,4 +168,5 @@ class LichChamCongController extends Controller
             'status' => $status
         ], 200);
     }
+   
 }

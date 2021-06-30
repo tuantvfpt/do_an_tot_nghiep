@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-
     public function index(Request $request)
     {
         //get lương
@@ -53,9 +52,6 @@ class DashboardController extends Controller
             $get_salary->whereBetween('date', [$request->yearBetween, $now]);
             // ->where('id', Auth::user()->id);;
         }
-        // }
-        $data_salary = $get_salary->get();
-        $dataBetween_salary = $get_salary->get();
         // get nhân viên theo năm
         $get_user = User::selectRaw('count(id) as so_luong_user');
         if (isset($selected_year)) {
@@ -68,24 +64,59 @@ class DashboardController extends Controller
         $data_user_in_position = User::selectRaw('count(id) as total_user,position_id')
             ->groupBy('position_id')
             ->get();
+        $data_salary = $get_salary->get();
+        $dataBetween_salary = $get_salary->get();
+        return $data_salary || $dataBetween_salary || $data_user || $data_user_in_position
+            ?
+            response()->json([
+                'status' => true,
+                'message' => 'Lấy thông tin thành công',
+                'data' => $dataBetween_salary, $data_salary, $data_user, $data_user_in_position
+            ], 200) :
+            response()->json([
+                'status' => false,
+                'message' => 'lấy thông tin không thành công'
+            ], 404);
+    }
+
+    public function get_user_late_early(Request $request)
+    {
         // get user đi làm muộn và sớm
         $mocgio = "8:15:00";
-        $get_user_di_lam = User::selectRaw('DISTINCT time_keep_calendar.user_id as user_id,users.id,count(time_keep_calendar.user_id) as 
-        tong_ngay,users.user_account')
+        $data_user_di_lam_som = User::selectRaw('DISTINCT time_keep_calendar.user_id as user_id,users.id,count(time_keep_calendar.user_id) as 
+        tong_ngay_di_som,users.user_account')
             ->join('time_keep_calendar', 'time_keep_calendar.user_id', '=', 'users.id')
             ->with([
                 'userinfo'
-            ])
-            ->groupBy('user_id');
+            ])->where('time_keep_calendar.deleted_at', null)
+            ->where('time_of_check_in', '<', $mocgio)
+            ->groupBy('user_id', 'users.id', 'users.user_account')->get();
         //data đi làm sớm
-        $data_user_di_som = $get_user_di_lam->where('time_of_check_in', '<', $mocgio)->get();
-        $data_user_di_muon = $get_user_di_lam->where('time_of_check_in', '>', $mocgio)->get();
-
-        //data đi làm muộn
-
-
-        //lay cac ngay trong thang
-        $id = $request->id;
+        // data đi làm muộn
+        $data_user_di_lam_muon = User::selectRaw('DISTINCT time_keep_calendar.user_id as user_id,users.id,count(time_keep_calendar.user_id) as 
+        tong_ngay_di_muon,users.user_account')
+            ->join('time_keep_calendar', 'time_keep_calendar.user_id', '=', 'users.id')
+            ->with([
+                'userinfo'
+            ])->where('time_keep_calendar.deleted_at', null)
+            ->where('time_of_check_in', '>', $mocgio)
+            ->groupBy('user_id', 'users.id', 'users.user_account')->get();
+        // lay cac ngay trong thang
+        return $data_user_di_lam_muon || $data_user_di_lam_som
+            ?
+            response()->json([
+                'status' => true,
+                'message' => 'Lấy thông tin thành công',
+                'data' => $data_user_di_lam_muon, $data_user_di_lam_som
+            ], 200) :
+            response()->json([
+                'status' => false,
+                'message' => 'lấy thông tin không thành công'
+            ], 404);
+    }
+    public function show_lich(Request $request)
+    {
+        $id = Auth::user()->id;
         $arrDay = [];
         if ($request->date_time) {
             $motnh = date('m', strtotime($request->date_time));
@@ -139,11 +170,12 @@ class DashboardController extends Controller
         } else {
             $error = "Không có dữ liệu";
         }
-        return $arr_lich_lam || $data_user_di_muon || $data_user_di_som || $data_user || $data_salary || $dataBetween_salary || $data_user_in_position ?
+        return $arr_lich_lam
+            ?
             response()->json([
                 'status' => true,
-                'message' => 'Lấy thông tin dashboard thành công',
-                'data' => $arr_lich_lam, $data_user_di_muon, $data_user_di_som, $data_user, $data_salary, $dataBetween_salary, $data_user_in_position
+                'message' => 'Lấy thông tin lịch đi làm thành công',
+                'data' => $arr_lich_lam,
             ], 200) :
             response()->json([
                 'status' => false,
