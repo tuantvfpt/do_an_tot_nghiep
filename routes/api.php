@@ -3,13 +3,11 @@
 use App\Http\Controllers\Api\CalendarLeaveController;
 use App\Http\Controllers\Api\ChucVuController;
 use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\LichChamCong;
 use App\Http\Controllers\Api\LichChamCongController;
 use App\Http\Controllers\Api\LuongController;
 use App\Http\Controllers\Api\PhongBanController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
