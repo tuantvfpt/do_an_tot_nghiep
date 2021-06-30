@@ -9,6 +9,7 @@ use App\Models\LichChamCong;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CalendarLeaveController extends Controller
@@ -122,7 +123,7 @@ class CalendarLeaveController extends Controller
     public function create(Request $request)
     {
         $today = Carbon::now()->toDateString();
-        $user_id = $request->user_id;
+        $user_id = Auth::user()->id;
         $check = Calendar_leave::where('date', $today)->where('user_id', $user_id)->first();
         $user_off = new Calendar_leave();
         if ($check) {
@@ -161,5 +162,5 @@ class CalendarLeaveController extends Controller
         ], 404);
     }
     //lấy tất cả dữ liệu đi lầm với nghỉ trong 1 tháng theo lich
-   
+
 }
