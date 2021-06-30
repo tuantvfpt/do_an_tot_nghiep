@@ -92,7 +92,6 @@ class update_salary_every_month extends Command
                 if ($luong_net) {
                     $luong_net->total_net_salary = $tongluong;
                     $luong_net->save();
-                    dd($luong_net);
                 }
             }
         }
