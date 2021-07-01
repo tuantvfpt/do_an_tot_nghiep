@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\userInfo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -96,7 +97,9 @@ class UserController extends Controller
         $users->email = $request->email;
         $users->position_id = $request->position_id;
         $users->department_id = $request->department_id;
-        $users->password = Hash::make($request->password);
+        $users->role_id = 3;
+        $users->password = Hash::make($request->user_account);
+        $users->updated_at = null;
         $users->save();
         if ($users->id) {
             $userinfo = new userInfo();
@@ -122,12 +125,13 @@ class UserController extends Controller
             ], 200) :
             response()->json([
                 'status' => false,
-                'message' => 'Sửa user thất bại',
+                'message' => 'Thêm user thất bại',
             ], 404);
     }
 
     public function update($id, Request $request)
     {
+
         $users = User::find($id);
         if (isset($users)) {
             $userinfo = userInfo::where('user_id', $users->id)->first();
