@@ -333,5 +333,4 @@ ASALocalRun/
 # Local History for Visual Studio
 .localhistory/
 /vendor
-/vendor
-/vendor
+/env
