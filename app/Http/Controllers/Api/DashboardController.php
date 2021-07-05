@@ -24,36 +24,38 @@ class DashboardController extends Controller
         $get_salary =
             TongThuNhap::select(
                 DB::raw(' DISTINCT total_salary.user_id as user_id'),
-                DB::raw('SUM(total_salary.total_gross_salary) as tongluong'),
+                DB::raw('SUM(total_salary.total_net_salary) as tongluong'),
                 DB::raw('users.user_account as name')
             )
             ->join('users', 'total_salary.user_id', '=', 'users.id')
             // ->whereBetween('date', [$thangtruoc, $now])
             ->groupBy('user_id', 'name');
-        // get lương cho hr và admin
-        // if (Auth::user()->role == 0 || Auth::user()->role = 1) {
-
-        if (isset($selected_year)) {
-            // get theo year
-            $get_salary->whereYear('date', '<', $selected_year + 1);
-        }
-
-        if (isset($selected_yearBetween)) {
-            $get_salary->whereBetween('date', [$request->yearBetween, $now]);
-        }
-        // chỉ nhân viên xem được thông kê lương của nhân viên đó
-        // } else {
-        if (isset($selected_year)) {
-            // get theo year
-            $get_salary->whereYear('date', '<', $selected_year + 1);
-            // ->where('id', Auth::user()->id);
-        }
-        if (isset($selected_yearBetween)) {
-            $get_salary->whereBetween('date', [$request->yearBetween, $now]);
-            // ->where('id', Auth::user()->id);;
-        }
         // get nhân viên theo năm
         $get_user = User::selectRaw('count(id) as so_luong_user');
+
+        // get lương cho hr và admin
+        if (Auth::user()->role == 0 || Auth::user()->role = 1) {
+
+            if (isset($selected_year)) {
+                // get theo year
+                $get_salary->whereYear('date', '<', $selected_year + 1);
+            }
+
+            if (isset($selected_yearBetween)) {
+                $get_salary->whereBetween('date', [$request->yearBetween, $now]);
+            }
+            // chỉ nhân viên xem được thông kê lương của nhân viên đó
+        } else {
+            if (isset($selected_year)) {
+                // get theo year
+                $get_salary->whereYear('date', '<', $selected_year + 1)
+                    ->where('id', Auth::user()->id);
+            }
+            if (isset($selected_yearBetween)) {
+                $get_salary->whereBetween('date', [$request->yearBetween, $now])
+                    ->where('id', Auth::user()->id);
+            }
+        }
         if (isset($selected_year)) {
             // get theo year
             $get_user->whereYear('date', '<', $selected_year + 1)
