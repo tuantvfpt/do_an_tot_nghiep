@@ -76,8 +76,8 @@ class UserController extends Controller
     }
     public function getlist()
     {
-        $phongban = phongban::all();
-        $chucvu = chucvu::all();
+        $phongban = chucvu::all();
+        $chucvu = phongban::all();
         return $phongban && $chucvu ?
             response()->json([
                 'status' => true,
