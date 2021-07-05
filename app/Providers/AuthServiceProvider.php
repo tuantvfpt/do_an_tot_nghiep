@@ -28,22 +28,22 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
        
         Gate::define('view', function (User $user) {
-            return $user->role_id == 1; //admin
+            return $user->role_id == 0; //admin
             // dd($user);
         });
         Gate::define('view/id', function (User $user) {
-            return $user->role_id == 2; // admin,hr,user
+            return $user->role_id == 0; // admin,hr,user
         });
         Gate::define('create', function (User $user) {
-            return in_array( $user->role_id, [2]) || (auth()->check() && $user->role_id == auth()->id()); 
+            return in_array( $user->role_id, [0]) || (auth()->check() && $user->role_id == auth()->id()); 
              // hr
         });
         Gate::define('update', function (User $user) {
-            return in_array( $user->role_id, [1,2]) || (auth()->check() &&$user->role_id == auth()->id());
+            return in_array( $user->role_id, [0]) || (auth()->check() &&$user->role_id == auth()->id());
             //admin, hr
         });
         Gate::define('delete', function (User $user) {
-            return in_array( $user->role_id, [1]) || (auth()->check() &&$user->role_id == auth()->id());
+            return in_array( $user->role_id, [0]) || (auth()->check() &&$user->role_id == auth()->id());
             //admin
         });
     }
