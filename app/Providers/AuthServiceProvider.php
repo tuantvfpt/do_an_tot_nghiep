@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 use App\Models\phongban;
 use App\Models\roles;
+use App\Models\chucvu;
+use App\Models\lichChamcong;
+use App\Models\Calendar_leave;
+
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -28,23 +32,30 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
        
         Gate::define('view', function (User $user) {
-            return $user->role_id == 0; //admin
+            return in_array($user->role_id,[1,2]); //admin,hr
             // dd($user);
         });
         Gate::define('view/id', function (User $user) {
-            return $user->role_id == 0; // admin,hr,user
+            return in_array($user->role_id,[1,2]); // admin,hr
         });
         Gate::define('create', function (User $user) {
-            return in_array( $user->role_id, [0]) || (auth()->check() && $user->role_id == auth()->id()); 
+            return in_array($user->role_id,[1]); //admin
              // hr
         });
         Gate::define('update', function (User $user) {
-            return in_array( $user->role_id, [0]) || (auth()->check() &&$user->role_id == auth()->id());
+            return in_array( $user->role_id,[1]); //admin
             //admin, hr
         });
         Gate::define('delete', function (User $user) {
-            return in_array( $user->role_id, [0]) || (auth()->check() &&$user->role_id == auth()->id());
+            return in_array($user->role_id,[1]); //admin
             //admin
+        });
+        Gate::define('attendanceCheck', function (User $user) {
+            return in_array($user->role_id,[1,2]); //admin,hr
+            //admin
+        });
+        Gate::define('confirmLeave', function (User $user){
+            return in_array($user->role_id,[1,2]); //admin, hr
         });
     }
 }

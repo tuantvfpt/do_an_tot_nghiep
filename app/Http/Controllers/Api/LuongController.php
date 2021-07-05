@@ -10,11 +10,13 @@ use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Gate;
 class LuongController extends Controller
 {
     public function getAll(Request $request)
     {
+        if(Gate::allows('view')){
+       
         $luong = TongThuNhap::select('total_salary.*', 'user_info.full_name')
             ->Join('users', 'total_salary.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
@@ -28,6 +30,12 @@ class LuongController extends Controller
             $luong =  $luong->where('date', $request->date);
         }
         $luong = $luong->paginate(($request->limit != null) ? $request->limit : 5);
+    }elseif(!Gate::allows('view')){
+        return response()->json([
+            'status' => false,
+            'message' => 'Bạn không được phép',
+        ],403);
+    }
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách lương thành công thành công',
@@ -38,10 +46,18 @@ class LuongController extends Controller
                 'currentPage' => $luong->currentPage()
             ]
         ])->setStatusCode(200);
+       
     }
     public function getdetail($id)
     {
+        if(Gate::allows('view/id')){
         $luong = TongThuNhap::find($id);
+    }elseif(!Gate::allows('view/id')){
+        return response()->json([
+            'status' => false,
+            'message' => 'Bạn không được phép',
+        ],403);
+    }
         return $luong ? response()->json([
             'status' => true,
             'message' => 'Lấy chi tiết lương thành công',
@@ -50,6 +66,7 @@ class LuongController extends Controller
             'status' => false,
             'message' => 'Lấy chi tiết lương thấy bại',
         ])->setStatusCode(404);
+       
     }
 
 

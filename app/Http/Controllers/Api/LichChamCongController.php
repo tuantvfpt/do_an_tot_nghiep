@@ -12,7 +12,7 @@ use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Gate;
 class LichChamCongController extends Controller
 {
     /**
@@ -22,6 +22,9 @@ class LichChamCongController extends Controller
      */
     public function getAll(Request $request)
     {
+        if(Gate::allows('view')){
+
+        
         $lich_cham_cong = LichChamCong::select('time_keep_calendar.*', 'user_info.full_name')
             ->Join('users', 'time_keep_calendar.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
@@ -35,6 +38,12 @@ class LichChamCongController extends Controller
             $lich_cham_cong =  $lich_cham_cong->where('date', $request->date);
         }
         $lich_cham_cong = $lich_cham_cong->paginate(($request->limit != null) ? $request->limit : 5);
+        }elseif(!Gate::allows('view')){
+        return response()->json([
+            'status' => false,
+            'message' => 'Bạn không được phép',
+        ],403);
+         }
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',
@@ -45,10 +54,18 @@ class LichChamCongController extends Controller
                 'currentPage' => $lich_cham_cong->currentPage()
             ]
         ])->setStatusCode(200);
+       
     }
     public function getdetail($id)
     {
+        if(Gate::allows('view/id')){
         $lich_cham_cong = LichChamCong::find($id);
+        }elseif(!Gate::allows('view/id')){
+        return response()->json([
+            'status' => false,
+            'message' => 'Bạn không được phép',
+        ],403);
+        }
         return $lich_cham_cong ? response()->json([
             'status' => true,
             'message' => 'Lấy chi tiết chấm công thành công',
@@ -57,9 +74,12 @@ class LichChamCongController extends Controller
             'status' => false,
             'message' => 'Lấy chi tiết chấm công thấy bại',
         ])->setStatusCode(404);
+      
     }
     public function diemdanh(Request $request)
     {
+        if(Gate::allows('attendanceCheck')){
+            
         try {
             DB::beginTransaction();
             $today = Carbon::now()->format('Y-m-d');
@@ -148,6 +168,7 @@ class LichChamCongController extends Controller
                         }
                     }
                 }
+                
             } else {
                 return  response()->json([
                     'message' => 'Không tồn tại mã QR',
@@ -162,11 +183,17 @@ class LichChamCongController extends Controller
             $mes = $e->getMessage();
             $status = false;
         }
-
+    }elseif(!Gate::allows('attendanceCheck')){
+        return response()->json([
+            'status' => false,
+            'message' => 'Bạn không được phép',
+        ],403);
+    }
         return  response()->json([
             'message' => $mes,
             'status' => $status
         ], 200);
+       
     }
-   
+
 }
