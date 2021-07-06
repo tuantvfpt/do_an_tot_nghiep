@@ -14,9 +14,8 @@ use App\Models\User;
 use App\Models\userInfo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Gate;
 class UserController extends Controller
 {
     public function __construct(User $users)
@@ -26,6 +25,7 @@ class UserController extends Controller
 
     public function getAll(Request $request)
     {
+        if(Gate::allows('view')){
         $users = $this->users
             ->select('users.id', 'user_info.full_name', 'users.email', 'department.name as name_department', 'position.name as name_position', 'user_info.avatar', 'users.user_account')
             ->leftJoin('department', 'department.id', '=', 'users.department_id')
@@ -46,6 +46,12 @@ class UserController extends Controller
             $users = $users->where('position_id', $request->phongban);
         }
         $users = $users->paginate(($request->limit != null) ? $request->limit : 5);
+        }elseif(!Gate::allows('view')){
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không được phép',
+            ], 403);
+        }
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách user thành công',
@@ -55,13 +61,21 @@ class UserController extends Controller
                 'perPage'    => $users->perPage(),
                 'currentPage' => $users->currentPage()
             ]
-        ])->setStatusCode(200);
+            ],200);
+       
     }
     public function getUser($id, Request $request)
     {
+        if(Gate::allows('view/id')){
         $users = User::find($id);
         if ($users) {
             $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
+        }
+        }elseif(!Gate::allows('view/id')){
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không được phép',
+            ], 403);
         }
         return $users ?
             response()->json([
@@ -73,11 +87,19 @@ class UserController extends Controller
                 'status' => false,
                 'message' => 'Không tìm thấy user',
             ], 404);
+        
     }
     public function getlist()
     {
-        $phongban = chucvu::all();
-        $chucvu = phongban::all();
+        if(Gate::allows('view')){
+        $phongban = phongban::all();
+        $chucvu = chucvu::all();
+        }elseif(!Gate::allows('view')){
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không được phép',
+            ],403);
+        }
         return $phongban && $chucvu ?
             response()->json([
                 'status' => true,
@@ -88,18 +110,17 @@ class UserController extends Controller
                 'status' => false,
                 'message' => 'Lấy dữ liệu thất bại',
             ], 404);
+       
     }
     public function addSaveUser(Request $request)
     {
-
+        if(Gate::allows('create')){
         $users = new User();
         $users->user_account = $request->user_account;
         $users->email = $request->email;
         $users->position_id = $request->position_id;
         $users->department_id = $request->department_id;
-        $users->role_id = 3;
-        $users->password = Hash::make($request->user_account);
-        $users->updated_at = null;
+        $users->password = Hash::make($request->password);
         $users->save();
         if ($users->id) {
             $userinfo = new userInfo();
@@ -117,6 +138,12 @@ class UserController extends Controller
             $userinfo->date_of_join = Carbon::now('Asia/Ho_Chi_Minh');
             $userinfo->save();
         }
+        }elseif(!Gate::allows('create')){
+            return response()->json([
+            'status' => false,
+            'message' => 'Bạn không được phép',
+            ], 403);
+        }
         return $userinfo && $users ?
             response()->json([
                 'status' => true,
@@ -125,13 +152,14 @@ class UserController extends Controller
             ], 200) :
             response()->json([
                 'status' => false,
-                'message' => 'Thêm user thất bại',
+                'message' => 'Sửa user thất bại',
             ], 404);
+      
     }
 
     public function update($id, Request $request)
     {
-
+        if(Gate::allows('update')){
         $users = User::find($id);
         if (isset($users)) {
             $userinfo = userInfo::where('user_id', $users->id)->first();
@@ -145,6 +173,12 @@ class UserController extends Controller
             }
             $userinfo->save();
             $userinfo->load('getuser');
+        }elseif(!Gate::allows('update')){
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không được phép',
+            ], 403);
+        }
         } else {
             return response()->json([
                 'status' => true,
@@ -161,11 +195,12 @@ class UserController extends Controller
                 'status' => false,
                 'message' => 'Sửa user thất bại',
             ], 404);
+     
     }
 
     public function delete($id)
     {
-
+        if(Gate::allows('delete')){
         $userinfo = userInfo::where('user_id', $id);
         $calendar_for_leave = Calendar_leave::where('user_id', $id);
         $company_mode = company_mode::where('user_id', $id);
@@ -177,6 +212,12 @@ class UserController extends Controller
             $userinfo->delete();
             $user->delete();
         }
+        }elseif(!Gate::allows('delete')){
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không được phép',
+            ], 403);
+        }
         return $user && $userinfo ?
             response()->json([
                 'status' => true,
@@ -186,5 +227,8 @@ class UserController extends Controller
                 'status' => false,
                 'message' => 'xóa thất bại',
             ], 404);
+        
     }
+
+
 }

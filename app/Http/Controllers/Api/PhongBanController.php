@@ -11,13 +11,21 @@ class PhongBanController extends Controller
 {
     public function getAll()
     {
-        // $this->authorize('view');
+        if(Gate::allows('view')){
         $phongban = phongban::all();
+    }elseif(!Gate::allows('view')){
+        return response()->json([
+            'status' => false,
+            'message' => 'Bạn không được phép',
+            
+        ], 403);
+    }
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách phòng ban thành công',
             'data' => $phongban
         ], 200);
+       
     }
     public function getphongban($id, Request $request)
     {
@@ -26,10 +34,11 @@ class PhongBanController extends Controller
             if ($phongban) {
                 $phongban->load('phongban_userinfo');
             }
+            
         } elseif (!Gate::allows('view/id')) {
             response()->json([
                 'status' => false,
-                'message' => 'Lấy thất bại',
+                'message' => 'Bạn không được phép',
             ], 403);
         }
         return  response()->json([
@@ -50,14 +59,15 @@ class PhongBanController extends Controller
                 'message' => 'Bạn không được phép',
             ], 403);
         }
-        return $phongban ? response()->json([
-            'status' => true,
-            'message' => 'Thêm phòng ban thành công',
-            'data' => $phongban
-        ], 200) : response()->json([
-            'status' => false,
-            'message' => 'Thêm phòng ban không thành công',
-        ], 404);
+            return $phongban ? response()->json([
+                'status' => true,
+                'message' => 'Thêm phòng ban thành công',
+                'data' => $phongban
+            ], 200) : response()->json([
+                'status' => false,
+                'message' => 'Thêm phòng ban không thành công',
+            ], 404);;
+      
     }
 
     public function update($id, Request $request)
@@ -71,19 +81,20 @@ class PhongBanController extends Controller
         } elseif (!Gate::allows('create')) {
             return response()->json([
                 'status' => false,
-                'message' => 'Bạn không có quyền này'
+                'message' => 'Bạn không được phép',
             ], 403);
         }
-        return $phongban ?
-            response()->json([
-                'status' => true,
-                'message' => 'Sửa phòng ban thành công',
-                'data' => $phongban
-            ], 200) :
-            response()->json([
-                'status' => false,
-                'message' => 'Sửa phòng ban không thành công',
-            ], 404);
+            return $phongban ?
+                response()->json([
+                    'status' => true,
+                    'message' => 'Sửa phòng ban thành công',
+                    'data' => $phongban
+                ], 200) :
+                response()->json([
+                    'status' => false,
+                    'message' => 'Sửa phòng ban không thành công',
+                ], 404);
+       
     }
 
     public function delete($id, Request $request)
@@ -93,15 +104,16 @@ class PhongBanController extends Controller
         } elseif (!Gate::allows('delete')) {
             return response()->json([
                 'status' => false,
-                'message' => 'Bạn không có quyền này'
+                'message' => 'Bạn không được phép',
             ], 403);
         }
-        return  $phongban ? response()->json([
-            'status' => true,
-            'message' => 'Xóa thành công',
-        ], 200) : response()->json([
-            'status' => false,
-            'message' => 'Xóa thất bại'
-        ], 404);
+            return  $phongban ? response()->json([
+                'status' => true,
+                'message' => 'Xóa thành công',
+            ], 200) : response()->json([
+                'status' => false,
+                'message' => 'Xóa thất bại'
+            ], 403);
+        
     }
 }

@@ -11,12 +11,13 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Gate;
 class CalendarLeaveController extends Controller
 {
     //
     public function getAll(Request $request)
     {
+        if(Gate::allows('view')){
         $lich_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
             ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
@@ -31,6 +32,12 @@ class CalendarLeaveController extends Controller
             $lich_nghi =  $lich_nghi->where('date', $request->date);
         }
         $lich_nghi = $lich_nghi->paginate(($request->limit != null) ? $request->limit : 5);
+        }elseif(!Gate::allows('view')){
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không được phép',
+            ],403);
+        }
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách nghỉ thành công',
@@ -41,9 +48,11 @@ class CalendarLeaveController extends Controller
                 'currentPage' => $lich_nghi->currentPage()
             ]
         ])->setStatusCode(200);
+          
     }
     public function update_day()
     {
+        if(Gate::allows('update')){
         $startyear = Carbon::now()->startOfYear()->toDateString();
         $endyear = Carbon::now()->endOfYear()->toDateString();
         $today = date('Y-m-d');
@@ -86,9 +95,16 @@ class CalendarLeaveController extends Controller
             }
             $mode_day->save();
         }
+        }elseif(!Gate::allows('update')){
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không được phép',
+            ],403);
+        }
     }
     public function get_lich_nghi()
     {
+        if(Gate::allows('view')){
         $lich_xin_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
             ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
@@ -96,6 +112,12 @@ class CalendarLeaveController extends Controller
             ->where('status', 0)
             ->where('date', Carbon::now()->toDateString())
             ->get();
+        }elseif(!Gate::allows('view')){
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không được phép',
+            ], 403);
+        }
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách xin nghỉ thành công',
@@ -103,7 +125,8 @@ class CalendarLeaveController extends Controller
         ])->setStatusCode(200);
     }
     public function comfig($id, Request $request)
-    {
+    {   
+        if(Gate::allows('confirmLeave')){
         // $check = Calendar_leave::where('id', $id)->first();
         if (isset($request->yes)) {
             $lich_xin_nghi = Calendar_leave::find($id);
@@ -114,11 +137,18 @@ class CalendarLeaveController extends Controller
             $lich_xin_nghi = Calendar_leave::find($id)->delete();
             $mess = "Không đồng ý cho nghỉ";
         }
+        }elseif(!Gate::allows('confirmLeave')){
+            return response()->json([
+                'status'=> false,
+                'message' => 'Bạn không được phép',
+            ],403);
+        }
         return response()->json([
             'status' => true,
             'message' => $mess,
             'data' => $lich_xin_nghi
         ])->setStatusCode(200);
+       
     }
     public function create(Request $request)
     {
@@ -162,4 +192,5 @@ class CalendarLeaveController extends Controller
         ], 404);
     }
     //lấy tất cả dữ liệu đi lầm với nghỉ trong 1 tháng theo lich
+
 }

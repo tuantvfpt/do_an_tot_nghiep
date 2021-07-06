@@ -17,10 +17,10 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         //get lương
-        $selected_year = isset($request->year) ? $request->year : null;
-        $selected_yearBetween = isset($request->yearBetween) ? $request->yearBetween : null;
-        // $current_year = date("Y");
         $now = Carbon::now()->toDateString();
+        $selected_year = isset($request->year) ? $request->year : null;
+        // $selected_yearBetween = isset($request->yearBetween) ? $request->yearBetween : null;
+        // $current_year = date("Y");
         $get_salary =
             TongThuNhap::select(
                 DB::raw(' DISTINCT total_salary.user_id as user_id'),
@@ -30,50 +30,45 @@ class DashboardController extends Controller
             ->join('users', 'total_salary.user_id', '=', 'users.id')
             // ->whereBetween('date', [$thangtruoc, $now])
             ->groupBy('user_id', 'name');
-        // get nhân viên theo năm
-        $get_user = User::selectRaw('count(id) as so_luong_user');
 
-        // get lương cho hr và admin
-        if (Auth::user()->role == 0 || Auth::user()->role = 1) {
-
+        if (Auth::user()->role_id == 1 || Auth::user()->role_id == 2) {
+            // get lương cho hr và admin
             if (isset($selected_year)) {
                 // get theo year
                 $get_salary->whereYear('date', '<', $selected_year + 1);
             }
 
-            if (isset($selected_yearBetween)) {
-                $get_salary->whereBetween('date', [$request->yearBetween, $now]);
-            }
+            // if (isset($selected_yearBetween)) {
+            //     $get_salary->whereBetween('date', [$request->yearBetween, $now]);
+            // }
             // chỉ nhân viên xem được thông kê lương của nhân viên đó
         } else {
+            $get_salary->where('user_id', Auth::user()->id);
             if (isset($selected_year)) {
                 // get theo year
                 $get_salary->whereYear('date', '<', $selected_year + 1)
-                    ->where('id', Auth::user()->id);
+                    ->where('user_id', Auth::user()->id);
             }
-            if (isset($selected_yearBetween)) {
-                $get_salary->whereBetween('date', [$request->yearBetween, $now])
-                    ->where('id', Auth::user()->id);
-            }
+            // if (isset($selected_yearBetween)) {
+            //     $get_salary->whereBetween('date', [$selected_yearBetween, $now])
+            //         ->where('user_id', Auth::user()->id);
+            //     dd($get_salary->get());
+            // }
         }
-        if (isset($selected_year)) {
-            // get theo year
-            $get_user->whereYear('date', '<', $selected_year + 1)
-                ->where('id', Auth::user()->id);
-        }
+        // get nhân viên theo năm
+        $get_user = User::selectRaw('count(id) as so_luong_user');
         $data_user = $get_user->get();
         // get nhân viên theo phòng ban
         $data_user_in_position = User::selectRaw('count(id) as total_user,position_id')
             ->groupBy('position_id')
             ->get();
         $data_salary = $get_salary->get();
-        $dataBetween_salary = $get_salary->get();
-        return $data_salary || $dataBetween_salary || $data_user || $data_user_in_position
+        return $data_salary || $data_user || $data_user_in_position
             ?
             response()->json([
                 'status' => true,
                 'message' => 'Lấy thông tin thành công',
-                'data' => $dataBetween_salary, $data_salary, $data_user, $data_user_in_position
+                'data' => $data_salary, $data_user, $data_user_in_position
             ], 200) :
             response()->json([
                 'status' => false,
