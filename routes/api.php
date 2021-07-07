@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\LuongController;
 use App\Http\Controllers\Api\PhongBanController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PrizefineController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -79,5 +80,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('getdetail/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
         Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
         Route::post('update_day', [CalendarLeaveController::class, 'update_day'])->name('update_day');
+    });
+    Route::group(['prefix' => 'prize_fine_money'], function () {
+        Route::get('/', [PrizefineController::class, 'index'])->name('getAll');
+        Route::post('create', [PrizefineController::class, 'create'])->name('create');
+        Route::post('update/{id}', [PrizefineController::class, 'update'])->name('update');
+        Route::post('delete/{id}', [PrizefineController::class, 'delete'])->name('delete');
     });
 });
