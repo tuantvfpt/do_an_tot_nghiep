@@ -12,4 +12,8 @@ class chucvu extends Model
     use SoftDeletes;
 
     protected $table = 'position';
+    public function chucvu()
+    {
+        return $this->hasMany(User::class, 'position_id');
+    }
 }

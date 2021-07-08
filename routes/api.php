@@ -76,7 +76,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'lichxinnghi'], function () {
         Route::get('/', [CalendarLeaveController::class, 'getAll'])->name('getAll');
         Route::get('user_leave', [CalendarLeaveController::class, 'get_lich_nghi'])->name('get_user_leave');
-        Route::get('comfig/{id}', [CalendarLeaveController::class, 'comfig'])->name('comfig');
+        Route::post('comfig/{id}', [CalendarLeaveController::class, 'comfig'])->name('comfig');
         Route::get('getdetail/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
         Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
         Route::post('update_day', [CalendarLeaveController::class, 'update_day'])->name('update_day');

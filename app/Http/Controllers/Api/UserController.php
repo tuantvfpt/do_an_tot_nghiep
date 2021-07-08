@@ -70,16 +70,10 @@ class UserController extends Controller
     }
     public function getUser($id, Request $request)
     {
-        if (Gate::allows('view/id')) {
-            $users = User::find($id);
-            if ($users) {
-                $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
-            }
-        } elseif (!Gate::allows('view/id')) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Bạn không được phép',
-            ], 403);
+
+        $users = User::find($id);
+        if ($users) {
+            $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
         }
         return $users ?
             response()->json([
@@ -126,6 +120,7 @@ class UserController extends Controller
                 $users->department_id = $request->department_id;
                 $users->password = Hash::make($request->password);
                 $users->save();
+                dd($users);
                 if ($users->id) {
                     $userinfo = new userInfo();
                     $userinfo->user_id = $users->id;

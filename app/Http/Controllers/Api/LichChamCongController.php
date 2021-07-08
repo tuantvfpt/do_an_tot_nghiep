@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -23,13 +24,11 @@ class LichChamCongController extends Controller
      */
     public function getAll(Request $request)
     {
+        $lich_cham_cong = LichChamCong::select('time_keep_calendar.*', 'user_info.full_name')
+            ->Join('users', 'time_keep_calendar.user_id', '=', 'users.id')
+            ->join('user_info', 'users.id', '=', 'user_info.user_id')
+            ->where('time_keep_calendar.deleted_at', null);
         if (Gate::allows('view')) {
-
-
-            $lich_cham_cong = LichChamCong::select('time_keep_calendar.*', 'user_info.full_name')
-                ->Join('users', 'time_keep_calendar.user_id', '=', 'users.id')
-                ->join('user_info', 'users.id', '=', 'user_info.user_id')
-                ->where('time_keep_calendar.deleted_at', null);
             if (!empty($request->keyword)) {
                 $lich_cham_cong =  $lich_cham_cong->Where(function ($query) use ($request) {
                     $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
@@ -38,14 +37,19 @@ class LichChamCongController extends Controller
             if (!empty($request->date)) {
                 $lich_cham_cong =  $lich_cham_cong->where('date', $request->date);
             }
-            $lich_cham_cong = $lich_cham_cong->paginate(($request->limit != null) ? $request->limit : 5);
-        } elseif (!Gate::allows('view')) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Bạn không được phép',
-            ], 403);
+        } else {
+            if (!empty($request->keyword)) {
+                $lich_cham_cong =  $lich_cham_cong->Where(function ($query) use ($request) {
+                    $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
+                });
+            }
+            if (!empty($request->date)) {
+                $lich_cham_cong =  $lich_cham_cong->where('date', $request->date);
+            }
+            $lich_cham_cong->where('time_keep_calendar.user_id', Auth::user()->id);
         }
-        return response()->json([
+        $lich_cham_cong = $lich_cham_cong->paginate(($request->limit != null) ? $request->limit : 5);
+        return  response()->json([
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',
             'data' => $lich_cham_cong->items(),
@@ -58,22 +62,25 @@ class LichChamCongController extends Controller
     }
     public function getdetail($id)
     {
-        if (Gate::allows('view/id')) {
+        $check = LichChamCong::where('user_id', Auth::user()->id)
+            ->where('id', $id)->first();
+        if (Gate::allows('view/id') || $check) {
             $lich_cham_cong = LichChamCong::find($id);
-        } elseif (!Gate::allows('view/id')) {
-            return response()->json([
+            $response = $lich_cham_cong ? response()->json([
+                'status' => true,
+                'message' => 'Lấy chi tiết lịch châm công thành công',
+                'data' => $lich_cham_cong
+            ])->setStatusCode(200) : response()->json([
                 'status' => false,
-                'message' => 'Bạn không được phép',
-            ], 403);
+                'message' => 'Lấy chi tiết lịch châm công thấy bại',
+            ])->setStatusCode(404);
+        } elseif ($check == null) {
+            $response = response()->json([
+                'status' => false,
+                'message' => "Bạn không có quyền truy cập",
+            ])->setStatusCode(404);
         }
-        return $lich_cham_cong ? response()->json([
-            'status' => true,
-            'message' => 'Lấy chi tiết chấm công thành công',
-            'data' => $lich_cham_cong
-        ])->setStatusCode(200) : response()->json([
-            'status' => false,
-            'message' => 'Lấy chi tiết chấm công thấy bại',
-        ])->setStatusCode(404);
+        return $response;
     }
     public function diemdanh(Request $request)
     {
@@ -85,6 +92,7 @@ class LichChamCongController extends Controller
             )
                 ->join('user_info', 'user_info.user_id', '=', 'users.id')
                 ->Where('Code_QR', $request->code_QR)
+                ->where('user_info.deleted_at', null)
                 ->first();
             if ($checkQR) {
                 $check_out = LichChamCong::where('user_id', $checkQR->userId)

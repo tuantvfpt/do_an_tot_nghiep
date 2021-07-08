@@ -8,6 +8,7 @@ use App\Models\Prize_user;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PrizefineController extends Controller
 {
@@ -17,11 +18,11 @@ class PrizefineController extends Controller
     }
     public function index(Request $request)
     {
+        $prize_fine_money = $this->Prize->select('prize_fine.*', 'users.user_account',)
+            ->Join('prize_fine_user', 'prize_fine_user.prize_fine_id', '=', 'prize_fine.id')
+            ->Join('users', 'users.id', '=', 'prize_fine_user.user_id')
+            ->where('prize_fine.deleted_at', null);
         if (Gate::allows('view')) {
-            $prize_fine_money = $this->Prize->select('prize_fine.*', 'users.user_account',)
-                ->Join('prize_fine_user', 'prize_fine_user.prize_fine_id', '=', 'prize_fine.id')
-                ->Join('users', 'users.id', '=', 'prize_fine_user.user_id')
-                ->where('prize_fine.deleted_at', null);
             if (!empty($request->keyword)) {
                 $prize_fine_money =  $prize_fine_money->Where(function ($query) use ($request) {
                     $query->Orwhere('prize_fine.name', 'like', "%" . $request->keyword . "%")
@@ -30,10 +31,14 @@ class PrizefineController extends Controller
             }
             $prize_fine_money = $prize_fine_money->get();
         } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Bạn không được phép',
-            ], 403);
+            $prize_fine_money->where('prize_fine_user.user_id', Auth::user()->id);
+            if (!empty($request->keyword)) {
+                $prize_fine_money =  $prize_fine_money->Where(function ($query) use ($request) {
+                    $query->Orwhere('prize_fine.name', 'like', "%" . $request->keyword . "%")
+                        ->Orwhere('users.user_account', 'like', "%" . $request->keyword . "%");
+                });
+            }
+            $prize_fine_money = $prize_fine_money->get();
         }
         return $prize_fine_money ?
             response()->json([
@@ -65,22 +70,23 @@ class PrizefineController extends Controller
                 $prize_fine_money_user->date = Carbon::now()->toDateString();
                 $prize_fine_money_user->save();
             }
+            $response =  $prize_fine_money ?
+                response()->json([
+                    'status' => true,
+                    'message' => 'Thêm prize_fine_money thành công',
+                    'data' => $prize_fine_money
+                ], 200) :
+                response()->json([
+                    'status' => false,
+                    'message' => 'Sửa prize_fine_money thất bại',
+                ], 404);
         } else {
-            return response()->json([
+            $response =  response()->json([
                 'status' => false,
                 'message' => 'Bạn không được phép',
             ], 403);
         }
-        return $prize_fine_money ?
-            response()->json([
-                'status' => true,
-                'message' => 'Thêm prize_fine_money thành công',
-                'data' => $prize_fine_money
-            ], 200) :
-            response()->json([
-                'status' => false,
-                'message' => 'Sửa prize_fine_money thất bại',
-            ], 404);
+        return $response;
     }
     public function update($id, Request $request)
     {
@@ -105,22 +111,23 @@ class PrizefineController extends Controller
                     $prize_fine_money_user->save();
                 }
             }
+            $response = $prize_fine_money ?
+                response()->json([
+                    'status' => true,
+                    'message' => 'cập nhật prize_fine_money thành công',
+                    'data' => $prize_fine_money
+                ], 200) :
+                response()->json([
+                    'status' => false,
+                    'message' => 'cập nhật prize_fine_money thất bại',
+                ], 404);
         } else {
-            return response()->json([
+            $response = response()->json([
                 'status' => false,
                 'message' => 'Bạn không được phép',
             ], 403);
         }
-        return $prize_fine_money ?
-            response()->json([
-                'status' => true,
-                'message' => 'cập nhật prize_fine_money thành công',
-                'data' => $prize_fine_money
-            ], 200) :
-            response()->json([
-                'status' => false,
-                'message' => 'cập nhật prize_fine_money thất bại',
-            ], 404);
+        return $response;
     }
     public function delete($id)
     {
@@ -131,20 +138,21 @@ class PrizefineController extends Controller
                 $prize_fine_money->delete();
                 $prize_fine_money_user->delete();
             }
+            $response =  $prize_fine_money_user || $prize_fine_money ?
+                response()->json([
+                    'status' => true,
+                    'message' => 'xóa prize_fine_money thành công',
+                ], 200) :
+                response()->json([
+                    'status' => false,
+                    'message' => 'xóa prize_fine_money thất bại',
+                ], 404);
         } else {
-            return response()->json([
+            $response =  response()->json([
                 'status' => false,
                 'message' => 'Bạn không được phép',
             ], 403);
         }
-        return $prize_fine_money_user || $prize_fine_money ?
-            response()->json([
-                'status' => true,
-                'message' => 'xóa prize_fine_money thành công',
-            ], 200) :
-            response()->json([
-                'status' => false,
-                'message' => 'xóa prize_fine_money thất bại',
-            ], 404);
+        return $response;
     }
 }

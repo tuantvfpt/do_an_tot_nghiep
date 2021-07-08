@@ -9,33 +9,30 @@ use App\Models\TongThuNhap;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+
 class LuongController extends Controller
 {
     public function getAll(Request $request)
     {
-        if(Gate::allows('view')){
-       
         $luong = TongThuNhap::select('total_salary.*', 'user_info.full_name')
             ->Join('users', 'total_salary.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
             ->where('total_salary.deleted_at', null);
-        if (!empty($request->keyword)) {
-            $luong =  $luong->Where(function ($query) use ($request) {
-                $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
-            });
-        }
-        if (!empty($request->date)) {
-            $luong =  $luong->where('date', $request->date);
+        if (!Gate::allows('view')) {
+            $luong->where('total_salary.user_id', Auth::user()->id);
+            if (!empty($request->keyword)) {
+                $luong =  $luong->Where(function ($query) use ($request) {
+                    $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
+                });
+            }
+            if (!empty($request->date)) {
+                $luong =  $luong->where('date', $request->date);
+            }
         }
         $luong = $luong->paginate(($request->limit != null) ? $request->limit : 5);
-    }elseif(!Gate::allows('view')){
-        return response()->json([
-            'status' => false,
-            'message' => 'Bạn không được phép',
-        ],403);
-    }
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách lương thành công thành công',
@@ -46,27 +43,28 @@ class LuongController extends Controller
                 'currentPage' => $luong->currentPage()
             ]
         ])->setStatusCode(200);
-       
     }
     public function getdetail($id)
     {
-        if(Gate::allows('view/id')){
-        $luong = TongThuNhap::find($id);
-    }elseif(!Gate::allows('view/id')){
-        return response()->json([
-            'status' => false,
-            'message' => 'Bạn không được phép',
-        ],403);
-    }
-        return $luong ? response()->json([
-            'status' => true,
-            'message' => 'Lấy chi tiết lương thành công',
-            'data' => $luong
-        ])->setStatusCode(200) : response()->json([
-            'status' => false,
-            'message' => 'Lấy chi tiết lương thấy bại',
-        ])->setStatusCode(404);
-       
+        $check = TongThuNhap::where('user_id', Auth::user()->id)
+            ->where('id', $id)->first();
+        if (Gate::allows('view/id') || $check) {
+            $luong = TongThuNhap::find($id);
+            $response = $luong ? response()->json([
+                'status' => true,
+                'message' => 'Lấy chi tiết lương thành công',
+                'data' => $luong
+            ])->setStatusCode(200) : response()->json([
+                'status' => false,
+                'message' => 'Lấy chi tiết lương thấy bại',
+            ])->setStatusCode(404);
+        } elseif ($check == null) {
+            $response = response()->json([
+                'status' => false,
+                'message' => "Bạn không có quyền truy cập",
+            ])->setStatusCode(404);
+        }
+        return  $response;
     }
 
 

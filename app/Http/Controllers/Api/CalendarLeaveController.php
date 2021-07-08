@@ -12,33 +12,31 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+
 class CalendarLeaveController extends Controller
 {
     //
     public function getAll(Request $request)
     {
-        if(Gate::allows('view')){
         $lich_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
             ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
             ->where('calendar_for_leave.deleted_at', null)
             ->where('calendar_for_leave.status', 1);
-        if (!empty($request->keyword)) {
-            $lich_nghi =  $lich_nghi->Where(function ($query) use ($request) {
-                $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
-            });
-        }
-        if (!empty($request->date)) {
-            $lich_nghi =  $lich_nghi->where('date', $request->date);
+        if (Gate::allows('view')) {
+            if (!empty($request->keyword)) {
+                $lich_nghi =  $lich_nghi->Where(function ($query) use ($request) {
+                    $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
+                });
+            }
+            if (!empty($request->date)) {
+                $lich_nghi =  $lich_nghi->where('date', $request->date);
+            }
+        } else {
+            $lich_nghi->where('calendar_for_leave.user_id', Auth::user()->id);
         }
         $lich_nghi = $lich_nghi->paginate(($request->limit != null) ? $request->limit : 5);
-        }elseif(!Gate::allows('view')){
-            return response()->json([
-                'status' => false,
-                'message' => 'Bạn không được phép',
-            ],403);
-        }
-        return response()->json([
+        return  response()->json([
             'status' => true,
             'message' => 'Lấy danh sách nghỉ thành công',
             'data' => $lich_nghi->items(),
@@ -48,107 +46,55 @@ class CalendarLeaveController extends Controller
                 'currentPage' => $lich_nghi->currentPage()
             ]
         ])->setStatusCode(200);
-          
     }
-    // public function update_day()
-    // {
-    //     if(Gate::allows('update')){
-    //     $startyear = Carbon::now()->startOfYear()->toDateString();
-    //     $endyear = Carbon::now()->endOfYear()->toDateString();
-    //     $today = date('Y-m-d');
-    //     $user = DB::table('users')
-    //         ->select('*')
-    //         ->rightjoin('user_info', 'users.id', '=', 'user_info.user_id')
-    //         ->where('users.deleted_at', null)
-    //         ->get();
-    //     foreach ($user as $user) {
-    //         // tính thời gian làm việc của nhân viên được bao nhiêu tháng
-    //         $dateDiff = date_diff(date_create($user->date_of_join), date_create($today));
-    //         $x = $dateDiff->m;
-    //         $i = $dateDiff->y;
-    //         $mode_day = new company_mode();
-    //         //kiểm tra điều kiện
-    //         $check = company_mode::where('user_id', $user->user_id)->whereBetween('date', [$startyear, $endyear])->first();
-    //         if ($check) {
-    //             $mode_day = company_mode::find($check->id);
-    //         }
-    //         if ($x >= 6 && $x < 8 && $i < 1) {
-    //             $mode_day->user_id = $user->user_id;
-    //             $mode_day->date = Carbon::now()->todateString();
-    //             $mode_day->total_day = 3;
-    //         } elseif ($x >= 8 && $x < 10 && $i < 1) {
-    //             $mode_day->user_id = $user->user_id;
-    //             $mode_day->date = Carbon::now()->todateString();
-    //             $mode_day->total_day = 4;
-    //         } elseif ($x >= 10 && $x < 12 && $i < 1) {
-    //             $mode_day->user_id = $user->user_id;
-    //             $mode_day->total_day = 5;
-    //             $mode_day->date = Carbon::now()->todateString();
-    //         } elseif ($i > 1) {
-    //             $mode_day->user_id = $user->user_id;
-    //             $mode_day->total_day = 6;
-    //             $mode_day->date = Carbon::now()->todateString();
-    //         } else {
-    //             $mode_day->user_id = $user->user_id;
-    //             $mode_day->total_day = 0;
-    //             $mode_day->date = Carbon::now()->todateString();
-    //         }
-    //         $mode_day->save();
-    //     }
-    //     }elseif(!Gate::allows('update')){
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Bạn không được phép',
-    //         ],403);
-    //     }
-    // }
     public function get_lich_nghi()
     {
-        if(Gate::allows('view')){
-        $lich_xin_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
-            ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
-            ->join('user_info', 'users.id', '=', 'user_info.user_id')
-            ->where('calendar_for_leave.deleted_at', null)
-            ->where('status', 0)
-            ->where('date', Carbon::now()->toDateString())
-            ->get();
-        }elseif(!Gate::allows('view')){
-            return response()->json([
+        if (Gate::allows('view')) {
+            $lich_xin_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
+                ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
+                ->join('user_info', 'users.id', '=', 'user_info.user_id')
+                ->where('calendar_for_leave.deleted_at', null)
+                ->where('status', 0)
+                ->where('date', Carbon::now()->toDateString())
+                ->get();
+            $response = response()->json([
+                'status' => true,
+                'message' => 'Lấy dữ liệu thành công',
+                'data' => $lich_xin_nghi
+            ])->setStatusCode(200);
+        } else {
+            $response = response()->json([
                 'status' => false,
-                'message' => 'Bạn không được phép',
-            ], 403);
+                'message' => 'Không được phép thực hiện',
+            ])->setStatusCode(404);
         }
-        return response()->json([
-            'status' => true,
-            'message' => 'Lấy danh sách xin nghỉ thành công',
-            'data' => $lich_xin_nghi
-        ])->setStatusCode(200);
+        return $response;
     }
     public function comfig($id, Request $request)
-    {   
-        if(Gate::allows('confirmLeave')){
-        // $check = Calendar_leave::where('id', $id)->first();
-        if (isset($request->yes)) {
-            $lich_xin_nghi = Calendar_leave::find($id);
-            $lich_xin_nghi->status = 1;
-            $lich_xin_nghi->save();
-            $mess = "Đồng ý cho nghỉ";
+    {
+        if (Gate::allows('confirmLeave')) {
+            // $check = Calendar_leave::where('id', $id)->first();
+            if (isset($request->yes)) {
+                $lich_xin_nghi = Calendar_leave::find($id);
+                $lich_xin_nghi->status = 1;
+                $lich_xin_nghi->save();
+                $mess = "Đồng ý cho nghỉ";
+            } else {
+                $lich_xin_nghi = Calendar_leave::find($id)->delete();
+                $mess = "Không đồng ý cho nghỉ";
+            }
+            $response = response()->json([
+                'status' => true,
+                'message' => $mess,
+                'data' => $lich_xin_nghi
+            ])->setStatusCode(200);
         } else {
-            $lich_xin_nghi = Calendar_leave::find($id)->delete();
-            $mess = "Không đồng ý cho nghỉ";
+            $response = response()->json([
+                'status' => false,
+                'message' => 'Không được phép thực hiện',
+            ])->setStatusCode(404);
         }
-        }elseif(!Gate::allows('confirmLeave')){
-            return response()->json([
-                'status'=> false,
-                'message' => 'Bạn không được phép',
-            ],403);
-        }
-        return response()->json([
-            'status' => true,
-            'message' => $mess,
-            'data' => $lich_xin_nghi
-        ])->setStatusCode(200);
-       
+        return $response;
     }
     public function create(Request $request)
     {

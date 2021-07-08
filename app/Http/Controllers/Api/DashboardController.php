@@ -76,7 +76,7 @@ class DashboardController extends Controller
             ], 404);
     }
 
-    public function get_user_late_early(Request $request)
+    public function get_user_late_early()
     {
         // get user đi làm muộn và sớm
         $mocgio = "8:15:00";
