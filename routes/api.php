@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-
+Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
 Route::post('/login', [AuthController::class, 'login']);
 Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'auth'], function () {
@@ -48,7 +48,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('create', [UserController::class, 'addSaveUser'])->name('addUser');
         Route::post('delete/{id}', [UserController::class, 'delete'])->name('delete');
         Route::post('changepassword', [UserController::class, 'changepassword'])->name('changepassword');
-        Route::get('sendmail', [UserController::class, 'sendmail'])->name('sendmail');
     });
     Route::group(['prefix' => 'phongban'], function () {
         Route::get('/', [PhongBanController::class, 'getAll'])->name('getAll');
@@ -67,7 +66,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'lichchamcong'], function () {
         Route::get('/', [LichChamCongController::class, 'getAll'])->name('getAll');
         Route::get('getdetail/{id}', [LichChamCongController::class, 'getdetail'])->name('getdetail');
-        Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
         Route::post('update/{id}', [LichChamCongController::class, 'update'])->name('update');
     });
     Route::group(['prefix' => 'luong'], function () {

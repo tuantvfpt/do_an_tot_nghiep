@@ -13,8 +13,10 @@ use App\Models\TongThuNhap;
 use App\Models\User;
 use App\Models\userInfo;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
@@ -115,28 +117,36 @@ class UserController extends Controller
     public function addSaveUser(Request $request)
     {
         if (Gate::allows('create')) {
-            $users = new User();
-            $users->user_account = $request->user_account;
-            $users->email = $request->email;
-            $users->position_id = $request->position_id;
-            $users->department_id = $request->department_id;
-            $users->password = Hash::make($request->password);
-            $users->save();
-            if ($users->id) {
-                $userinfo = new userInfo();
-                $userinfo->user_id = $users->id;
-                $userinfo->full_name = $request->full_name;
-                $userinfo->phone = $request->phone;
-                if ($request->hasFile('avatar')) {
-                    $file = $request->file('avatar');
-                    $newname = rand() . '.' . $file->getClientOriginalExtension();
-                    $file->move("images", $newname);
-                    $userinfo->avatar = "images/" . $newname;
+            try {
+                DB::beginTransaction();
+                $users = new User();
+                $users->user_account = $request->user_account;
+                $users->email = $request->email;
+                $users->position_id = $request->position_id;
+                $users->department_id = $request->department_id;
+                $users->password = Hash::make($request->password);
+                $users->save();
+                if ($users->id) {
+                    $userinfo = new userInfo();
+                    $userinfo->user_id = $users->id;
+                    $userinfo->full_name = $request->full_name;
+                    $userinfo->phone = $request->phone;
+                    if ($request->hasFile('avatar')) {
+                        $file = $request->file('avatar');
+                        $newname = rand() . '.' . $file->getClientOriginalExtension();
+                        $file->move("images", $newname);
+                        $userinfo->avatar = "images/" . $newname;
+                    }
+                    $userinfo->basic_salary = $request->basic_salary;
+                    $userinfo->code_QR = $users->user_account . $users->id;
+                    $userinfo->date_of_join = Carbon::now('Asia/Ho_Chi_Minh');
+                    $userinfo->save();
                 }
-                $userinfo->basic_salary = $request->basic_salary;
-                $userinfo->code_QR = $users->user_account . $users->id;
-                $userinfo->date_of_join = Carbon::now('Asia/Ho_Chi_Minh');
-                $userinfo->save();
+                DB::commit();
+            } catch (Exception $e) {
+                DB::rollBack();
+                $mes = $e->getMessage();
+                $status = false;
             }
         } elseif (!Gate::allows('create')) {
             return response()->json([
