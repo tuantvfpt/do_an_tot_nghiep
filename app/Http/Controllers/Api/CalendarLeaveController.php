@@ -8,6 +8,7 @@ use App\Models\company_mode;
 use App\Models\LichChamCong;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -80,13 +81,21 @@ class CalendarLeaveController extends Controller
                 $lich_xin_nghi->save();
                 $mess = "Đồng ý cho nghỉ";
             } else {
-                $lich_xin_nghi = Calendar_leave::find($id)->delete();
-                $mess = "Không đồng ý cho nghỉ";
+                $lich_xin_nghi = Calendar_leave::find($id);
+                if ($lich_xin_nghi) {
+                    if ($lich_xin_nghi->mode_leave == 1) {
+                        $mode_user = company_mode::where('user_id', $lich_xin_nghi->user_id)->first();
+                        $mode_user = company_mode::find($mode_user->id);
+                        $mode_user->total_day_off = $mode_user->total_day_off - $lich_xin_nghi->number_mode_leave;
+                        $mode_user->save();
+                    }
+                    $lich_xin_nghi->delete();
+                }
+                $mess = "Không cho phép nghỉ";
             }
             $response = response()->json([
                 'status' => true,
                 'message' => $mess,
-                'data' => $lich_xin_nghi
             ])->setStatusCode(200);
         } else {
             $response = response()->json([
@@ -98,35 +107,59 @@ class CalendarLeaveController extends Controller
     }
     public function create(Request $request)
     {
-        $today = Carbon::now()->toDateString();
-        $user_id = Auth::user()->id;
-        $check = Calendar_leave::where('date', $today)->where('user_id', $user_id)->first();
-        $user_off = new Calendar_leave();
-        if ($check) {
-            $user_off = Calendar_leave::find($check->id);
-        }
-        $dateDiff = date_diff(date_create($request->time_start), date_create($request->time_end));
-        $x = $dateDiff->d;
-        $user_off->user_id = $user_id;
-        $user_off->time_start = $request->time_start;
-        $user_off->time_end = $request->time_end;
-        $user_off->note = $request->note;
-        $user_off->date = Carbon::now()->toDateString();
-        $user_off->status = 0;
-        $user_off->mode_leave = $request->mode_leave;
-        $user_off->save();
-        if ($request->mode_leave == 1) {
-            $mode = company_mode::where('user_id', $user_id)->first();
-            if (($mode->total_day - $x >= 0 && ($mode->total_day_off + $x <= $mode->total_day || $mode->total_day_off + $request->number_day <= $mode->total_day))) {
-                $mode_user = company_mode::find($mode->id);
-                if ($request->number_day && $request->number_day <= $x) {
-                    $mode_user->total_day_off += $request->number_day;
-                } else {
-                    $mode_user->total_day_off += $x;
-                }
-                $mode_user->date = Carbon::now();
-                $mode_user->save();
+        try {
+            DB::beginTransaction();
+            $today = Carbon::now()->toDateString();
+            $user_id = Auth::user()->id;
+            $check = Calendar_leave::where('date', $today)->where('user_id', $user_id)->first();
+            $dateDiff = date_diff(date_create($request->time_start), date_create($request->time_end));
+            $x = $dateDiff->d;
+            $user_off = new Calendar_leave();
+            if ($check) {
+                $user_off = Calendar_leave::find($check->id);
             }
+            $user_off->user_id = $user_id;
+            $user_off->time_start = $request->time_start;
+            $user_off->time_end = $request->time_end;
+            $user_off->note = $request->note;
+            $user_off->date = Carbon::now()->toDateString();
+            $user_off->status = 0;
+            $user_off->mode_leave = $request->mode_leave;
+            if ($request->mode_leave) {
+                if ($request->number_day) {
+                    $user_off->number_mode_leave = $request->number_day;
+                } else {
+                    $user_off->number_mode_leave = $x;
+                }
+            } else {
+                $user_off->number_mode_leave = 0;
+            }
+            if ($request->mode_leave == 1) {
+                $mode = company_mode::where('user_id', $user_id)->first();
+
+                if (($mode->total_day - $x >= 0 && $mode->total_day - $request->number_day >= 0) &&
+                    ($mode->total_day_off + $x <= $mode->total_day && $mode->total_day_off + $request->number_day <= $mode->total_day)
+                ) {
+                    $mode_user = company_mode::find($mode->id);
+                    if ($request->number_day && $request->number_day <= $x) {
+                        $mode_user->total_day_off += $request->number_day;
+                    } else {
+                        $mode_user->total_day_off += $x;
+                    }
+                    $mode_user->date = Carbon::now();
+                    $mode_user->save();
+                } else {
+                    $error = "Không thực hiện";
+                }
+            }
+            if (empty($error)) {
+                $user_off->save();
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $mes = $e->getMessage();
+            $status = false;
         }
         return $user_off ? response()->json([
             'status' => true,

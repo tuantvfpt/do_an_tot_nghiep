@@ -27,8 +27,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('command:update_mode_day_off')->everyFiveMinutes();
-        $schedule->command('command:update_salary_every_month')->lastDayOfMonth('15:00');
+        $schedule->command('command:update_mode_day_off')->everyMinute();
+        $schedule->command('command:update_salary_every_month')->everyFiveMinutes();
+        $schedule->command('command:update_total_salary_every_month')->everyMinute();
     }
 
     /**

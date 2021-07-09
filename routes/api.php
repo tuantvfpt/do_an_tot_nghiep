@@ -67,6 +67,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/', [LichChamCongController::class, 'getAll'])->name('getAll');
         Route::get('getdetail/{id}', [LichChamCongController::class, 'getdetail'])->name('getdetail');
         Route::post('update/{id}', [LichChamCongController::class, 'update'])->name('update');
+        Route::post('create', [LichChamCongController::class, 'create'])->name('create');
+        // Route::post('total_gross_salary', [LichChamCongController::class, 'total_gross_salary'])->name('total_gross_salary');
     });
     Route::group(['prefix' => 'luong'], function () {
         Route::get('/', [LuongController::class, 'getAll'])->name('getAll');

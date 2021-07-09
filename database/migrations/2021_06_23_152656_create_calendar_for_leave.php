@@ -21,8 +21,10 @@ class CreateCalendarForLeave extends Migration
             $table->dateTime('time_end')->nullable();
             $table->date('date')->nullable();
             $table->string('note')->nullable();
-            $table->integer('status')->nullable();
             $table->integer('mode_leave')->nullable();
+            $table->integer('number_mode_leave')->nullable();
+            $table->integer('number_day_leave')->nullable();
+            $table->integer('status')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
