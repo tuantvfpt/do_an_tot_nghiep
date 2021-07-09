@@ -107,68 +107,58 @@ class CalendarLeaveController extends Controller
     }
     public function create(Request $request)
     {
-        try {
-            DB::beginTransaction();
-            $today = Carbon::now()->toDateString();
-            $user_id = Auth::user()->id;
-            $check = Calendar_leave::where('date', $today)->where('user_id', $user_id)->first();
-            $dateDiff = date_diff(date_create($request->time_start), date_create($request->time_end));
-            $x = $dateDiff->d;
-            $user_off = new Calendar_leave();
-            if ($check) {
-                $user_off = Calendar_leave::find($check->id);
-            }
-            $user_off->user_id = $user_id;
-            $user_off->time_start = $request->time_start;
-            $user_off->time_end = $request->time_end;
-            $user_off->note = $request->note;
-            $user_off->date = Carbon::now()->toDateString();
-            $user_off->status = 0;
-            $user_off->mode_leave = $request->mode_leave;
-            if ($request->mode_leave) {
-                if ($request->number_day) {
-                    $user_off->number_mode_leave = $request->number_day;
-                } else {
-                    $user_off->number_mode_leave = $x;
-                }
-            } else {
-                $user_off->number_mode_leave = 0;
-            }
-            if ($request->mode_leave == 1) {
-                $mode = company_mode::where('user_id', $user_id)->first();
-
-                if (($mode->total_day - $x >= 0 && $mode->total_day - $request->number_day >= 0) &&
-                    ($mode->total_day_off + $x <= $mode->total_day && $mode->total_day_off + $request->number_day <= $mode->total_day)
-                ) {
+        $today = Carbon::now()->toDateString();
+        $user_id = Auth::user()->id;
+        $check = Calendar_leave::where('date', $today)->where('user_id', $user_id)->first();
+        $dateDiff = date_diff(date_create($request->time_start), date_create($request->time_end));
+        $x = $dateDiff->d;
+        $user_off = new Calendar_leave();
+        if ($check) {
+            $user_off = Calendar_leave::find($check->id);
+        }
+        $user_off->user_id = $user_id;
+        $user_off->time_start = $request->time_start;
+        $user_off->time_end = $request->time_end;
+        $user_off->note = $request->note;
+        $user_off->date = Carbon::now()->toDateString();
+        $user_off->status = 0;
+        $user_off->mode_leave = $request->mode_leave;
+        $user_off->number_day_leave = $x;
+        if ($request->mode_leave) {
+            $user_off->number_mode_leave = $request->number_day;
+        } else {
+            $user_off->number_mode_leave = 0;
+        }
+        // Update bảng chế độ nghỉ của công ty
+        if ($request->mode_leave == 1) {
+            $mode = company_mode::where('user_id', $user_id)->first();
+            if ($request->number_day) {
+                if ($mode->total_day - $request->number_day >= 0 && ($mode->total_day_off + $request->number_day <= $mode->total_day)) {
                     $mode_user = company_mode::find($mode->id);
-                    if ($request->number_day && $request->number_day <= $x) {
-                        $mode_user->total_day_off += $request->number_day;
-                    } else {
-                        $mode_user->total_day_off += $x;
-                    }
+                    $mode_user->total_day_off += $request->number_day;
                     $mode_user->date = Carbon::now();
                     $mode_user->save();
+                    $user_off->save();
+                    $response = response()->json([
+                        'status' => true,
+                        'message' => "Bạn đã đăng kí lịch nghỉ thành công",
+                        'data' => $user_off
+                    ])->setStatusCode(200);
                 } else {
-                    $error = "Không thực hiện";
+                    $response = response()->json([
+                        'status' => false,
+                        'message' => "Bạn đã thực hiên lỗi vui lòng thử lại"
+                    ])->setStatusCode(404);
                 }
             }
-            if (empty($error)) {
-                $user_off->save();
-            }
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-            $mes = $e->getMessage();
-            $status = false;
+        } else {
+            $response = response()->json([
+                'status' => true,
+                'message' => "Bạn đã đăng kí lịch nghỉ thành công",
+                'data' => $user_off
+            ])->setStatusCode(200);
         }
-        return $user_off ? response()->json([
-            'status' => true,
-            'message' => "Đăng kí ngày nghỉ thành công",
-            'data' => $user_off
-        ])->setStatusCode(200) : response()->json([
-            'status' => false,
-            'message' => 'Đăng kí không thành công',
-        ], 404);
+        return $response;
     }
     //lấy tất cả dữ liệu đi lầm với nghỉ trong 1 tháng theo lich
 
