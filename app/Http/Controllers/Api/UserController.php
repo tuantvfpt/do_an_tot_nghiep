@@ -111,44 +111,37 @@ class UserController extends Controller
     public function addSaveUser(Request $request)
     {
         if (Gate::allows('create')) {
-            try {
-                DB::beginTransaction();
-                $users = new User();
-                $users->user_account = $request->user_account;
-                $users->email = $request->email;
-                $users->position_id = $request->position_id;
-                $users->department_id = $request->department_id;
-                $users->password = Hash::make($request->password);
-                $users->save();
-                if ($users->id) {
-                    $userinfo = new userInfo();
-                    $userinfo->user_id = $users->id;
-                    $userinfo->full_name = $request->full_name;
-                    $userinfo->phone = $request->phone;
-                    if ($request->hasFile('avatar')) {
-                        $file = $request->file('avatar');
-                        $newname = rand() . '.' . $file->getClientOriginalExtension();
-                        $file->move("images", $newname);
-                        $userinfo->avatar = "images/" . $newname;
-                    }
-                    $userinfo->basic_salary = $request->basic_salary;
-                    $userinfo->code_QR = $users->user_account . $users->id;
-                    $userinfo->date_of_join = Carbon::now('Asia/Ho_Chi_Minh');
-                    $userinfo->save();
+            $users = new User();
+            $users->user_account = $request->user_account;
+            $users->email = $request->email;
+            $users->position_id = $request->position_id;
+            $users->department_id = $request->department_id;
+            $users->password = Hash::make($request->user_account);
+            $users->role_id = $request->role_id;
+            $users->save();
+            if ($users->id) {
+                $userinfo = new userInfo();
+                $userinfo->user_id = $users->id;
+                $userinfo->full_name = $request->full_name;
+                $userinfo->phone = $request->phone;
+                if ($request->hasFile('avatar')) {
+                    $file = $request->file('avatar');
+                    $newname = rand() . '.' . $file->getClientOriginalExtension();
+                    $file->move("images", $newname);
+                    $userinfo->avatar = "images/" . $newname;
                 }
-                DB::commit();
-            } catch (Exception $e) {
-                DB::rollBack();
-                $mes = $e->getMessage();
-                $status = false;
+                $userinfo->basic_salary = $request->basic_salary;
+                $userinfo->code_QR = $users->user_account . $users->id;
+                $userinfo->date_of_join = Carbon::now('Asia/Ho_Chi_Minh');
+                $userinfo->save();
             }
-        } elseif (!Gate::allows('create')) {
+        } else {
             return response()->json([
                 'status' => false,
                 'message' => 'Bạn không được phép',
             ], 403);
         }
-        return $userinfo && $users ?
+        return $users ?
             response()->json([
                 'status' => true,
                 'message' => 'Thêm user thành công',
