@@ -120,7 +120,6 @@ class UserController extends Controller
                 $users->department_id = $request->department_id;
                 $users->password = Hash::make($request->password);
                 $users->save();
-                dd($users);
                 if ($users->id) {
                     $userinfo = new userInfo();
                     $userinfo->user_id = $users->id;
