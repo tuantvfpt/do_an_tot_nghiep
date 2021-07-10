@@ -22,7 +22,7 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'user_account',
         'position_id',
-        'department_id', 
+        'department_id',
         'role_id',
         'email',
         'password',
@@ -56,7 +56,7 @@ class User extends Authenticatable implements JWTSubject
     }
     public function phongban_userinfo()
     {
-        return $this->belongsTo(phongban::class, 'position_id');
+        return $this->belongsTo(phongban::class, 'department_id');
     }
     public function user_calendar()
     {
@@ -65,12 +65,13 @@ class User extends Authenticatable implements JWTSubject
 
 
 
-       /**
+    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
      */
-    public function getJWTIdentifier() {
+    public function getJWTIdentifier()
+    {
         return $this->getKey();
     }
 
@@ -79,7 +80,8 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return array
      */
-    public function getJWTCustomClaims() {
+    public function getJWTCustomClaims()
+    {
         return [];
-    }    
+    }
 }

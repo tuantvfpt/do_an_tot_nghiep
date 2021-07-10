@@ -12,4 +12,8 @@ class phongban extends Model
     use SoftDeletes;
 
     protected $table = 'department';
+    public function phongban()
+    {
+        return $this->hasMany(User::class, 'department_id');
+    }
 }

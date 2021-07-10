@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\LuongController;
 use App\Http\Controllers\Api\PhongBanController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PrizefineController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-
+Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
 Route::post('/login', [AuthController::class, 'login']);
 Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'auth'], function () {
@@ -46,6 +47,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('update/{id}', [UserController::class, 'update'])->name('update');
         Route::post('create', [UserController::class, 'addSaveUser'])->name('addUser');
         Route::post('delete/{id}', [UserController::class, 'delete'])->name('delete');
+        Route::post('changepassword', [UserController::class, 'changepassword'])->name('changepassword');
     });
     Route::group(['prefix' => 'phongban'], function () {
         Route::get('/', [PhongBanController::class, 'getAll'])->name('getAll');
@@ -64,8 +66,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'lichchamcong'], function () {
         Route::get('/', [LichChamCongController::class, 'getAll'])->name('getAll');
         Route::get('getdetail/{id}', [LichChamCongController::class, 'getdetail'])->name('getdetail');
-        Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
         Route::post('update/{id}', [LichChamCongController::class, 'update'])->name('update');
+        Route::post('create', [LichChamCongController::class, 'create'])->name('create');
+        // Route::post('total_gross_salary', [LichChamCongController::class, 'total_gross_salary'])->name('total_gross_salary');
     });
     Route::group(['prefix' => 'luong'], function () {
         Route::get('/', [LuongController::class, 'getAll'])->name('getAll');
@@ -75,9 +78,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'lichxinnghi'], function () {
         Route::get('/', [CalendarLeaveController::class, 'getAll'])->name('getAll');
         Route::get('user_leave', [CalendarLeaveController::class, 'get_lich_nghi'])->name('get_user_leave');
-        Route::get('comfig/{id}', [CalendarLeaveController::class, 'comfig'])->name('comfig');
+        Route::post('comfig/{id}', [CalendarLeaveController::class, 'comfig'])->name('comfig');
         Route::get('getdetail/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
         Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
         Route::post('update_day', [CalendarLeaveController::class, 'update_day'])->name('update_day');
+    });
+    Route::group(['prefix' => 'prize_fine_money'], function () {
+        Route::get('/', [PrizefineController::class, 'index'])->name('getAll');
+        Route::post('create', [PrizefineController::class, 'create'])->name('create');
+        Route::post('update/{id}', [PrizefineController::class, 'update'])->name('update');
+        Route::post('delete/{id}', [PrizefineController::class, 'delete'])->name('delete');
     });
 });
