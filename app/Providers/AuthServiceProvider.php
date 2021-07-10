@@ -30,32 +30,32 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-       
+
         Gate::define('view', function (User $user) {
-            return in_array($user->role_id,[1,2]); //admin,hr
+            return in_array($user->role_id, [1, 2]); //admin,hr
             // dd($user);
         });
         Gate::define('view/id', function (User $user) {
-            return in_array($user->role_id,[1,2]); // admin,hr
+            return in_array($user->role_id, [1, 2]); // admin,hr
         });
         Gate::define('create', function (User $user) {
-            return in_array($user->role_id,[1]); //admin
-             // hr
+            return in_array($user->role_id, [1, 2]); //admin
+            // hr
         });
         Gate::define('update', function (User $user) {
-            return in_array( $user->role_id,[1]); //admin
+            return in_array($user->role_id, [1, 2]); //admin
             //admin, hr
         });
         Gate::define('delete', function (User $user) {
-            return in_array($user->role_id,[1]); //admin
+            return in_array($user->role_id, [1, 2]); //admin
             //admin
         });
         Gate::define('attendanceCheck', function (User $user) {
-            return in_array($user->role_id,[1,2]); //admin,hr
+            return in_array($user->role_id, [1, 2]); //admin,hr
             //admin
         });
-        Gate::define('confirmLeave', function (User $user){
-            return in_array($user->role_id,[1,2]); //admin, hr
+        Gate::define('confirmLeave', function (User $user) {
+            return in_array($user->role_id, [1, 2]); //admin, hr
         });
     }
 }
