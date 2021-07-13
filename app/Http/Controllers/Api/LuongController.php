@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\BangThue;
+use App\Models\Calendar_leave;
+use App\Models\LichChamCong;
 use App\Models\Prize_user;
 use App\Models\TongThuNhap;
 use Carbon\Carbon;
@@ -46,10 +48,24 @@ class LuongController extends Controller
     }
     public function getdetail($id)
     {
+        $today = Carbon::now()->toDateString();
         $check = TongThuNhap::where('user_id', Auth::user()->id)
             ->where('id', $id)->first();
         if (Gate::allows('view/id') || $check) {
             $luong = TongThuNhap::find($id);
+            $tong_ngay_lam = LichChamCong::selectRaw('count(user_id) as total_day,user_id')
+                ->where('user_id', $luong->user_id)
+                ->whereMonth('date_of_work', '=', $luong->date)
+                ->groupBy('user_id')
+                ->get();
+            $tong_ngay_xin_nghi = Calendar_leave::selectRaw('count(user_id) as total_day,user_id')
+                ->where('user_id', $luong->user_id)
+                ->whereyear('date', $luong->date)
+                ->groupBy('user_id')
+                ->get();
+            $get_pize_fine_money = Prize_user::selectRaw('prize_fine.name,prize_fine.money')
+                ->join('prize_fine', 'prize_fine.id', '=', 'prize_fine_user.prize_fine_id')->get();
+            dd($get_pize_fine_money);
             $response = $luong ? response()->json([
                 'status' => true,
                 'message' => 'Lấy chi tiết lương thành công',

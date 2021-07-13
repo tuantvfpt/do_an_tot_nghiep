@@ -57,5 +57,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('confirmLeave', function (User $user) {
             return in_array($user->role_id, [1, 2]); //admin, hr
         });
+        Gate::define('diemdanh', function (User $user) {
+            return in_array($user->role_id, [1, 2]); //admin, hr
+        });
     }
 }

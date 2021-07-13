@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 use Validator;
 
 
@@ -119,10 +120,16 @@ class AuthController extends Controller
      */
     protected function createNewToken($token)
     {
+
+        if (Gate::allows('diemdanh')) {
+            $x =  auth()->factory()->getTTL() * 30000000;
+        } else {
+            $x =  auth()->factory()->getTTL() * 360;
+        }
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
+            'expires_in' => $x,
             'user' => auth()->user()
         ]);
     }
