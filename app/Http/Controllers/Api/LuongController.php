@@ -53,23 +53,37 @@ class LuongController extends Controller
             ->where('id', $id)->first();
         if (Gate::allows('view/id') || $check) {
             $luong = TongThuNhap::find($id);
-            $tong_ngay_lam = LichChamCong::selectRaw('count(user_id) as total_day,user_id')
-                ->where('user_id', $luong->user_id)
-                ->whereMonth('date_of_work', '=', $luong->date)
-                ->groupBy('user_id')
-                ->get();
-            $tong_ngay_xin_nghi = Calendar_leave::selectRaw('count(user_id) as total_day,user_id')
-                ->where('user_id', $luong->user_id)
-                ->whereyear('date', $luong->date)
-                ->groupBy('user_id')
-                ->get();
-            $get_pize_fine_money = Prize_user::selectRaw('prize_fine.name,prize_fine.money')
-                ->join('prize_fine', 'prize_fine.id', '=', 'prize_fine_user.prize_fine_id')->get();
-            dd($get_pize_fine_money);
+            if ($luong) {
+
+                $tong_ngay_lam = LichChamCong::selectRaw('count(user_id) as total_day_to_work')
+                    ->where('user_id', $luong->user_id)
+                    ->whereMonth('date_of_work', date('m', strtotime($luong->date)))
+                    ->whereYear('date_of_work', date('Y', strtotime($luong->date)))
+                    ->first();
+                $tong_ngay_xin_nghi = Calendar_leave::selectRaw('Sum(number_day_leave) as total_day_leave,Sum(number_mode_leave) as total_day_mode')
+                    ->where('user_id', $luong->user_id)
+                    ->whereMonth('date', date('m', strtotime($luong->date)))
+                    ->whereYear('date', date('Y', strtotime($luong->date)))
+                    ->first();
+                $get_fine_money = Prize_user::selectRaw('SUM(prize_fine.fine_money) as total_money_fine')
+                    ->join('prize_fine', 'prize_fine.id', '=', 'prize_fine_user.prize_fine_id')
+                    ->where('user_id', $luong->user_id)
+                    ->whereMonth('date', date('m', strtotime($luong->date)))
+                    ->whereYear('date', date('Y', strtotime($luong->date)))
+                    ->where('prize_money', null)
+                    ->first();
+                $get_pize_money = Prize_user::selectRaw('SUM(prize_fine.prize_money) as total_money_prize')
+                    ->join('prize_fine', 'prize_fine.id', '=', 'prize_fine_user.prize_fine_id')
+                    ->where('user_id', $luong->user_id)
+                    ->whereMonth('date', date('m', strtotime($luong->date)))
+                    ->whereYear('date', date('Y', strtotime($luong->date)))
+                    ->where('fine_money', null)
+                    ->first();
+            }
             $response = $luong ? response()->json([
                 'status' => true,
                 'message' => 'Lấy chi tiết lương thành công',
-                'data' => $luong
+                'data' => $luong, $tong_ngay_lam, $tong_ngay_xin_nghi, $get_fine_money, $get_pize_money
             ])->setStatusCode(200) : response()->json([
                 'status' => false,
                 'message' => 'Lấy chi tiết lương thấy bại',

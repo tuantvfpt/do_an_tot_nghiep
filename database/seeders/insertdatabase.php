@@ -71,7 +71,7 @@ class insertdatabase extends Seeder
 
             ],
         ]);
-        DB::table('department')->insert([
+        DB::table('position')->insert([
             [
                 'name' => 'Tester',
 
@@ -89,7 +89,7 @@ class insertdatabase extends Seeder
 
             ],
         ]);
-        DB::table('position')->insert([
+        DB::table('department')->insert([
             [
                 'name' => 'Phòng Test',
 
