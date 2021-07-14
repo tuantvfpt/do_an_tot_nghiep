@@ -174,7 +174,6 @@ class UserController extends Controller
                     $userinfo->avatar = "images/" . $newname;
                 }
                 $userinfo->save();
-                $userinfo->load('getuser');
             }
             $response =   $userinfo ?
                 response()->json([

@@ -176,7 +176,8 @@ class LichChamCongController extends Controller
             } else {
                 return  response()->json([
                     'message' => 'Không tồn tại mã QR',
-                    'status' => false
+                    'status' => false,
+
                 ], 404);
             }
             DB::commit();
@@ -189,7 +190,8 @@ class LichChamCongController extends Controller
         }
         return  response()->json([
             'message' => $mes,
-            'status' => $status
+            'status' => $status,
+            'data' => $lich_cham_cong
         ], 200);
     }
     public function create(Request $request)

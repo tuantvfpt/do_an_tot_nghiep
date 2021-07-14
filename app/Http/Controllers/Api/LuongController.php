@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\BangThue;
+use App\Models\Calendar_leave;
+use App\Models\LichChamCong;
 use App\Models\Prize_user;
 use App\Models\TongThuNhap;
 use Carbon\Carbon;
@@ -46,14 +48,42 @@ class LuongController extends Controller
     }
     public function getdetail($id)
     {
+        $today = Carbon::now()->toDateString();
         $check = TongThuNhap::where('user_id', Auth::user()->id)
             ->where('id', $id)->first();
         if (Gate::allows('view/id') || $check) {
             $luong = TongThuNhap::find($id);
+            if ($luong) {
+
+                $tong_ngay_lam = LichChamCong::selectRaw('count(user_id) as total_day_to_work')
+                    ->where('user_id', $luong->user_id)
+                    ->whereMonth('date_of_work', date('m', strtotime($luong->date)))
+                    ->whereYear('date_of_work', date('Y', strtotime($luong->date)))
+                    ->first();
+                $tong_ngay_xin_nghi = Calendar_leave::selectRaw('Sum(number_day_leave) as total_day_leave,Sum(number_mode_leave) as total_day_mode')
+                    ->where('user_id', $luong->user_id)
+                    ->whereMonth('date', date('m', strtotime($luong->date)))
+                    ->whereYear('date', date('Y', strtotime($luong->date)))
+                    ->first();
+                $get_fine_money = Prize_user::selectRaw('SUM(prize_fine.fine_money) as total_money_fine')
+                    ->join('prize_fine', 'prize_fine.id', '=', 'prize_fine_user.prize_fine_id')
+                    ->where('user_id', $luong->user_id)
+                    ->whereMonth('date', date('m', strtotime($luong->date)))
+                    ->whereYear('date', date('Y', strtotime($luong->date)))
+                    ->where('prize_money', null)
+                    ->first();
+                $get_pize_money = Prize_user::selectRaw('SUM(prize_fine.prize_money) as total_money_prize')
+                    ->join('prize_fine', 'prize_fine.id', '=', 'prize_fine_user.prize_fine_id')
+                    ->where('user_id', $luong->user_id)
+                    ->whereMonth('date', date('m', strtotime($luong->date)))
+                    ->whereYear('date', date('Y', strtotime($luong->date)))
+                    ->where('fine_money', null)
+                    ->first();
+            }
             $response = $luong ? response()->json([
                 'status' => true,
                 'message' => 'Lấy chi tiết lương thành công',
-                'data' => $luong
+                'data' => $luong, $tong_ngay_lam, $tong_ngay_xin_nghi, $get_fine_money, $get_pize_money
             ])->setStatusCode(200) : response()->json([
                 'status' => false,
                 'message' => 'Lấy chi tiết lương thấy bại',
