@@ -50,7 +50,7 @@ class UserController extends Controller
             if (!empty($request->phongban)) {
                 $users = $users->where('position_id', $request->phongban);
             }
-            $users = $users->paginate(($request->limit != null) ? $request->limit : 5);
+            $users = $users->paginate(($request->limit != null) ? $request->limit : 25);
             $response = response()->json([
                 'status' => true,
                 'message' => 'Lấy danh sách user thành công',
@@ -87,28 +87,6 @@ class UserController extends Controller
                 'message' => 'Không tìm thấy user',
             ], 404);
     }
-    // public function getlist()
-    // {
-    //     if (Gate::allows('view')) {
-    //         $phongban = phongban::all();
-    //         $chucvu = chucvu::all();
-    //     } elseif (!Gate::allows('view')) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Bạn không được phép',
-    //         ], 403);
-    //     }
-    //     return $phongban && $chucvu ?
-    //         response()->json([
-    //             'status' => true,
-    //             'message' => 'Lấy dữ liệu thành công',
-    //             'data' => $phongban, $chucvu
-    //         ], 200) :
-    //         response()->json([
-    //             'status' => false,
-    //             'message' => 'Lấy dữ liệu thất bại',
-    //         ], 404);
-    // }
     public function addSaveUser(Request $request)
     {
         if (Gate::allows('create')) {
