@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 
 class CalendarLeaveController extends Controller
 {
@@ -79,6 +80,15 @@ class CalendarLeaveController extends Controller
                 $lich_xin_nghi = Calendar_leave::find($id);
                 $lich_xin_nghi->status = 1;
                 $lich_xin_nghi->save();
+                $user = User::where('id', $lich_xin_nghi->user_id)->first();
+                $to_name = $user->user_account;
+                $to_email = $user->email;
+                $data = array('name' => 'Hello' . $to_name, 'body' => 'Công ty đã nhận được đơn xin nghỉ của bạn và 
+                công ty chấp nhận đơn xin nghỉ của bạn.');
+                Mail::send('emails.mail', $data, function ($message) use ($to_name, $to_email) {
+                    $message->to($to_email, $to_name)->subject('V.v nghỉ phép');
+                    $message->from('tuantong.datus@gmail.com');
+                });
                 $mess = "Đồng ý cho nghỉ";
             } else {
                 $lich_xin_nghi = Calendar_leave::find($id);
@@ -89,6 +99,15 @@ class CalendarLeaveController extends Controller
                         $mode_user->total_day_off = $mode_user->total_day_off - $lich_xin_nghi->number_mode_leave;
                         $mode_user->save();
                     }
+                    $user = User::where('id', $lich_xin_nghi->user_id)->first();
+                    $to_name = $user->user_account;
+                    $to_email = $user->email;
+                    $data = array('name' => $to_name, 'body' => 'Công ty đã nhận được đơn xin nghỉ của bạn và 
+                công ty không chấp nhận đơn xin nghỉ của bạn.Mong bạn thu xếp công việc và đi làm đúng giờ nhé');
+                    Mail::send('emails.mail', $data, function ($message) use ($to_name, $to_email) {
+                        $message->to($to_email, $to_name)->subject('V.v nghỉ phép');
+                        $message->from('tuantong.datus@gmail.com');
+                    });
                     $lich_xin_nghi->delete();
                 }
                 $mess = "Không cho phép nghỉ";

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Prize;
 use App\Models\User;
 use App\Models\userInfo;
 use Carbon\Carbon;
@@ -150,7 +151,9 @@ class insertdatabase extends Seeder
                 $user_info->basic_salary = 8000000;
                 $user_info->code_QR = $model->user_account . $model->id;
                 $user_info->save();
+                
             }
+            
         }
     }
 }
