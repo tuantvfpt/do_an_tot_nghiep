@@ -53,21 +53,46 @@ class update_total_salary_every_month extends Command
                 ->get();
             $muoihaigio = "12:00:00";
             $muoibagio = "13:00:00";
+            $muoibaygio = "17:00:00";
             $tongtimecheckin = 0;
             foreach ($tongtime as $item) {
-                if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
-                    $x = 0;
-                } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
-                    $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                if ($item->check_ot == 0) {
+                    if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
+                        $x = 0;
+                    } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
+                        $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                    } else {
+                        $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
+                    }
+                    if (strtotime($item->time_of_check_out) - strtotime($muoibagio) < 0) {
+                        $b = 0;
+                    } elseif (strtotime($item->time_of_check_in) - strtotime($muoibagio) > 0) {
+                        $b = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                    } else {
+                        if (strtotime($item->time_of_check_out) - strtotime($muoibaygio) < 0) {
+                            $b = strtotime($item->time_of_check_out) - strtotime($muoibagio);
+                        } else {
+                            $b = strtotime($muoibaygio) - strtotime($muoibagio);
+                        }
+                    }
                 } else {
-                    $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
-                }
-                if (strtotime($item->time_of_check_out) - strtotime($muoibagio) < 0) {
-                    $b = 0;
-                } elseif (strtotime($item->time_of_check_in) - strtotime($muoibagio) > 0) {
-                    $b = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
-                } else {
-                    $b = strtotime($item->time_of_check_out) - strtotime($muoibagio);
+                    if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
+                        $x = 0;
+                    } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
+                        $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                    } else {
+                        $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
+                    }
+                    if (strtotime($item->time_of_check_out) - strtotime($muoibagio) < 0) {
+                        $b = 0;
+                    } elseif (strtotime($item->time_of_check_in) - strtotime($muoibagio) > 0) {
+                        $b = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                    } elseif (strtotime($item->time_of_check_out) - strtotime($muoibagio) > 0 && (strtotime($item->time_of_check_out) <= (strtotime($muoibaygio)))) {
+                        $b = strtotime($item->time_of_check_out) - strtotime($muoibagio);
+                    } elseif (strtotime($item->time_of_check_out) - strtotime($muoibaygio) > 0) {
+                        $c = (strtotime($item->time_of_check_out) - strtotime($muoibaygio)) * 2;
+                        $b = strtotime($muoibaygio) - strtotime($muoibagio) + $c;
+                    }
                 }
                 $tongtimecheckin += ($x + $b);
             }

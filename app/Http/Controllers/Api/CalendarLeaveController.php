@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Calendar_leave;
 use App\Models\company_mode;
 use App\Models\LichChamCong;
+use App\Models\TongThuNhap;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -180,5 +181,228 @@ class CalendarLeaveController extends Controller
         return $response;
     }
     //lấy tất cả dữ liệu đi lầm với nghỉ trong 1 tháng theo lich
+    // public function nghiphep()
+    // {
+    //     $startyear = Carbon::now()->startOfYear()->toDateString();
+    //     $endyear = Carbon::now()->endOfYear()->toDateString();
+    //     $today = date('Y-m-d');
+    //     $user = DB::table('users')
+    //         ->select('*')
+    //         ->rightjoin('user_info', 'users.id', '=', 'user_info.user_id')
+    //         ->where('users.deleted_at', null)
+    //         ->get();
+    //     foreach ($user as $user) {
+    //         // tính thời gian làm việc của nhân viên được bao nhiêu tháng
+    //         $dateDiff = date_diff(date_create($user->date_of_join), date_create($today));
+    //         $x = $dateDiff->m;
+    //         $i = $dateDiff->y;
+    //         $mode_day = new company_mode();
+    //         //kiểm tra điều kiện
+    //         $check = company_mode::where('user_id', $user->user_id)->whereBetween('date', [$startyear, $endyear])->first();
+    //         if ($check) {
+    //             $mode_day = company_mode::find($check->id);
+    //         }
+    //         if ($i < 1) {
+    //             if ($x >= 1 && $x < 2 && $i < 1) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //                 $mode_day->total_day = 1;
+    //             } elseif ($x >= 2 && $x < 3 && $i < 1) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //                 $mode_day->total_day = 2;
+    //             } elseif ($x >= 3 && $x < 4 && $i < 1) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //                 $mode_day->total_day = 3;
+    //             } elseif ($x >= 4 && $x < 5 && $i < 1) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 4;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 5 && $x < 6 && $i < 1) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 5;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 6 && $x < 7 && $i < 1) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 6;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 7 && $x < 8 && $i < 1) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 7;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 8 && $x < 9 && $i < 1) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 8;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 9 && $x < 10 && $i < 1) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 9;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 10 && $x < 11 && $i < 1) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 10;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 11 && $x < 12 && $i < 1) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 11;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 12) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 12;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } else {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 0;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             }
+    //         } else {
+    //             $dateDiff = date_diff(date_create($startyear), date_create($today));
+    //             $x = $dateDiff->m;
+    //             if ($x >= 1 && $x < 2) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //                 $mode_day->total_day = 2;
+    //             } elseif ($x >= 2 && $x < 3) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //                 $mode_day->total_day = 3;
+    //             } elseif ($x >= 3 && $x < 4) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //                 $mode_day->total_day = 4;
+    //             } elseif ($x >= 4 && $x < 5) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 5;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 5 && $x < 6) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 6;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 6 && $x < 7) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 7;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 7 && $x < 8) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 8;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 8 && $x < 9) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 9;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 9 && $x < 10) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 10;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 10 && $x < 11) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 11;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } elseif ($x >= 11 && $x < 12) {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 12;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             } else {
+    //                 $mode_day->user_id = $user->user_id;
+    //                 $mode_day->total_day = 1;
+    //                 $mode_day->date = Carbon::now()->todateString();
+    //             }
+    //         }
+    //         $mode_day->save();
+    //     }
+    // }
+    //update tiền lương
+    // public function tienluong()
+    // {
+    //     $user = User::select('users.*', 'user_info.basic_salary')
+    //         ->join('user_info', 'users.id', '=', 'user_info.user_id')->get();
+    //     foreach ($user as $user) {
+    //         // $checkluong = userInfo::where('user_id', $user->id)->first();
+    //         $startmonth = Carbon::now()->startOfMonth()->toDateString();
+    //         $endmonth = Carbon::now()->endOfMonth()->toDateString();
+    //         $tongtime = LichChamCong::where('user_id', $user->id)
+    //             ->where('date_of_work', '>=', $startmonth)
+    //             ->where('date_of_work', '<=', $endmonth)
+    //             ->get();
+    //         $muoihaigio = "12:00:00";
+    //         $muoibagio = "13:00:00";
+    //         $muoibaygio = "17:00:00";
+    //         $tongtimecheckin = 0;
+    //         foreach ($tongtime as $item) {
+    //             if ($item->check_ot == 0) {
+    //                 if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
+    //                     $x = 0;
+    //                 } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
+    //                     $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+    //                 } else {
+    //                     $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
+    //                 }
+    //                 if (strtotime($item->time_of_check_out) - strtotime($muoibagio) < 0) {
+    //                     $b = 0;
+    //                 } elseif (strtotime($item->time_of_check_in) - strtotime($muoibagio) > 0) {
+    //                     $b = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+    //                 } else {
+    //                     if (strtotime($item->time_of_check_out) - strtotime($muoibaygio) < 0) {
+    //                         $b = strtotime($item->time_of_check_out) - strtotime($muoibagio);
+    //                     } else {
+    //                         $b = strtotime($muoibaygio) - strtotime($muoibagio);
+    //                     }
+    //                 }
+    //             } else {
+    //                 if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
+    //                     $x = 0;
+    //                 } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
+    //                     $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+    //                 } else {
+    //                     $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
+    //                 }
+    //                 if (strtotime($item->time_of_check_out) - strtotime($muoibagio) < 0) {
+    //                     $b = 0;
+    //                 } elseif (strtotime($item->time_of_check_in) - strtotime($muoibagio) > 0) {
+    //                     $b = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+    //                 } elseif (strtotime($item->time_of_check_out) - strtotime($muoibagio) > 0 && (strtotime($item->time_of_check_out) <= (strtotime($muoibaygio)))) {
+    //                     $b = strtotime($item->time_of_check_out) - strtotime($muoibagio);
+    //                 } elseif (strtotime($item->time_of_check_out) - strtotime($muoibaygio) > 0) {
+    //                     $c = (strtotime($item->time_of_check_out) - strtotime($muoibaygio)) * 2;
+    //                     $b = strtotime($muoibaygio) - strtotime($muoibagio) + $c;
+    //                 }
+    //             }
+    //             $tongtimecheckin += ($x + $b);
+    //         }
+    //         $tongtimelam = $tongtimecheckin / 3600;
+    //         $luongcoban = $user->basic_salary;
+    //         $timecodinh = 8;
+    //         if (($tongtimelam - $timecodinh * 22) > 0) {
+    //             $tongluong = ($luongcoban + ($tongtimelam - ($timecodinh * 22) * ($luongcoban / (22 * 8))));
+    //         } elseif (($tongtimelam - $timecodinh * 22) == 0) {
+    //             $tongluong = $luongcoban;
+    //         } else {
+    //             $tongluong = ($luongcoban - (($timecodinh * 22) - $tongtimelam) * ($luongcoban / (22 * 8)));
+    //         }
+    //         $formatluong = $tongluong;
+    //         if (isset($formatluong)) {
+    //             $checktongluong = TongThuNhap::where('user_id', $user->id)
+    //                 ->where('date', '>=', $startmonth)
+    //                 ->where('date', '<=', $endmonth)
+    //                 ->first();
+    //             if ($checktongluong) {
+    //                 $luong = TongThuNhap::find($checktongluong->id);
+    //                 $luong->total_gross_salary = $formatluong;
+    //                 $luong->date = Carbon::now()->toDateString();
+    //                 $luong->save();
+    //             } else {
+    //                 $luong = new TongThuNhap();
+    //                 $luong->user_id = $user->id;
+    //                 $luong->total_gross_salary = $formatluong;
+    //                 $luong->total_net_salary = 0;
+    //                 $luong->status = "0";
+    //                 $luong->date = Carbon::now();
+    //                 $luong->save();
+    //             }
+    //         }
+    //     }
+    // }
 
+   
 }

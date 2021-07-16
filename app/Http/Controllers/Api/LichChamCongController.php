@@ -189,4 +189,23 @@ class LichChamCongController extends Controller
         }
         return $response;
     }
+    // update ot của nhân viên
+    public function update_OT(Request $request)
+    {
+        $today = Carbon::now()->toDateString();
+        $user_id = $request->id;
+        foreach ($user_id as $value => $key) {
+            $update_OT = LichChamCong::where('user_id', $key)->where('date_of_work', $today)->first();
+            if ($update_OT) {
+                $update = LichChamCong::find($update_OT->id);
+                $update->check_ot = 1;
+                $update->save();
+            }
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Cập nhật OT thành công',
+            'data' => $update,
+        ], 200);
+    }
 }

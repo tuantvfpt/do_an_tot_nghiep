@@ -28,8 +28,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('command:update_mode_day_off')->everyMinute();
-        $schedule->command('command:update_salary_every_month')->everyMinute();
         $schedule->command('command:update_total_salary_every_month')->everyMinute();
+        $schedule->command('command:update_salary_every_month')->everyMinute();
     }
 
     /**
