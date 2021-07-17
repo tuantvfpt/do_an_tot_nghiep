@@ -34,7 +34,7 @@ class LuongController extends Controller
                 $luong =  $luong->where('date', $request->date);
             }
         }
-        $luong = $luong->paginate(($request->limit != null) ? $request->limit : 5);
+        $luong = $luong->paginate(($request->limit != null) ? $request->limit : 10);
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách lương thành công thành công',

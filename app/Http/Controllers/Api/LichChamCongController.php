@@ -48,7 +48,7 @@ class LichChamCongController extends Controller
             }
             $lich_cham_cong->where('time_keep_calendar.user_id', Auth::user()->id);
         }
-        $lich_cham_cong = $lich_cham_cong->paginate(($request->limit != null) ? $request->limit : 5);
+        $lich_cham_cong = $lich_cham_cong->paginate(($request->limit != null) ? $request->limit : 10);
         return  response()->json([
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',

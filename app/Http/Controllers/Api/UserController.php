@@ -4,22 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Calendar_leave;
-use App\Models\chucvu;
 use App\Models\company_mode;
 use App\Models\LichChamCong;
-use App\Models\phongban;
 use App\Models\Prize_user;
 use App\Models\TongThuNhap;
 use App\Models\User;
 use App\Models\userInfo;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -50,7 +45,7 @@ class UserController extends Controller
             if (!empty($request->phongban)) {
                 $users = $users->where('position_id', $request->phongban);
             }
-            $users = $users->paginate(($request->limit != null) ? $request->limit : 25);
+            $users = $users->paginate(($request->limit != null) ? $request->limit : 8);
             $response = response()->json([
                 'status' => true,
                 'message' => 'Lấy danh sách user thành công',

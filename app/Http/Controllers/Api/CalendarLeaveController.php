@@ -38,7 +38,7 @@ class CalendarLeaveController extends Controller
         } else {
             $lich_nghi->where('calendar_for_leave.user_id', Auth::user()->id);
         }
-        $lich_nghi = $lich_nghi->paginate(($request->limit != null) ? $request->limit : 5);
+        $lich_nghi = $lich_nghi->paginate(($request->limit != null) ? $request->limit : 10);
         return  response()->json([
             'status' => true,
             'message' => 'Lấy danh sách nghỉ thành công',
@@ -404,5 +404,5 @@ class CalendarLeaveController extends Controller
     //     }
     // }
 
-   
+
 }
