@@ -25,8 +25,8 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-
-
+Route::post('password_new', [UserController::class, 'password_new'])->name('password_new');
+Route::get('forget_password', [UserController::class, 'forget_password'])->name('forget_password');
 Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
 Route::post('/login', [AuthController::class, 'login']);
 Route::group(['middleware' => 'auth'], function () {
@@ -70,7 +70,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('getdetail/{id}', [LichChamCongController::class, 'getdetail'])->name('getdetail');
         Route::post('update/{id}', [LichChamCongController::class, 'update'])->name('update');
         Route::post('create', [LichChamCongController::class, 'create'])->name('create');
-        Route::get('update_OT', [LichChamCongController::class, 'update_OT'])->name('update_OT');
+        Route::post('update_OT', [LichChamCongController::class, 'update_OT'])->name('update_OT');
         // Route::post('total_gross_salary', [LichChamCongController::class, 'total_gross_salary'])->name('total_gross_salary');
     });
     Route::group(['prefix' => 'luong'], function () {

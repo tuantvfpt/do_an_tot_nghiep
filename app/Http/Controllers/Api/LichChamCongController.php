@@ -35,7 +35,7 @@ class LichChamCongController extends Controller
                 });
             }
             if (!empty($request->date)) {
-                $lich_cham_cong =  $lich_cham_cong->where('date', $request->date);
+                $lich_cham_cong =  $lich_cham_cong->whereMonth('date_of_work', date('m', strtotime($request->date)));
             }
         } else {
             if (!empty($request->keyword)) {
@@ -44,7 +44,7 @@ class LichChamCongController extends Controller
                 });
             }
             if (!empty($request->date)) {
-                $lich_cham_cong =  $lich_cham_cong->where('date', $request->date);
+                $lich_cham_cong =  $lich_cham_cong->whereMonth('date_of_work', date('m', strtotime($request->date)));
             }
             $lich_cham_cong->where('time_keep_calendar.user_id', Auth::user()->id);
         }
@@ -113,6 +113,7 @@ class LichChamCongController extends Controller
                     $lich_cham_cong->status = '0';
                     $lich_cham_cong->save();
                 }
+                $lich_cham_cong->load('get_user_name');
             } else {
                 return  response()->json([
                     'message' => 'Không tồn tại mã QR',
@@ -192,20 +193,28 @@ class LichChamCongController extends Controller
     // update ot của nhân viên
     public function update_OT(Request $request)
     {
-        $today = Carbon::now()->toDateString();
-        $user_id = $request->id;
-        foreach ($user_id as $value => $key) {
-            $update_OT = LichChamCong::where('user_id', $key)->where('date_of_work', $today)->first();
-            if ($update_OT) {
-                $update = LichChamCong::find($update_OT->id);
-                $update->check_ot = 1;
-                $update->save();
+        if (Gate::allows('leader')) {
+            $today = Carbon::now()->toDateString();
+            $user_id = $request->id;
+            foreach ($user_id as $value => $key) {
+                $update_OT = LichChamCong::where('user_id', $key)->where('date_of_work', $today)->first();
+                if ($update_OT) {
+                    $update = LichChamCong::find($update_OT->id);
+                    $update->check_ot = 1;
+                    $update->save();
+                }
             }
+            $response =  response()->json([
+                'status' => true,
+                'message' => 'Cập nhật OT thành công',
+                'data' => $update,
+            ], 200);
+        } else {
+            $response = response()->json([
+                'status' => false,
+                'message' => "Không có quyền truy cập",
+            ], 404);
         }
-        return response()->json([
-            'status' => true,
-            'message' => 'Cập nhật OT thành công',
-            'data' => $update,
-        ], 200);
+        return $response;
     }
 }

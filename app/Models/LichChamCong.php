@@ -12,4 +12,8 @@ class LichChamCong extends Model
     use SoftDeletes;
 
     protected $table = 'time_keep_calendar';
+    public function get_user_name()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

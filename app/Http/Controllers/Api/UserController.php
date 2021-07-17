@@ -232,4 +232,31 @@ class UserController extends Controller
             'message' => $messages,
         ]);
     }
+    // public function forget_password(Request $request)
+    // {
+    //     $email = $request->email;
+    //     $check = User::where('email', $email)->first();
+    //     if ($check) {
+    //         $to_name = $check->user_account;
+    //         $to_email = $check->email;
+    //         $code = session()->get('code');
+    //         $code = Hash::make(123456);
+    //         session()->put('code', $code);
+    //         // $data = array('name' => $to_name, 'body' => 'Đây là mã xác nhận lại mật khẩu của bạn' . $code);
+    //         // Mail::send('emails.mail', $data, function ($message) use ($to_name, $to_email) {
+    //         //     $message->to($to_email, $to_name)->subject('Mã xác nhận quên mất khẩu');
+    //         //     $message->from('tuantong.datus@gmail.com');
+    //         // });
+    //     } else {
+    //         $response = response()->json([
+    //             'status' => false,
+    //             'message' => 'Không tìm thấy email',
+    //         ]);
+    //     }
+    // }
+    // public function password_new()
+    // {
+    //     $x = session()->get('code');
+    //     dd($x);
+    // }
 }
