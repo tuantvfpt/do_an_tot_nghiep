@@ -50,6 +50,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('create', [UserController::class, 'addSaveUser'])->name('addUser');
         Route::post('delete/{id}', [UserController::class, 'delete'])->name('delete');
         Route::post('changepassword', [UserController::class, 'changepassword'])->name('changepassword');
+        Route::get('/getListUser', [UserController::class, 'ListUsers'])->name('getListUser');
     });
     Route::group(['prefix' => 'phongban'], function () {
         Route::get('/', [PhongBanController::class, 'getAll'])->name('getAll');
@@ -85,6 +86,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('getdetail/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
         Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
         Route::post('update_day', [CalendarLeaveController::class, 'update_day'])->name('update_day');
+        Route::get('total_day', [CalendarLeaveController::class, 'get_company_leave'])->name('get_company_leave');
     });
     Route::group(['prefix' => 'prize_fine_money'], function () {
         Route::get('/', [PrizefineController::class, 'index'])->name('getAll');

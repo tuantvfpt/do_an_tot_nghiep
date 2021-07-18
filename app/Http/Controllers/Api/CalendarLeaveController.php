@@ -24,8 +24,7 @@ class CalendarLeaveController extends Controller
         $lich_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
             ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
-            ->where('calendar_for_leave.deleted_at', null)
-            ->where('calendar_for_leave.status', 1);
+            ->where('calendar_for_leave.deleted_at', null);
         if (Gate::allows('view')) {
             if (!empty($request->keyword)) {
                 $lich_nghi =  $lich_nghi->Where(function ($query) use ($request) {
@@ -149,6 +148,7 @@ class CalendarLeaveController extends Controller
         } else {
             $user_off->number_mode_leave = 0;
         }
+
         // Update bảng chế độ nghỉ của công ty
         if ($request->mode_leave == 1) {
             $mode = company_mode::where('user_id', $user_id)->first();
@@ -403,6 +403,14 @@ class CalendarLeaveController extends Controller
     //         }
     //     }
     // }
-
-
+    public function get_company_leave()
+    {
+        $today = Carbon::now()->toDateString();
+        $get_company_leave = company_mode::where('user_id', Auth::user()->id)->WhereYear('date', date('Y', strtotime($today)))->first();
+        return  response()->json([
+            'status' => true,
+            'message' => "Lấy tổng số ngày nghỉ nhân viên thành công",
+            'data' => $get_company_leave
+        ])->setStatusCode(200);
+    }
 }
