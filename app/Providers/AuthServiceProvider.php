@@ -58,7 +58,7 @@ class AuthServiceProvider extends ServiceProvider
             return in_array($user->role_id, [1, 2]); //admin, hr
         });
         Gate::define('diemdanh', function (User $user) {
-            return in_array($user->role_id, [1, 2]); //admin, hr
+            return in_array($user->role_id, [5]); //admin, hr
         });
         Gate::define('leader', function (User $user) {
             return in_array($user->role_id, [4]); //admin, hr

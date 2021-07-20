@@ -27,7 +27,6 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::post('password_new', [UserController::class, 'password_new'])->name('password_new');
 Route::post('forget_password', [UserController::class, 'forget_password'])->name('forget_password');
-Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
 Route::post('/login', [AuthController::class, 'login']);
 Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'auth'], function () {
@@ -73,7 +72,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('create', [LichChamCongController::class, 'create'])->name('create');
         Route::post('update_OT', [LichChamCongController::class, 'update_OT'])->name('update_OT');
         Route::get('/getListByUser', [LichChamCongController::class, 'getListByUser'])->name('getListByUser');
-
+        Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
         // Route::post('total_gross_salary', [LichChamCongController::class, 'total_gross_salary'])->name('total_gross_salary');
     });
     Route::group(['prefix' => 'luong'], function () {

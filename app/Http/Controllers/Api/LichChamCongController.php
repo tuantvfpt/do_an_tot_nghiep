@@ -76,43 +76,50 @@ class LichChamCongController extends Controller
     {
         try {
             DB::beginTransaction();
-            $today = Carbon::now()->format('Y-m-d');
-            $checkQR = User::select(
-                DB::raw('user_info.Code_QR as ma_QR,users.id as userId')
-            )
-                ->join('user_info', 'user_info.user_id', '=', 'users.id')
-                ->Where('Code_QR', $request->code_QR)
-                ->where('user_info.deleted_at', null)
-                ->first();
-            if ($checkQR) {
-                $check_out = LichChamCong::where('user_id', $checkQR->userId)
-                    ->where('date_of_work', '>=', $today)
-                    ->where('date_of_work', '<=', $today)
+            if (Gate::allows('diemdanh')) {
+                $today = Carbon::now()->format('Y-m-d');
+                $checkQR = User::select(
+                    DB::raw('user_info.Code_QR as ma_QR,users.id as userId')
+                )
+                    ->join('user_info', 'user_info.user_id', '=', 'users.id')
+                    ->Where('Code_QR', $request->code_QR)
+                    ->where('user_info.deleted_at', null)
                     ->first();
-                if ($check_out) {
-                    $lich_cham_cong = LichChamCong::find($check_out->id);
-                    $lich_cham_cong->time_of_check_out = Carbon::now()->format('H:i:m');
-                    $lich_cham_cong->status = '1';
-                    $lich_cham_cong->save();
+                if ($checkQR) {
+                    $check_out = LichChamCong::where('user_id', $checkQR->userId)
+                        ->where('date_of_work', '>=', $today)
+                        ->where('date_of_work', '<=', $today)
+                        ->first();
+                    if ($check_out) {
+                        $lich_cham_cong = LichChamCong::find($check_out->id);
+                        $lich_cham_cong->time_of_check_out = Carbon::now()->format('H:i:m');
+                        $lich_cham_cong->status = '1';
+                        $lich_cham_cong->save();
+                    } else {
+                        $lich_cham_cong = new LichChamCong();
+                        $lich_cham_cong->user_id = $checkQR->userId;
+                        $lich_cham_cong->time_of_check_in = Carbon::now()->format('H:i:m');
+                        $lich_cham_cong->time_of_check_out = Carbon::now()->format('H:i:m');
+                        $lich_cham_cong->date_of_work = Carbon::now()->format('Y-m-d');
+                        $lich_cham_cong->status = '0';
+                        $lich_cham_cong->save();
+                    }
+                    $lich_cham_cong->load('get_user_name');
                 } else {
-                    $lich_cham_cong = new LichChamCong();
-                    $lich_cham_cong->user_id = $checkQR->userId;
-                    $lich_cham_cong->time_of_check_in = Carbon::now()->format('H:i:m');
-                    $lich_cham_cong->time_of_check_out = Carbon::now()->format('H:i:m');
-                    $lich_cham_cong->date_of_work = Carbon::now()->format('Y-m-d');
-                    $lich_cham_cong->status = '0';
-                    $lich_cham_cong->save();
+                    return  response()->json([
+                        'message' => 'Không tồn tại mã QR',
+                        'status' => false,
+                    ], 404);
                 }
-                $lich_cham_cong->load('get_user_name');
+                DB::commit();
+                $mes = "Check mã QR thành công";
+                $status = true;
             } else {
                 return  response()->json([
-                    'message' => 'Không tồn tại mã QR',
+                    'message' => 'Không có quyền điểm danh',
                     'status' => false,
                 ], 404);
             }
-            DB::commit();
-            $mes = "Check mã QR thành công";
-            $status = true;
         } catch (Exception $e) {
             DB::rollBack();
             $mes = $e->getMessage();
