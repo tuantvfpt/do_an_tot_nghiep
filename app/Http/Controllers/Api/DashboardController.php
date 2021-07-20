@@ -86,7 +86,7 @@ class DashboardController extends Controller
             ->with([
                 'userinfo'
             ])->where('time_keep_calendar.deleted_at', null)
-            ->where('time_of_check_in', '<', $mocgio)
+            ->where('time_of_check_in', '<=', $mocgio)
             ->groupBy('user_id', 'users.id', 'users.user_account')->get();
         //data đi làm sớm
         // data đi làm muộn

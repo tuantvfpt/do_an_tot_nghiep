@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 Route::post('password_new', [UserController::class, 'password_new'])->name('password_new');
-Route::get('forget_password', [UserController::class, 'forget_password'])->name('forget_password');
+Route::post('forget_password', [UserController::class, 'forget_password'])->name('forget_password');
 Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
 Route::post('/login', [AuthController::class, 'login']);
 Route::group(['middleware' => 'auth'], function () {
@@ -42,7 +42,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/show_calendar', [DashboardController::class, 'show_lich'])->name('show_lich');
         Route::get('/get_user_late_early', [DashboardController::class, 'get_user_late_early'])->name('get_user_late_early');
     });
-    Route::group(['prefix' => 'user'], function () {
+    Route::group(['prefix' => 'user/'], function () {
         Route::get('/', [UserController::class, 'getAll'])->name('getAllUser');
         Route::get('getdetail/{id}', [UserController::class, 'getUser'])->name('getUser');
         Route::get('getlist', [UserController::class, 'getlist'])->name('getListChucVuPhongBan');
@@ -50,7 +50,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('create', [UserController::class, 'addSaveUser'])->name('addUser');
         Route::post('delete/{id}', [UserController::class, 'delete'])->name('delete');
         Route::post('changepassword', [UserController::class, 'changepassword'])->name('changepassword');
-        Route::get('/getListUser', [UserController::class, 'ListUsers'])->name('getListUser');
+        Route::get('getListUser', [UserController::class, 'ListUsers'])->name('getListUser');
     });
     Route::group(['prefix' => 'phongban'], function () {
         Route::get('/', [PhongBanController::class, 'getAll'])->name('getAll');
@@ -72,6 +72,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('update/{id}', [LichChamCongController::class, 'update'])->name('update');
         Route::post('create', [LichChamCongController::class, 'create'])->name('create');
         Route::post('update_OT', [LichChamCongController::class, 'update_OT'])->name('update_OT');
+        Route::get('/getListByUser', [LichChamCongController::class, 'getListByUser'])->name('getListByUser');
+
         // Route::post('total_gross_salary', [LichChamCongController::class, 'total_gross_salary'])->name('total_gross_salary');
     });
     Route::group(['prefix' => 'luong'], function () {

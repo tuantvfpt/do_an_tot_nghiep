@@ -37,16 +37,6 @@ class LichChamCongController extends Controller
             if (!empty($request->date)) {
                 $lich_cham_cong =  $lich_cham_cong->whereMonth('date_of_work', date('m', strtotime($request->date)));
             }
-        } else {
-            if (!empty($request->keyword)) {
-                $lich_cham_cong =  $lich_cham_cong->Where(function ($query) use ($request) {
-                    $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
-                });
-            }
-            if (!empty($request->date)) {
-                $lich_cham_cong =  $lich_cham_cong->whereMonth('date_of_work', date('m', strtotime($request->date)));
-            }
-            $lich_cham_cong->where('time_keep_calendar.user_id', Auth::user()->id);
         }
         $lich_cham_cong = $lich_cham_cong->paginate(($request->limit != null) ? $request->limit : 10);
         return  response()->json([
@@ -216,5 +206,32 @@ class LichChamCongController extends Controller
             ], 404);
         }
         return $response;
+    }
+    public function getListByUser(Request $request)
+    {
+        $lich_cham_cong = LichChamCong::select('time_keep_calendar.*', 'user_info.full_name')
+            ->Join('users', 'time_keep_calendar.user_id', '=', 'users.id')
+            ->join('user_info', 'users.id', '=', 'user_info.user_id')
+            ->where('time_keep_calendar.deleted_at', null)
+            ->where('time_keep_calendar.user_id', Auth::user()->id);
+        if (!empty($request->keyword)) {
+            $lich_cham_cong =  $lich_cham_cong->Where(function ($query) use ($request) {
+                $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
+            });
+        }
+        if (!empty($request->date)) {
+            $lich_cham_cong =  $lich_cham_cong->whereMonth('date_of_work', date('m', strtotime($request->date)));
+        }
+        $lich_cham_cong = $lich_cham_cong->paginate(($request->limit != null) ? $request->limit : 10);
+        return  response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách chấm công thành công',
+            'data' => $lich_cham_cong->items(),
+            'meta' => [
+                'total'      => $lich_cham_cong->total(),
+                'perPage'    => $lich_cham_cong->perPage(),
+                'currentPage' => $lich_cham_cong->currentPage()
+            ]
+        ])->setStatusCode(200);
     }
 }

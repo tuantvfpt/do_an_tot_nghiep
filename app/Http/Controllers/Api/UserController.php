@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
 use App\Models\Calendar_leave;
 use App\Models\company_mode;
 use App\Models\LichChamCong;
@@ -15,6 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -25,65 +28,71 @@ class UserController extends Controller
 
     public function getAll(Request $request)
     {
-        if (Gate::allows('view')) {
-            $users = $this->users
-                ->select('users.id', 'user_info.full_name', 'users.email', 'department.name as name_department', 'position.name as name_position', 'user_info.avatar', 'users.user_account')
-                ->leftJoin('department', 'department.id', '=', 'users.department_id')
-                ->leftJoin('position', 'position.id', '=', 'users.position_id')
-                ->leftJoin('user_info', 'user_info.user_id', '=', 'users.id')
-                ->where('user_info.deleted_at', null);
-            // $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
-            if (!empty($request->keyword)) {
-                $users =  $users->Where(function ($query) use ($request) {
-                    $query->Orwhere('user_info.full_name', 'like', "%" . $request->keyword . "%")
-                        ->Orwhere('email', 'like', "%" . $request->keyword . "%");
-                });
-            }
-            if (!empty($request->chucvu)) {
-                $users =  $users->where('department_id', $request->chucvu);
-            }
-            if (!empty($request->phongban)) {
-                $users = $users->where('position_id', $request->phongban);
-            }
-            $users = $users->paginate(($request->limit != null) ? $request->limit : 8);
-            $response = response()->json([
-                'status' => true,
-                'message' => 'Lấy danh sách user thành công',
-                'data' => $users->items(),
-                'meta' => [
-                    'total'      => $users->total(),
-                    'perPage'    => $users->perPage(),
-                    'currentPage' => $users->currentPage()
-                ]
-            ], 200);
-        } else {
-            $response = response()->json([
-                'status' => false,
-                'message' => 'Bạn không được phép',
-            ], 403);
+        $users = $this->users
+            ->select('users.id', 'user_info.full_name', 'users.email', 'department.name as name_department', 'position.name as name_position', 'user_info.avatar', 'users.user_account')
+            ->leftJoin('department', 'department.id', '=', 'users.department_id')
+            ->leftJoin('position', 'position.id', '=', 'users.position_id')
+            ->leftJoin('user_info', 'user_info.user_id', '=', 'users.id')
+            ->where('user_info.deleted_at', null);
+        if (!empty($request->keyword)) {
+            $users =  $users->Where(function ($query) use ($request) {
+                $query->Orwhere('user_info.full_name', 'like', "%" . $request->keyword . "%")
+                    ->Orwhere('email', 'like', "%" . $request->keyword . "%");
+            });
         }
-        return $response;
+        if (!empty($request->chucvu)) {
+            $users =  $users->where('department_id', $request->chucvu);
+        }
+        if (!empty($request->phongban)) {
+            $users = $users->where('position_id', $request->phongban);
+        }
+        $users = $users->paginate(($request->limit != null) ? $request->limit : 8);
+        return  response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách user thành công',
+            'data' => $users->items(),
+            'meta' => [
+                'total'      => $users->total(),
+                'perPage'    => $users->perPage(),
+                'currentPage' => $users->currentPage()
+            ]
+        ], 200);
     }
-    public function getUser($id, Request $request)
+    public function getUser($id)
     {
-
-        $users = User::find($id);
-        if ($users) {
-            $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
-        }
-        return $users ?
-            response()->json([
+        $check = User::where('id', $id)
+            ->where('id', Auth::user()->id)->first();
+        if (Gate::allows('view/id')) {
+            $users = User::find($id);
+            if ($users) {
+                $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
+            }
+            $response =  $users ?
+                response()->json([
+                    'status' => true,
+                    'message' => 'Lấy thông tin user thành công',
+                    'data' => $users
+                ], 200) :
+                response()->json([
+                    'status' => false,
+                    'message' => 'Không tìm thấy user',
+                ], 404);
+        } else {
+            if ($check) {
+                $users = User::find($check->id);
+                $users->load('userinfo', 'phongban_userinfo', 'chucvu_userinfo');
+            }
+            $response = response()->json([
                 'status' => true,
                 'message' => 'Lấy thông tin user thành công',
                 'data' => $users
-            ], 200) :
-            response()->json([
-                'status' => false,
-                'message' => 'Không tìm thấy user',
-            ], 404);
+            ], 200);
+        }
+        return $response;
     }
     public function addSaveUser(Request $request)
     {
+
         if (Gate::allows('create')) {
             $users = new User();
             $users->user_account = $request->user_account;
@@ -238,31 +247,33 @@ class UserController extends Controller
             'data' => $list
         ]);
     }
-    // public function forget_password(Request $request)
-    // {
-    //     $email = $request->email;
-    //     $check = User::where('email', $email)->first();
-    //     if ($check) {
-    //         $to_name = $check->user_account;
-    //         $to_email = $check->email;
-    //         $code = session()->get('code');
-    //         $code = Hash::make(123456);
-    //         session()->put('code', $code);
-    //         // $data = array('name' => $to_name, 'body' => 'Đây là mã xác nhận lại mật khẩu của bạn' . $code);
-    //         // Mail::send('emails.mail', $data, function ($message) use ($to_name, $to_email) {
-    //         //     $message->to($to_email, $to_name)->subject('Mã xác nhận quên mất khẩu');
-    //         //     $message->from('tuantong.datus@gmail.com');
-    //         // });
-    //     } else {
-    //         $response = response()->json([
-    //             'status' => false,
-    //             'message' => 'Không tìm thấy email',
-    //         ]);
-    //     }
-    // }
-    // public function password_new()
-    // {
-    //     $x = session()->get('code');
-    //     dd($x);
-    // }
+    public function forget_password(Request $request)
+    {
+        $email = $request->email;
+        $check = User::where('email', $email)->orWhere('user_account', $email)->first();
+        if ($check) {
+            $to_name = $check->user_account;
+            $to_email = $check->email;
+            $random = Str::random(10);
+            $password = strtolower($random);
+            $user = User::find($check->id);
+            $user->password = Hash::make($password);
+            $user->save();
+            $data = array('name' => $to_name, 'body' => 'Mật khẩu mới của bạn là:' . $password . ' .Ghi nhớ nhé não cá vàng :)');
+            Mail::send('emails.mail', $data, function ($message) use ($to_name, $to_email) {
+                $message->to($to_email, $to_name)->subject('Mã xác nhận quên mất khẩu');
+                $message->from('tuantong.datus@gmail.com');
+            });
+            $response = response()->json([
+                'status' => true,
+                'message' => 'Lấy dữ liệu thành công',
+            ]);
+        } else {
+            $response = response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy email',
+            ]);
+        }
+        return $response;
+    }
 }
