@@ -79,6 +79,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/', [LuongController::class, 'getAll'])->name('getAll');
         Route::get('getdetail/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
         Route::post('tinhluong', [LuongController::class, 'tinhluong'])->name('tinhluong');
+        Route::get('getSalaryByUser', [LuongController::class, 'getSalaryByUser'])->name('getSalaryByUser');
+        Route::post('tra_luong', [LuongController::class, 'tra_luong'])->name('tra_luong');
     });
     Route::group(['prefix' => 'lichxinnghi'], function () {
         Route::get('/', [CalendarLeaveController::class, 'getAll'])->name('getAll');

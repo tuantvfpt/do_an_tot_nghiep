@@ -19,12 +19,12 @@ class LuongController extends Controller
 {
     public function getAll(Request $request)
     {
-        $luong = TongThuNhap::select('total_salary.*', 'user_info.full_name')
-            ->Join('users', 'total_salary.user_id', '=', 'users.id')
-            ->join('user_info', 'users.id', '=', 'user_info.user_id')
-            ->where('total_salary.deleted_at', null);
-        if (!Gate::allows('view')) {
-            $luong->where('total_salary.user_id', Auth::user()->id);
+
+        if (Gate::allows('view')) {
+            $luong = TongThuNhap::select('total_salary.*', 'user_info.full_name')
+                ->Join('users', 'total_salary.user_id', '=', 'users.id')
+                ->join('user_info', 'users.id', '=', 'user_info.user_id')
+                ->where('total_salary.deleted_at', null);
             if (!empty($request->keyword)) {
                 $luong =  $luong->Where(function ($query) use ($request) {
                     $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
@@ -33,18 +33,24 @@ class LuongController extends Controller
             if (!empty($request->date)) {
                 $luong =  $luong->where('date', $request->date);
             }
+            $luong = $luong->paginate(($request->limit != null) ? $request->limit : 10);
+            $response =  response()->json([
+                'status' => true,
+                'message' => 'Lấy danh sách lương thành công thành công',
+                'data' => $luong->items(),
+                'meta' => [
+                    'total'      => $luong->total(),
+                    'perPage'    => $luong->perPage(),
+                    'currentPage' => $luong->currentPage()
+                ]
+            ])->setStatusCode(200);
+        } else {
+            $response = response()->json([
+                'status' => true,
+                'message' => 'Không có quyền truy cập',
+            ]);
         }
-        $luong = $luong->paginate(($request->limit != null) ? $request->limit : 10);
-        return response()->json([
-            'status' => true,
-            'message' => 'Lấy danh sách lương thành công thành công',
-            'data' => $luong->items(),
-            'meta' => [
-                'total'      => $luong->total(),
-                'perPage'    => $luong->perPage(),
-                'currentPage' => $luong->currentPage()
-            ]
-        ])->setStatusCode(200);
+        return $response;
     }
     public function getdetail($id)
     {
@@ -95,6 +101,41 @@ class LuongController extends Controller
             ])->setStatusCode(404);
         }
         return  $response;
+    }
+    public function getSalaryByUser(Request $request)
+    {
+        $luong = TongThuNhap::select('total_salary.*', 'user_info.full_name')
+            ->Join('users', 'total_salary.user_id', '=', 'users.id')
+            ->join('user_info', 'users.id', '=', 'user_info.user_id')
+            ->where('total_salary.deleted_at', null)
+            ->where('total_salary.user_id', Auth::user()->id);
+        if (!empty($request->keyword)) {
+            $luong =  $luong->Where(function ($query) use ($request) {
+                $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
+            });
+        }
+        if (!empty($request->date)) {
+            $luong =  $luong->where('date', $request->date);
+        }
+        $luong = $luong->paginate(($request->limit != null) ? $request->limit : 10);
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách lương thành công thành công',
+            'data' => $luong->items(),
+            'meta' => [
+                'total'      => $luong->total(),
+                'perPage'    => $luong->perPage(),
+                'currentPage' => $luong->currentPage()
+            ]
+        ])->setStatusCode(200);
+    }
+    public function tra_luong($id)
+    {
+        $luong = LichChamCong::find($id);
+        if ($luong) {
+            $luong->status = 1;
+        }
+        $luong->save();
     }
 
 
