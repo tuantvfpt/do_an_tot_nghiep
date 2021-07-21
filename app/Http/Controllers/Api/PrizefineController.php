@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class PrizefineController extends Controller
 {
@@ -53,7 +55,19 @@ class PrizefineController extends Controller
     }
     public function create(Request $request)
     {
+
         if (Gate::allows('create')) {
+            $validator = Validator::make(
+                $request->all(),
+                ['name' => 'required'],
+
+            );
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()
+                ], 400);
+            }
             $prize_fine_money = new Prize;
             if ($request->thuong) {
                 $prize_fine_money->name = $request->name;
@@ -90,7 +104,19 @@ class PrizefineController extends Controller
     }
     public function update($id, Request $request)
     {
+
         if (Gate::allows('update')) {
+            $validator = Validator::make(
+                $request->all(),
+                ['name' => 'required'],
+
+            );
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()
+                ], 400);
+            }
             $prize_fine_money = Prize::find($id);
             if ($prize_fine_money) {
                 $prize_fine_money->name = $request->name;

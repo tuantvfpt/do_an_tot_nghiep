@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Validator;
 
 class LichChamCongController extends Controller
 {
@@ -22,6 +23,12 @@ class LichChamCongController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    protected $validate = [
+        'time_of_check_in' => 'required',
+        'time_of_check_out' => 'required',
+        'date_of_work' => 'required',
+        'user_id' => 'required',
+    ];
     public function getAll(Request $request)
     {
         $lich_cham_cong = LichChamCong::select('time_keep_calendar.*', 'user_info.full_name')
@@ -134,6 +141,16 @@ class LichChamCongController extends Controller
     public function create(Request $request)
     {
         if (Gate::allows('create')) {
+            $validator = Validator::make(
+                $request->all(),
+                $this->validate
+            );
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()
+                ], 400);
+            }
             $lich_cham_cong = new LichChamCong();
             $lich_cham_cong->time_of_check_in = $request->time_of_check_in;
             $lich_cham_cong->time_of_check_out = $request->time_of_check_out;
@@ -161,30 +178,39 @@ class LichChamCongController extends Controller
     public function update($id, Request $request)
     {
         if (Gate::allows('create')) {
-            $lich_cham_cong = LichChamCong::find($id);
-            if ($lich_cham_cong) {
-                $lich_cham_cong->time_of_check_in = $request->time_of_check_in;
-                $lich_cham_cong->time_of_check_out = $request->time_of_check_out;
-                $lich_cham_cong->date_of_work = $request->date_of_work;
-                $lich_cham_cong->user_id = $request->user_id;
-                $lich_cham_cong->status = 1;
-                $lich_cham_cong->note = "Hr đã sửa ngày công cho bạn";
-                $lich_cham_cong->save();
-                $response = $lich_cham_cong ? response()->json([
-                    'status' => true,
-                    'message' => 'Sửa lịch châm công thành công',
-                    'data' => $lich_cham_cong
-                ])->setStatusCode(200) : response()->json([
+            $validator = Validator::make(
+                $request->all(),
+                $this->validate
+            );
+            if ($validator->fails()) {
+                return response()->json([
                     'status' => false,
-                    'message' => 'Sửa lịch châm công thấy bại',
-                ])->setStatusCode(404);
-            } else {
-                $response = response()->json([
-                    'status' => false,
-                    'message' => "Bạn không có quyền truy cập",
-                ])->setStatusCode(404);
+                    'message' => $validator->errors()
+                ], 400);
             }
+            $lich_cham_cong = LichChamCong::find($id);
+            $lich_cham_cong->time_of_check_in = $request->time_of_check_in;
+            $lich_cham_cong->time_of_check_out = $request->time_of_check_out;
+            $lich_cham_cong->date_of_work = $request->date_of_work;
+            $lich_cham_cong->user_id = $request->user_id;
+            $lich_cham_cong->status = 1;
+            $lich_cham_cong->note = "Hr đã sửa ngày công cho bạn";
+            $lich_cham_cong->save();
+            $response = $lich_cham_cong ? response()->json([
+                'status' => true,
+                'message' => 'Sửa lịch châm công thành công',
+                'data' => $lich_cham_cong
+            ])->setStatusCode(200) : response()->json([
+                'status' => false,
+                'message' => 'Sửa lịch châm công thấy bại',
+            ])->setStatusCode(404);
+        } else {
+            $response = response()->json([
+                'status' => false,
+                'message' => "Bạn không có quyền truy cập",
+            ])->setStatusCode(404);
         }
+
         return $response;
     }
     // update ot của nhân viên

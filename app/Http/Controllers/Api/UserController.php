@@ -17,10 +17,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+    protected $validate_user = [
+        'user_account' => 'required|unique:users,user_account,',
+        'email' => 'required|unique:users,email',
+        'full_name' => 'required',
+        'position_id' => 'required',
+        'department_id' => 'required',
+        'password' => 'required',
+        'role_id' => 'required',
+    ];
     public function __construct(User $users)
     {
         $this->users = $users;
@@ -90,9 +101,16 @@ class UserController extends Controller
         }
         return $response;
     }
+
     public function addSaveUser(Request $request)
     {
-
+        $validator = Validator::make($request->all(), $this->validate_user);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()
+            ], 400);
+        }
         if (Gate::allows('create')) {
             $users = new User();
             $users->user_account = $request->user_account;
@@ -144,24 +162,56 @@ class UserController extends Controller
     public function update($id, Request $request)
     {
         if (Gate::allows('update')) {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'user_account' =>
+                    [
+                        'required',
+                        Rule::unique('users')->ignore($request->id),
+                    ],
+                    'email' => Rule::unique('users')->ignore($request->id),
+
+                    'email' => 'required',
+                    'full_name' => 'required',
+                    'position_id' => 'required',
+                    'department_id' => 'required',
+                ]
+            );
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()
+                ], 400);
+            }
             $users = User::find($id);
-            if (isset($users)) {
+            $users->position_id = $request->position_id;
+            $users->department_id = $request->department_id;
+            $users->role_id = $request->role_id;
+            $users->save();
+            if ($users) {
                 $userinfo = userInfo::where('user_id', $users->id)->first();
+                $userinfo = userInfo::find($userinfo->id);
+                $userinfo->basic_salary = $request->basic_salary;
                 $userinfo->full_name = $request->full_name;
+                $userinfo->sex = $request->sex;
+                $userinfo->address = $request->address;
+                $userinfo->id_card = $request->id_card;
                 $userinfo->phone = $request->phone;
+                $userinfo->marital_status = $request->marital_status;
                 if ($request->hasFile('avatar')) {
                     $file = $request->file('avatar');
                     $newname = rand() . '.' . $file->getClientOriginalExtension();
                     $file->move("images", $newname);
                     $userinfo->avatar = "images/" . $newname;
                 }
-                $userinfo->save();
             }
-            $response =   $userinfo ?
+            $users->save();
+            $response =   $users || $userinfo  ?
                 response()->json([
                     'status' => true,
                     'message' => 'Sửa user thành công',
-                    'data' => $userinfo
+                    'data' => $userinfo, $users
                 ], 200) :
                 response()->json([
                     'status' => false,
@@ -169,8 +219,8 @@ class UserController extends Controller
                 ], 404);
         } else {
             $response =  response()->json([
-                'status' => false,
-                'message' => 'Bạn không được phép',
+                'status' => true,
+                'message' => 'Không có quyền truy cập',
             ], 403);
         }
         return $response;
@@ -241,6 +291,15 @@ class UserController extends Controller
         $check = User::where('id', Auth::user()->id)->where('role_id', 4)->first();
         $list = User::where('department_id', $check->department_id)->get();
         $list->load('userinfo');
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $list
+        ]);
+    }
+    public function ListAll()
+    {
+        $list = User::all();
         return response()->json([
             'status' => true,
             'message' => 'Lấy dữ liệu thành công',

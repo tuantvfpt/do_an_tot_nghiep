@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\phongban;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Validator;
 
 class PhongBanController extends Controller
 {
+    protected $validate_phongban = [
+        'name' => 'required',
+    ];
     public function getAll()
     {
         if (Gate::allows('view')) {
@@ -30,7 +34,6 @@ class PhongBanController extends Controller
     {
         if (Gate::allows('view/id')) {
             $phongban = phongban::find($id);
-            $a = $phongban->phongban_userinfo;
             if ($phongban) {
                 $phongban->load('phongban');
             }
@@ -49,7 +52,18 @@ class PhongBanController extends Controller
     }
     public function addSave(Request $request)
     {
+
         if (Gate::allows('create')) {
+            $validator = Validator::make(
+                $request->all(),
+                $this->validate_phongban
+            );
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()
+                ], 400);
+            }
             $phongban = new phongban();
             $phongban->name = $request->name;
             $phongban->save();
@@ -72,7 +86,18 @@ class PhongBanController extends Controller
 
     public function update($id, Request $request)
     {
+
         if (Gate::allows('update')) {
+            $validator = Validator::make(
+                $request->all(),
+                $this->validate_phongban
+            );
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()
+                ], 400);
+            }
             $phongban = phongban::find($id);
             if ($phongban) {
                 $phongban->name = $request->name;

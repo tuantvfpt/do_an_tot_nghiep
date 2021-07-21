@@ -15,10 +15,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class CalendarLeaveController extends Controller
 {
     //
+    protected $validate = [
+        'time_start' => 'required',
+        'time_end' => 'required',
+        'note' => 'required',
+    ];
     public function getAll(Request $request)
     {
         $lich_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
@@ -126,6 +132,16 @@ class CalendarLeaveController extends Controller
     }
     public function create(Request $request)
     {
+        $validator = Validator::make(
+            $request->all(),
+            $this->validate
+        );
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()
+            ], 400);
+        }
         $today = Carbon::now()->toDateString();
         $user_id = Auth::user()->id;
         $check = Calendar_leave::where('date', $today)->where('user_id', $user_id)->first();

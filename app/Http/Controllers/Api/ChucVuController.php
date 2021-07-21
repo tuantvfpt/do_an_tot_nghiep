@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\chucvu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Validator;
 
 class ChucVuController extends Controller
 {
+    protected $validate_chucvu = [
+        'name' => 'required',
+    ];
     public function getAll()
     {
         if (Gate::allows('view')) {
@@ -53,6 +57,16 @@ class ChucVuController extends Controller
     }
     public function addSave(Request $request)
     {
+        $validator = Validator::make(
+            $request->all(),
+            $this->validate_chucvu
+        );
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()
+            ], 400);
+        }
         if (Gate::allows('create')) {
             $chucvu = new chucvu();
             $chucvu->name = $request->name;
@@ -78,6 +92,16 @@ class ChucVuController extends Controller
 
     public function update($id, Request $request)
     {
+        $validator = Validator::make(
+            $request->all(),
+            $this->validate_chucvu
+        );
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()
+            ], 400);
+        }
         if (Gate::allows('update')) {
             $chucvu = chucvu::find($id);
             if ($chucvu) {
