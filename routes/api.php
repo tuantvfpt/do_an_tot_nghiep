@@ -90,6 +90,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
         // Route::post('update_day', [CalendarLeaveController::class, 'update_day'])->name('update_day');
         Route::get('total_day', [CalendarLeaveController::class, 'get_company_leave'])->name('get_company_leave');
+        Route::get('update_leave', [CalendarLeaveController::class, 'update_calenda'])->name('update_calenda');
     });
     Route::group(['prefix' => 'prize_fine_money'], function () {
         Route::get('/', [PrizefineController::class, 'index'])->name('getAll');
