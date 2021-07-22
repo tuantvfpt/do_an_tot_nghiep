@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PhongBanController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PrizefineController;
+use App\Models\Calendar_leave;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,8 +38,11 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::group(['prefix' => 'dashboard'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('getdata');
-        Route::get('/show_calendar', [DashboardController::class, 'show_lich'])->name('show_lich');
-        Route::get('/get_user_late_early', [DashboardController::class, 'get_user_late_early'])->name('get_user_late_early');
+        Route::get('show_total', [DashboardController::class, 'total_user_team_work_leave'])->name('show_total');
+        Route::get('list_comfig', [DashboardController::class, 'list_comfig'])->name('list_comfig');
+        Route::post('comfig/{id}', [CalendarLeaveController::class, 'comfig'])->name('comfig');
+        Route::get('show_calendar', [DashboardController::class, 'show_lich'])->name('show_lich');
+        Route::get('get_user_late_early', [DashboardController::class, 'get_user_late_early'])->name('get_user_late_early');
     });
     Route::group(['prefix' => 'user/'], function () {
         Route::get('/', [UserController::class, 'getAll'])->name('getAllUser');
@@ -84,9 +88,8 @@ Route::group(['middleware' => 'auth'], function () {
     });
     Route::group(['prefix' => 'lichxinnghi'], function () {
         Route::get('/', [CalendarLeaveController::class, 'getAll'])->name('getAll');
-        Route::get('user_leave', [CalendarLeaveController::class, 'get_lich_nghi'])->name('get_user_leave');
-        Route::post('comfig/{id}', [CalendarLeaveController::class, 'comfig'])->name('comfig');
-        Route::get('getdetail/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
+        // Route::post('comfig/{id}', [CalendarLeaveController::class, 'comfig'])->name('comfig');
+        Route::get('getdetail/{id}', [CalendarLeaveController::class, 'getdetail'])->name('getdetail');
         Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
         // Route::post('update_day', [CalendarLeaveController::class, 'update_day'])->name('update_day');
         Route::get('total_day', [CalendarLeaveController::class, 'get_company_leave'])->name('get_company_leave');

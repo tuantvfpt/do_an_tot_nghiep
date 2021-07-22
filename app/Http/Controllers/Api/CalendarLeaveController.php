@@ -55,29 +55,7 @@ class CalendarLeaveController extends Controller
             ]
         ])->setStatusCode(200);
     }
-    public function get_lich_nghi()
-    {
-        if (Gate::allows('view')) {
-            $lich_xin_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
-                ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
-                ->join('user_info', 'users.id', '=', 'user_info.user_id')
-                ->where('calendar_for_leave.deleted_at', null)
-                ->where('status', 0)
-                ->where('date', Carbon::now()->toDateString())
-                ->get();
-            $response = response()->json([
-                'status' => true,
-                'message' => 'Lấy dữ liệu thành công',
-                'data' => $lich_xin_nghi
-            ])->setStatusCode(200);
-        } else {
-            $response = response()->json([
-                'status' => false,
-                'message' => 'Không được phép thực hiện',
-            ])->setStatusCode(404);
-        }
-        return $response;
-    }
+
     public function update_calenda($id, Request $request)
     {
         $validator = Validator::make(
@@ -123,66 +101,7 @@ class CalendarLeaveController extends Controller
         }
         return $response;
     }
-    public function comfig($id, Request $request)
-    {
-        if (Gate::allows('confirmLeave')) {
-            // $check = Calendar_leave::where('id', $id)->first();
-            $today = Carbon::now()->toDateString();
-            if (isset($request->yes)) {
-                $lich_xin_nghi = Calendar_leave::find($id);
-                $lich_xin_nghi->status = 1;
-                $lich_xin_nghi->save();
-                $mode = company_mode::where('user_id', $lich_xin_nghi->user_id)->whereYear('date', $today)->first();
-                if ($mode->total_day - $lich_xin_nghi->number_mode_leave >= 0 && ($mode->total_day_off + $lich_xin_nghi->number_mode_leave <= $mode->total_day)) {
-                    $mode_user = company_mode::find($mode->id);
-                    $mode_user->total_day_off += $lich_xin_nghi->number_mode_leave;
-                    $mode_user->date = Carbon::now();
-                    $mode_user->save();
-                }
-                $user = User::where('id', $lich_xin_nghi->user_id)->first();
-                $to_name = $user->user_account;
-                $to_email = $user->email;
-                $data = array('name' => 'Hello' . $to_name, 'body' => 'Công ty đã nhận được đơn xin nghỉ của bạn và 
-                công ty chấp nhận đơn xin nghỉ của bạn.');
-                Mail::send('emails.mail', $data, function ($message) use ($to_name, $to_email) {
-                    $message->to($to_email, $to_name)->subject('V.v nghỉ phép');
-                    $message->from('tuantong.datus@gmail.com');
-                });
-                $mess = "Đồng ý cho nghỉ";
-            } else {
-                $lich_xin_nghi = Calendar_leave::find($id);
-                if ($lich_xin_nghi) {
-                    if ($lich_xin_nghi->mode_leave == 1) {
-                        $mode_user = company_mode::where('user_id', $lich_xin_nghi->user_id)->first();
-                        $mode_user = company_mode::find($mode_user->id);
-                        $mode_user->total_day_off = $mode_user->total_day_off - $lich_xin_nghi->number_mode_leave;
-                        $mode_user->save();
-                    }
-                    $user = User::where('id', $lich_xin_nghi->user_id)->first();
-                    $to_name = $user->user_account;
-                    $to_email = $user->email;
-                    $data = array('name' => $to_name, 'body' => 'Công ty đã nhận được đơn xin nghỉ của bạn và 
-                công ty không chấp nhận đơn xin nghỉ của bạn.Mong bạn thu xếp công việc và đi làm đúng giờ nhé');
-                    Mail::send('emails.mail', $data, function ($message) use ($to_name, $to_email) {
-                        $message->to($to_email, $to_name)->subject('V.v nghỉ phép');
-                        $message->from('tuantong.datus@gmail.com');
-                    });
-                    $lich_xin_nghi->delete();
-                }
-                $mess = "Không cho phép nghỉ";
-            }
-            $response = response()->json([
-                'status' => true,
-                'message' => $mess,
-            ])->setStatusCode(200);
-        } else {
-            $response = response()->json([
-                'status' => false,
-                'message' => 'Không được phép thực hiện',
-            ])->setStatusCode(404);
-        }
-        return $response;
-    }
+
     public function create(Request $request)
     {
         $validator = Validator::make(
@@ -242,6 +161,15 @@ class CalendarLeaveController extends Controller
             'status' => true,
             'message' => "Lấy tổng số ngày nghỉ nhân viên thành công",
             'data' => $get_company_leave
+        ])->setStatusCode(200);
+    }
+    public function getdetail($id)
+    {
+        $detail = Calendar_leave::find($id);
+        return  response()->json([
+            'status' => true,
+            'message' => "Lấy chi tiết lịch xin nghỉ thành công",
+            'data' => $detail
         ])->setStatusCode(200);
     }
 }
