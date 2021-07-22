@@ -10,18 +10,33 @@ use Illuminate\Support\Facades\Validator;
 
 class ChucVuController extends Controller
 {
+    public function __construct(chucvu $chucvu)
+    {
+        $this->chucvu = $chucvu;
+    }
     protected $validate_chucvu = [
         'name' => 'required',
     ];
-    public function getAll()
+    public function getAll(Request $request)
     {
         if (Gate::allows('view')) {
-            $chucvu = chucvu::all();
+            $chucvu = $this->chucvu;
+            if (!empty($request->keyword)) {
+                $chucvu =  $chucvu->Where(function ($query) use ($request) {
+                    $query->where('name', 'like', "%" . $request->keyword . "%");
+                });
+            }
+            $chucvu = $chucvu->paginate(($request->limit != null) ? $request->limit : 10);
             $response =  response()->json([
                 'status' => true,
-                'message' => 'Lấy danh sách chức vụ thành công',
-                'data' => $chucvu
-            ])->setStatusCode(200);
+                'message' => 'Lấy danh sách phòng ban thành công',
+                'data' => $chucvu->items(),
+                'meta' => [
+                    'total'      => $chucvu->total(),
+                    'perPage'    => $chucvu->perPage(),
+                    'currentPage' => $chucvu->currentPage()
+                ]
+            ], 200);
         } else {
             $response =  response()->json([
                 'status' => false,

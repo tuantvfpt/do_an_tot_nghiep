@@ -20,7 +20,7 @@ class insertdatabase extends Seeder
     public function run()
     {
         //
-        DB::table('tax')->insert([
+        DB::table('Tax')->insert([
             [
                 'Tax_bracket' => 'Bậc I',
                 'Taxable_income' => 5000000,
@@ -151,9 +151,7 @@ class insertdatabase extends Seeder
                 $user_info->basic_salary = 8000000;
                 $user_info->code_QR = $model->user_account . $model->id;
                 $user_info->save();
-                
             }
-            
         }
     }
 }

@@ -23,6 +23,7 @@ class CreateUserInfo extends Migration
             $table->dateTime('date_of_join')->nullable();
             $table->float('basic_salary', 11, 2)->nullable();
             $table->string('code_QR')->nullable();
+            $table->string('sex')->nullable();
             $table->string('address')->nullable();
             $table->string('marital_status')->nullable();
             $table->string('id_card')->nullable();

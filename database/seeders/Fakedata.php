@@ -23,9 +23,9 @@ class Fakedata extends Seeder
         //         'status' => 1,
         //         'user_id' => rand(1, 3)
         //     ];
-        //     DB::table('time_keep_calendar')->insert($item);
+        //     DB::table('Time_keep_Calendar')->insert($item);
         // }
-        // for ($i = 31; $i < 52; $i++) {
+        // for ($i = 4; $i < 50; $i++) {
         //     $item = [
         //         'user_account' => "NhanVien$i",
         //         'role_id' => "3",
@@ -36,7 +36,7 @@ class Fakedata extends Seeder
         //     ];
         //     DB::table('users')->insert($item);
         // }
-        for ($i = 31; $i < 52; $i++) {
+        for ($i = 4; $i < 50; $i++) {
             $item = [
                 'user_id' => "$i",
                 'full_name' => "Nguyễn Thị Nhân Viên $i",

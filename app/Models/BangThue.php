@@ -10,5 +10,5 @@ class BangThue extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $table = 'tax';
+    protected $table = 'Tax';
 }

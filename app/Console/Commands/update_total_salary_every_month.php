@@ -45,7 +45,7 @@ class update_total_salary_every_month extends Command
             ->join('user_info', 'users.id', '=', 'user_info.user_id')->get();
         foreach ($user as $user) {
             // $checkluong = userInfo::where('user_id', $user->id)->first();
-            $startmonth = Carbon::now()->startOfMonth()->toDateString();
+            $startmonth = Carbon::now()->startOfMonth ()->toDateString();
             $endmonth = Carbon::now()->endOfMonth()->toDateString();
             $tongtime = LichChamCong::where('user_id', $user->id)
                 ->where('date_of_work', '>=', $startmonth)

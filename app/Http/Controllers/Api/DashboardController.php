@@ -216,6 +216,8 @@ class DashboardController extends Controller
     {
         if (Gate::allows('confirmLeave')) {
             // $check = Calendar_leave::where('id', $id)->first();
+            $startmonth = Carbon::now()->startOfMonth()->toDateString();
+            $endmonth = Carbon::now()->endOfMonth()->toDateString();
             $today = Carbon::now()->toDateString();
             if (isset($request->yes)) {
                 $lich_xin_nghi = Calendar_leave::find($id);
@@ -228,15 +230,24 @@ class DashboardController extends Controller
                     $mode_user->date = Carbon::now();
                     $mode_user->save();
                 }
-                $user = User::where('id', $lich_xin_nghi->user_id)->first();
+                $user = User::where('users.id', $lich_xin_nghi->user_id)
+                    ->join('user_info', 'users.id', '=', 'user_info.user_id')->first();
+                $check = TongThuNhap::where('user_id', $lich_xin_nghi->user_id)
+                    ->wherebetween('date', [$startmonth, $endmonth])->first();
+                $luongcoban = $user->basic_salary;
+                $salaryOneDay = $luongcoban / 22;
+                $totalSalary_leave = $salaryOneDay * ($lich_xin_nghi->number_mode_leave);
+                $total_salary_leave = TongThuNhap::find($check->id);
+                $total_salary_leave->total_salary_leave = $totalSalary_leave;
+                $total_salary_leave->save();
                 $to_name = $user->user_account;
                 $to_email = $user->email;
-                $data = array('name' => 'Hello' . $to_name, 'body' => 'Công ty đã nhận được đơn xin nghỉ của bạn và 
-                công ty chấp nhận đơn xin nghỉ của bạn.');
-                Mail::send('emails.mail', $data, function ($message) use ($to_name, $to_email) {
-                    $message->to($to_email, $to_name)->subject('V.v nghỉ phép');
-                    $message->from('tuantong.datus@gmail.com');
-                });
+                // $data = array('name' => 'Hello' . $to_name, 'body' => 'Công ty đã nhận được đơn xin nghỉ của bạn và 
+                // công ty chấp nhận đơn xin nghỉ của bạn.');
+                // Mail::send('emails.mail', $data, function ($message) use ($to_name, $to_email) {
+                //     $message->to($to_email, $to_name)->subject('V.v nghỉ phép');
+                //     $message->from('tuantong.datus@gmail.com');
+                // });
                 $mess = "Đồng ý cho nghỉ";
             } else {
                 $lich_xin_nghi = Calendar_leave::find($id);

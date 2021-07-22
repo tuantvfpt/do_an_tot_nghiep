@@ -12,4 +12,8 @@ class Prize extends Model
     use SoftDeletes;
 
     protected $table = 'prize_fine';
+    public function get_user_name()
+    {
+        return $this->belongsTo(User::class, 'id');
+    }
 }

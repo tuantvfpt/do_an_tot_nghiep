@@ -54,12 +54,12 @@ class update_salary_every_month extends Command
         $checkthue30 = BangThue::where('Tax_percentage', 30)->first();
         $checkthue35 = BangThue::where('Tax_percentage', 35)->first();
         foreach ($getlist as $item) {
-            $total_gross_salary = $item->total_gross_salary;
+            $total_gross_salary = $item->total_gross_salary + $item->total_salary_leave;
             $prize = Prize_user::select(
                 DB::raw('prize_money,fine_money')
             )
                 ->join('prize_fine', 'prize_fine.id', '=', 'prize_fine_user.prize_fine_id')
-                ->where('user_id', 1)->wherebetween('date', [$startmonth, $endmonth])
+                ->where('user_id', $item->user_id)->wherebetween('date', [$startmonth, $endmonth])
                 ->get();
             if ($prize) {
                 foreach ($prize as $prize) {

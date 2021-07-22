@@ -31,7 +31,6 @@ class PrizefineController extends Controller
                         ->Orwhere('users.user_account', 'like', "%" . $request->keyword . "%");
                 });
             }
-            $prize_fine_money = $prize_fine_money->get();
         } else {
             $prize_fine_money->where('prize_fine_user.user_id', Auth::user()->id);
             if (!empty($request->keyword)) {
@@ -40,18 +39,35 @@ class PrizefineController extends Controller
                         ->Orwhere('users.user_account', 'like', "%" . $request->keyword . "%");
                 });
             }
-            $prize_fine_money = $prize_fine_money->get();
         }
+        $prize_fine_money = $prize_fine_money->paginate(($request->limit != null) ? $request->limit : 10);
         return $prize_fine_money ?
             response()->json([
                 'status' => true,
                 'message' => 'lấy prize_fine_money thành công',
-                'data' => $prize_fine_money
+                'data' => $prize_fine_money->items(),
+                'meta' => [
+                    'total'      => $prize_fine_money->total(),
+                    'perPage'    => $prize_fine_money->perPage(),
+                    'currentPage' => $prize_fine_money->currentPage()
+                ]
             ], 200) :
             response()->json([
                 'status' => false,
                 'message' => 'lấy prize_fine_money thất bại',
             ], 404);
+    }
+    public function getDetail($id)
+    {
+        $getdetail = Prize::select('prize_fine.*', 'users.user_account',)
+            ->Join('prize_fine_user', 'prize_fine_user.prize_fine_id', '=', 'prize_fine.id')
+            ->Join('users', 'users.id', '=', 'prize_fine_user.user_id')
+            ->where('prize_fine.id', $id)->first();
+        return response()->json([
+            'status' => false,
+            'message' => 'lấy chi tiết thành công',
+            'data' => $getdetail
+        ], 404);
     }
     public function create(Request $request)
     {

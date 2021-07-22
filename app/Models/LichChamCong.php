@@ -11,7 +11,7 @@ class LichChamCong extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $table = 'time_keep_calendar';
+    protected $table = 'Time_keep_Calendar';
     public function get_user_name()
     {
         return $this->belongsTo(User::class, 'user_id');

@@ -40,7 +40,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('getdata');
         Route::get('show_total', [DashboardController::class, 'total_user_team_work_leave'])->name('show_total');
         Route::get('list_comfig', [DashboardController::class, 'list_comfig'])->name('list_comfig');
-        Route::post('comfig/{id}', [CalendarLeaveController::class, 'comfig'])->name('comfig');
+        Route::post('comfig/{id}', [DashboardController::class, 'comfig'])->name('comfig');
         Route::get('show_calendar', [DashboardController::class, 'show_lich'])->name('show_lich');
         Route::get('get_user_late_early', [DashboardController::class, 'get_user_late_early'])->name('get_user_late_early');
     });
@@ -97,6 +97,7 @@ Route::group(['middleware' => 'auth'], function () {
     });
     Route::group(['prefix' => 'prize_fine_money'], function () {
         Route::get('/', [PrizefineController::class, 'index'])->name('getAll');
+        Route::get('getdetail/{id}', [PrizefineController::class, 'getdetail'])->name('getdetail');
         Route::post('create', [PrizefineController::class, 'create'])->name('create');
         Route::post('update/{id}', [PrizefineController::class, 'update'])->name('update');
         Route::post('delete/{id}', [PrizefineController::class, 'delete'])->name('delete');

@@ -10,17 +10,32 @@ use Illuminate\Support\Facades\Validator;
 
 class PhongBanController extends Controller
 {
+    public function __construct(phongban $phongban)
+    {
+        $this->phongban = $phongban;
+    }
     protected $validate_phongban = [
         'name' => 'required',
     ];
-    public function getAll()
+    public function getAll(Request $request)
     {
         if (Gate::allows('view')) {
-            $phongban = phongban::all();
+            $phongban = $this->phongban;
+            if (!empty($request->keyword)) {
+                $phongban =  $phongban->Where(function ($query) use ($request) {
+                    $query->where('name', 'like', "%" . $request->keyword . "%");
+                });
+            }
+            $phongban = $phongban->paginate(($request->limit != null) ? $request->limit : 10);
             $response =  response()->json([
                 'status' => true,
                 'message' => 'Lấy danh sách phòng ban thành công',
-                'data' => $phongban
+                'data' => $phongban->items(),
+                'meta' => [
+                    'total'      => $phongban->total(),
+                    'perPage'    => $phongban->perPage(),
+                    'currentPage' => $phongban->currentPage()
+                ]
             ], 200);
         } else {
             $response =  response()->json([

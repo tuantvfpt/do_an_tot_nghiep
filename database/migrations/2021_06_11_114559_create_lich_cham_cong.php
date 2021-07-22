@@ -20,6 +20,7 @@ class CreateLichChamCong extends Migration
             $table->Time('time_of_check_in');
             $table->Time('time_of_check_out');
             $table->date('date_of_work');
+            $table->integer('check_ot')->nullable();
             $table->integer('status')->nullable();
             $table->string('note')->nullable();
             $table->timestamps();
