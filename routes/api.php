@@ -9,7 +9,6 @@ use App\Http\Controllers\Api\PhongBanController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PrizefineController;
-use App\Models\Calendar_leave;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -77,6 +76,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('update_OT', [LichChamCongController::class, 'update_OT'])->name('update_OT');
         Route::get('/getListByUser', [LichChamCongController::class, 'getListByUser'])->name('getListByUser');
         Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
+        Route::get('/getListOt', [LichChamCongController::class, 'list_OT'])->name('getListOt');
         // Route::post('total_gross_salary', [LichChamCongController::class, 'total_gross_salary'])->name('total_gross_salary');
     });
     Route::group(['prefix' => 'luong'], function () {
@@ -94,6 +94,7 @@ Route::group(['middleware' => 'auth'], function () {
         // Route::post('update_day', [CalendarLeaveController::class, 'update_day'])->name('update_day');
         Route::get('total_day', [CalendarLeaveController::class, 'get_company_leave'])->name('get_company_leave');
         Route::post('update_leave/{id}', [CalendarLeaveController::class, 'update_calenda'])->name('update_calenda');
+        Route::get('/getAllByUser', [CalendarLeaveController::class, 'getAllByUser'])->name('getAllByUser');
     });
     Route::group(['prefix' => 'prize_fine_money'], function () {
         Route::get('/', [PrizefineController::class, 'index'])->name('getAll');

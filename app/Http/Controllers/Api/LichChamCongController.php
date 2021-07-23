@@ -31,10 +31,10 @@ class LichChamCongController extends Controller
     ];
     public function getAll(Request $request)
     {
-        $lich_cham_cong = LichChamCong::select('time_keep_calendar.*', 'user_info.full_name')
-            ->Join('users', 'time_keep_calendar.user_id', '=', 'users.id')
+        $lich_cham_cong = LichChamCong::select('Time_keep_Calendar.*', 'user_info.full_name')
+            ->Join('users', 'Time_keep_Calendar.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
-            ->where('time_keep_calendar.deleted_at', null);
+            ->where('Time_keep_Calendar.deleted_at', null);
         if (Gate::allows('view')) {
             if (!empty($request->keyword)) {
                 $lich_cham_cong =  $lich_cham_cong->Where(function ($query) use ($request) {
@@ -264,6 +264,37 @@ class LichChamCongController extends Controller
                 'total'      => $lich_cham_cong->total(),
                 'perPage'    => $lich_cham_cong->perPage(),
                 'currentPage' => $lich_cham_cong->currentPage()
+            ]
+        ])->setStatusCode(200);
+    }
+    public function list_OT(Request $request)
+    {
+        $list_OT = LichChamCong::select('Time_keep_Calendar.*', 'user_info.full_name')
+            ->Join('users', 'Time_keep_Calendar.user_id', '=', 'users.id')
+            ->join('user_info', 'users.id', '=', 'user_info.user_id')
+            ->where('Time_keep_Calendar.deleted_at', null)
+            ->where('check_ot', 1);
+        if (Gate::allows('view')) {
+            if (!empty($request->keyword)) {
+                $list_OT =  $list_OT->Where(function ($query) use ($request) {
+                    $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
+                });
+            }
+            if (!empty($request->date)) {
+                $list_OT =  $list_OT->whereMonth('date_of_work', date('m', strtotime($request->date)));
+            }
+        } else {
+            $list_OT =  $list_OT->where('Time_keep_Calendar.user_id', Auth::user()->id);
+        }
+        $list_OT = $list_OT->paginate(($request->limit != null) ? $request->limit : 10);
+        return  response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách chấm công thành công',
+            'data' => $list_OT->items(),
+            'meta' => [
+                'total'      => $list_OT->total(),
+                'perPage'    => $list_OT->perPage(),
+                'currentPage' => $list_OT->currentPage()
             ]
         ])->setStatusCode(200);
     }

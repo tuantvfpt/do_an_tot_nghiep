@@ -27,11 +27,12 @@ class CalendarLeaveController extends Controller
     ];
     public function getAll(Request $request)
     {
-        $lich_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
-            ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
-            ->join('user_info', 'users.id', '=', 'user_info.user_id')
-            ->where('calendar_for_leave.deleted_at', null);
+
         if (Gate::allows('view')) {
+            $lich_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
+                ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
+                ->join('user_info', 'users.id', '=', 'user_info.user_id')
+                ->where('calendar_for_leave.deleted_at', null);
             if (!empty($request->keyword)) {
                 $lich_nghi =  $lich_nghi->Where(function ($query) use ($request) {
                     $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
@@ -40,11 +41,43 @@ class CalendarLeaveController extends Controller
             if (!empty($request->date)) {
                 $lich_nghi =  $lich_nghi->where('date', $request->date);
             }
+            $lich_nghi = $lich_nghi->paginate(($request->limit != null) ? $request->limit : 10);
+            $response = response()->json([
+                'status' => true,
+                'message' => 'Lấy danh sách nghỉ thành công',
+                'data' => $lich_nghi->items(),
+                'meta' => [
+                    'total'      => $lich_nghi->total(),
+                    'perPage'    => $lich_nghi->perPage(),
+                    'currentPage' => $lich_nghi->currentPage()
+                ]
+            ])->setStatusCode(200);
         } else {
-            $lich_nghi->where('calendar_for_leave.user_id', Auth::user()->id);
+            $response = response()->json([
+                'status' => false,
+                'message' => 'Không có quyền truy cập',
+            ], 404);
+        }
+        return  $response;
+    }
+    public function GetAllByUser(Request $request)
+    {
+
+        $lich_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
+            ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
+            ->join('user_info', 'users.id', '=', 'user_info.user_id')
+            ->where('calendar_for_leave.deleted_at', null)
+            ->where('calendar_for_leave.user_id', Auth::user()->id);
+        if (!empty($request->keyword)) {
+            $lich_nghi =  $lich_nghi->Where(function ($query) use ($request) {
+                $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
+            });
+        }
+        if (!empty($request->date)) {
+            $lich_nghi =  $lich_nghi->where('date', $request->date);
         }
         $lich_nghi = $lich_nghi->paginate(($request->limit != null) ? $request->limit : 10);
-        return  response()->json([
+        return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách nghỉ thành công',
             'data' => $lich_nghi->items(),
