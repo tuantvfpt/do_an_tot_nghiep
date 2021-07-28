@@ -13,14 +13,13 @@ class CreateBangThue extends Migration
      */
     public function up()
     {
-        Schema::create('Tax', function (Blueprint $table) {
+        Schema::create('tax', function (Blueprint $table) {
             $table->id();
-            $table->string('Tax_bracket')->nullable();
-            $table->float('Taxable_income', 11, 2)->nullable();
-            $table->integer('Tax_percentage')->nullable();
+            $table->string('tax_bracket')->nullable();
+            $table->float('taxable_income', 11, 2)->nullable();
+            $table->integer('tax_percentage')->nullable();
             $table->timestamps();
             $table->softDeletes();
-
         });
     }
 

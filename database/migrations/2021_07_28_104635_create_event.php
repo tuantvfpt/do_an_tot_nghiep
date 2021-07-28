@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLichChamCong extends Migration
+class CreateEvent extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,14 @@ class CreateLichChamCong extends Migration
      */
     public function up()
     {
-        Schema::create('time_keep_calendar', function (Blueprint $table) {
+        Schema::create('event', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->Time('time_of_check_in');
-            $table->Time('time_of_check_out');
-            $table->date('date_of_work');
-            $table->integer('check_ot')->nullable();
-            $table->integer('status')->nullable();
-            $table->string('note')->nullable();
+            $table->string('title')->nullable();
+            $table->string('content')->nullable();
+            $table->date('date');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -35,6 +31,6 @@ class CreateLichChamCong extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lich_cham_cong');
+        Schema::dropIfExists('event');
     }
 }

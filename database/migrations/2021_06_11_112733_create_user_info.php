@@ -20,7 +20,7 @@ class CreateUserInfo extends Migration
             $table->string('full_name');
             $table->string('phone')->nullable();
             $table->string('avatar')->nullable();
-            $table->dateTime('date_of_join')->nullable();
+            $table->date('date_of_join')->nullable();
             $table->float('basic_salary', 11, 2)->nullable();
             $table->string('code_QR')->nullable();
             $table->string('sex')->nullable();

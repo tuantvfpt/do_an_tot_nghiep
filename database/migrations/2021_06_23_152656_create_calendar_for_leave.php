@@ -17,8 +17,8 @@ class CreateCalendarForLeave extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->dateTime('time_start')->nullable();
-            $table->dateTime('time_end')->nullable();
+            $table->date('time_start')->nullable();
+            $table->date('time_end')->nullable();
             $table->date('date')->nullable();
             $table->string('note')->nullable();
             $table->integer('mode_leave')->nullable();

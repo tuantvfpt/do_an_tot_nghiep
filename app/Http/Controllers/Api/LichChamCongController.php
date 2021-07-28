@@ -31,10 +31,10 @@ class LichChamCongController extends Controller
     ];
     public function getAll(Request $request)
     {
-        $lich_cham_cong = LichChamCong::select('Time_keep_Calendar.*', 'user_info.full_name')
-            ->Join('users', 'Time_keep_Calendar.user_id', '=', 'users.id')
+        $lich_cham_cong = LichChamCong::select('time_keep_calendar.*', 'user_info.full_name')
+            ->Join('users', 'time_keep_calendar.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
-            ->where('Time_keep_Calendar.deleted_at', null);
+            ->where('time_keep_calendar.deleted_at', null);
         if (Gate::allows('view')) {
             if (!empty($request->keyword)) {
                 $lich_cham_cong =  $lich_cham_cong->Where(function ($query) use ($request) {
@@ -241,11 +241,11 @@ class LichChamCongController extends Controller
     }
     public function getListByUser(Request $request)
     {
-        $lich_cham_cong = LichChamCong::select('Time_keep_Calendar.*', 'user_info.full_name')
-            ->Join('users', 'Time_keep_Calendar.user_id', '=', 'users.id')
+        $lich_cham_cong = LichChamCong::select('time_keep_calendar.*', 'user_info.full_name')
+            ->Join('users', 'time_keep_calendar.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
-            ->where('Time_keep_Calendar.deleted_at', null)
-            ->where('Time_keep_Calendar.user_id', Auth::user()->id);
+            ->where('time_keep_calendar.deleted_at', null)
+            ->where('time_keep_calendar.user_id', Auth::user()->id);
         if (!empty($request->keyword)) {
             $lich_cham_cong =  $lich_cham_cong->Where(function ($query) use ($request) {
                 $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
@@ -268,10 +268,10 @@ class LichChamCongController extends Controller
     }
     public function list_OT(Request $request)
     {
-        $list_OT = LichChamCong::select('Time_keep_Calendar.*', 'user_info.full_name')
-            ->Join('users', 'Time_keep_Calendar.user_id', '=', 'users.id')
+        $list_OT = LichChamCong::select('time_keep_calendar.*', 'user_info.full_name')
+            ->Join('users', 'time_keep_calendar.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
-            ->where('Time_keep_Calendar.deleted_at', null)
+            ->where('time_keep_calendar.deleted_at', null)
             ->where('check_ot', 1);
         if (Gate::allows('view')) {
             if (!empty($request->keyword)) {
@@ -283,7 +283,7 @@ class LichChamCongController extends Controller
                 $list_OT =  $list_OT->whereMonth('date_of_work', date('m', strtotime($request->date)));
             }
         } else {
-            $list_OT =  $list_OT->where('Time_keep_Calendar.user_id', Auth::user()->id);
+            $list_OT =  $list_OT->where('time_keep_calendar.user_id', Auth::user()->id);
         }
         $list_OT = $list_OT->paginate(($request->limit != null) ? $request->limit : 10);
         return  response()->json([

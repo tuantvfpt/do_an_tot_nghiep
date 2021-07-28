@@ -46,13 +46,13 @@ class update_salary_every_month extends Command
         $startmonth = Carbon::now()->startOfMonth()->toDateString();
         $endmonth = Carbon::now()->endOfMonth()->toDateString();
         $getlist = TongThuNhap::wherebetween('date', [$startmonth, $endmonth])->get();
-        $checkthue5 = BangThue::where('Tax_percentage', 5)->first();
-        $checkthue10 = BangThue::where('Tax_percentage', 10)->first();
-        $checkthue15 = BangThue::where('Tax_percentage', 15)->first();
-        $checkthue20 = BangThue::where('Tax_percentage', 20)->first();
-        $checkthue25 = BangThue::where('Tax_percentage', 25)->first();
-        $checkthue30 = BangThue::where('Tax_percentage', 30)->first();
-        $checkthue35 = BangThue::where('Tax_percentage', 35)->first();
+        $checkthue5 = BangThue::where('tax_percentage', 5)->first();
+        $checkthue10 = BangThue::where('tax_percentage', 10)->first();
+        $checkthue15 = BangThue::where('tax_percentage', 15)->first();
+        $checkthue20 = BangThue::where('tax_percentage', 20)->first();
+        $checkthue25 = BangThue::where('tax_percentage', 25)->first();
+        $checkthue30 = BangThue::where('tax_percentage', 30)->first();
+        $checkthue35 = BangThue::where('tax_percentage', 35)->first();
         foreach ($getlist as $item) {
             $total_gross_salary = $item->total_gross_salary + $item->total_salary_leave;
             $prize = Prize_user::select(

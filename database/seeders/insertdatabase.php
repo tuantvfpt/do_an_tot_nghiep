@@ -20,41 +20,41 @@ class insertdatabase extends Seeder
     public function run()
     {
         //
-        DB::table('Tax')->insert([
+        DB::table('tax')->insert([
             [
-                'Tax_bracket' => 'Bậc I',
-                'Taxable_income' => 5000000,
-                'Tax_percentage' => 5
+                'tax_bracket' => 'Bậc I',
+                'taxable_income' => 5000000,
+                'tax_percentage' => 5
             ],
             [
-                'Tax_bracket' => 'Bậc II',
-                'Taxable_income' => 10000000,
-                'Tax_percentage' => 10
+                'tax_bracket' => 'Bậc II',
+                'taxable_income' => 10000000,
+                'tax_percentage' => 10
             ],
             [
-                'Tax_bracket' => 'Bậc III',
-                'Taxable_income' => 18000000,
-                'Tax_percentage' => 15
+                'tax_bracket' => 'Bậc III',
+                'taxable_income' => 18000000,
+                'tax_percentage' => 15
             ],
             [
-                'Tax_bracket' => 'Bậc IV',
-                'Taxable_income' => 32000000,
-                'Tax_percentage' => 20
+                'tax_bracket' => 'Bậc IV',
+                'taxable_income' => 32000000,
+                'tax_percentage' => 20
             ],
             [
-                'Tax_bracket' => 'Bậc V',
-                'Taxable_income' => 52000000,
-                'Tax_percentage' => 25
+                'tax_bracket' => 'Bậc V',
+                'taxable_income' => 52000000,
+                'tax_percentage' => 25
             ],
             [
-                'Tax_bracket' => 'Bậc VI',
-                'Taxable_income' => 80000000,
-                'Tax_percentage' => 30
+                'tax_bracket' => 'Bậc VI',
+                'taxable_income' => 80000000,
+                'tax_percentage' => 30
             ],
             [
-                'Tax_bracket' => 'Bậc VII',
-                'Taxable_income' => 80000000,
-                'Tax_percentage' => 35
+                'tax_bracket' => 'Bậc VII',
+                'taxable_income' => 80000000,
+                'tax_percentage' => 35
             ],
 
         ]);
