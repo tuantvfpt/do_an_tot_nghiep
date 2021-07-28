@@ -289,13 +289,15 @@ class UserController extends Controller
     public function ListUsers()
     {
         $check = User::where('id', Auth::user()->id)->where('role_id', 4)->first();
-        $list = User::where('department_id', $check->department_id)->get();
-        $list->load('userinfo');
-        return response()->json([
-            'status' => true,
-            'message' => 'Lấy dữ liệu thành công',
-            'data' => $list
-        ]);
+        if ($check) {
+            $list = User::where('department_id', $check->department_id)->get();
+            $list->load('userinfo');
+            return response()->json([
+                'status' => true,
+                'message' => 'Lấy dữ liệu thành công',
+                'data' => $list
+            ]);
+        }
     }
     public function ListAll()
     {

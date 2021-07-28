@@ -105,24 +105,27 @@ class CalendarLeaveController extends Controller
         $dateDiff = date_diff(date_create($request->time_start), date_create($request->time_end));
         $x = $dateDiff->d;
         $calendar = Calendar_leave::find($id);
-        $calendar->user_id = Auth::user()->id;
-        $calendar->time_start = $request->time_start;
-        $calendar->time_end = $request->time_end;
-        $calendar->note = $request->note;
-        $calendar->status = 0;
-        $calendar->mode_leave = $request->mode_leave;
-        $calendar->number_day_leave = $x;
-        if ($request->mode_leave) {
-            $calendar->number_mode_leave = $request->number_day;
-        } else {
-            $calendar->number_mode_leave = 0;
+        if ($calendar) {
+            $calendar->user_id = Auth::user()->id;
+            $calendar->time_start = $request->time_start;
+            $calendar->time_end = $request->time_end;
+            $calendar->note = $request->note;
+            $calendar->status = 0;
+            $calendar->mode_leave = $request->mode_leave;
+            $calendar->number_day_leave = $x;
+            if ($request->mode_leave) {
+                $calendar->number_mode_leave = $request->number_day;
+            } else {
+                $calendar->number_mode_leave = 0;
+            }
         }
+
         $mode = company_mode::where('user_id', Auth::user()->id)->whereYear('date', $today)->first();
         if ($mode->total_day - $request->number_day >= 0 && ($mode->total_day_off + $request->number_day <= $mode->total_day)) {
             $calendar->save();
             $response = response()->json([
                 'status' => true,
-                'message' => "Bạn đã đăng kí lịch nghỉ thành công",
+                'message' => "Bạn đã sửa lịch nghỉ thành công",
                 'data' => $calendar
             ])->setStatusCode(200);
         } else {

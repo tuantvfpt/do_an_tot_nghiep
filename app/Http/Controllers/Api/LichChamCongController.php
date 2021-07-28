@@ -224,13 +224,13 @@ class LichChamCongController extends Controller
                     $update = LichChamCong::find($update_OT->id);
                     $update->check_ot = 1;
                     $update->save();
+                    $response =  response()->json([
+                        'status' => true,
+                        'message' => 'Cập nhật OT thành công',
+                        'data' => $update,
+                    ], 200);
                 }
             }
-            $response =  response()->json([
-                'status' => true,
-                'message' => 'Cập nhật OT thành công',
-                'data' => $update,
-            ], 200);
         } else {
             $response = response()->json([
                 'status' => false,

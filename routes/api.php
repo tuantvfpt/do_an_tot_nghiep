@@ -36,8 +36,6 @@ Route::group(['middleware' => 'auth',], function () {
     });
 
     Route::group(['prefix' => 'dashboard'], function () {
-        Route::get('/', [DashboardController::class, 'index'])->name('getdata');
-        Route::get('show_total', [DashboardController::class, 'total_user_team_work_leave'])->name('show_total');
         Route::get('list_comfig', [DashboardController::class, 'list_comfig'])->name('list_comfig');
         Route::post('comfig/{id}', [DashboardController::class, 'comfig'])->name('comfig');
         Route::get('show_calendar', [DashboardController::class, 'show_lich'])->name('show_lich');
@@ -84,7 +82,7 @@ Route::group(['middleware' => 'auth',], function () {
         Route::get('getdetail/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
         // Route::post('tinhluong', [LuongController::class, 'tinhluong'])->name('tinhluong');
         Route::get('getSalaryByUser', [LuongController::class, 'getSalaryByUser'])->name('getSalaryByUser');
-        Route::post('tra_luong', [LuongController::class, 'tra_luong'])->name('tra_luong');
+        Route::post('tra_luong/{id}', [LuongController::class, 'tra_luong'])->name('tra_luong');
     });
     Route::group(['prefix' => 'lichxinnghi'], function () {
         Route::get('/', [CalendarLeaveController::class, 'getAll'])->name('getAll');
