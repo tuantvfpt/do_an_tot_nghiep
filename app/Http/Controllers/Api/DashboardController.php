@@ -255,7 +255,6 @@ class DashboardController extends Controller
                         $message->from('tuantong.datus@gmail.com');
                     });
                     $lich_xin_nghi->delete();
-                    // }
                     $mess = "Không cho phép nghỉ";
                 }
             }

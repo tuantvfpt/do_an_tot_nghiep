@@ -12,4 +12,12 @@ class Prize_user extends Model
     use SoftDeletes;
 
     protected $table = 'prize_fine_user';
+    public function prize_id()
+    {
+        return $this->belongsTo(Prize::class, 'prize_fine_id');
+    }
+    public function user_id()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

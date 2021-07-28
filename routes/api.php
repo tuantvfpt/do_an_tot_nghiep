@@ -96,7 +96,7 @@ Route::group(['middleware' => 'auth',], function () {
     });
     Route::group(['prefix' => 'prize_fine_money'], function () {
         Route::get('/', [PrizefineController::class, 'index'])->name('getAll');
-        Route::get('getdetail/{id}', [PrizefineController::class, 'getdetail'])->name('getdetail');
+        Route::get('getdetail/{id}', [PrizefineController::class, 'getdetail'])->name('getdetail_prize');
         Route::post('create', [PrizefineController::class, 'create'])->name('create');
         Route::post('update/{id}', [PrizefineController::class, 'update'])->name('update');
         Route::post('delete/{id}', [PrizefineController::class, 'delete'])->name('delete');
