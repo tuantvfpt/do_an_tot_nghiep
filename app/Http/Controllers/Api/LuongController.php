@@ -31,7 +31,7 @@ class LuongController extends Controller
                 });
             }
             if (!empty($request->date)) {
-                $luong =  $luong->where('date', $request->date);
+                $luong =  $luong->whereMonth('total_salary.date', date('m', strtotime($request->date)));
             }
             $luong = $luong->paginate(($request->limit != null) ? $request->limit : 10);
             $response =  response()->json([
@@ -115,7 +115,7 @@ class LuongController extends Controller
             });
         }
         if (!empty($request->date)) {
-            $luong =  $luong->where('date', $request->date);
+            $luong =  $luong->whereMonth('total_salary.date', date('m', strtotime($request->date)));
         }
         $luong = $luong->paginate(($request->limit != null) ? $request->limit : 10);
         return response()->json([

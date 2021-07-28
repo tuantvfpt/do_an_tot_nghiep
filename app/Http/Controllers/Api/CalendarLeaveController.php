@@ -39,7 +39,7 @@ class CalendarLeaveController extends Controller
                 });
             }
             if (!empty($request->date)) {
-                $lich_nghi =  $lich_nghi->where('date', $request->date);
+                $lich_nghi =  $lich_nghi->whereMonth('calendar_for_leave.date', date('m', strtotime($request->date)));
             }
             $lich_nghi = $lich_nghi->paginate(($request->limit != null) ? $request->limit : 10);
             $response = response()->json([
@@ -74,7 +74,7 @@ class CalendarLeaveController extends Controller
             });
         }
         if (!empty($request->date)) {
-            $lich_nghi =  $lich_nghi->where('date', $request->date);
+            $lich_nghi =  $lich_nghi->whereMonth('calendar_for_leave.date', date('m', strtotime($request->date)));
         }
         $lich_nghi = $lich_nghi->paginate(($request->limit != null) ? $request->limit : 10);
         return response()->json([

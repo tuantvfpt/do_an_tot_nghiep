@@ -218,8 +218,7 @@ class LichChamCongController extends Controller
     {
         if (Gate::allows('leader')) {
             $today = Carbon::now()->toDateString();
-            $user_id = $request->id;
-            foreach ($user_id as $value => $key) {
+            foreach ($request->all() as $key) {
                 $update_OT = LichChamCong::where('user_id', $key)->where('date_of_work', $today)->first();
                 if ($update_OT) {
                     $update = LichChamCong::find($update_OT->id);

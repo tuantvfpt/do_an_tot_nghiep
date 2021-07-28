@@ -142,21 +142,18 @@ class DashboardController extends Controller
     }
     public function show_lich(Request $request)
     {
-        if ($request->user_id) {
-            $id = $request->user_id;
-        } else {
-            $id = Auth::user()->id;
-        }
+        $id = Auth::user()->id;
         $arrDay = [];
         if ($request->date_time) {
             $motnh = date('m', strtotime($request->date_time));
             $year = date('Y', strtotime($request->date_time));
         } else {
-            $motnh = date('6');
+            $motnh = date('m');
             $year = date('Y');
         }
         for ($day = 1; $day <= 31; $day++) {
             $time = mktime(12, 0, 0, $motnh, $day, $year);
+            dd($time);
             if (date('m', $time) == $motnh) {
                 $arrDay[] = date('w-Y-m-d', $time);
             }
@@ -164,16 +161,10 @@ class DashboardController extends Controller
         $chunhat = 0;
         $thubay = 1;
         $get_lich_lam = LichChamCong::select('date_of_work', 'users.user_account as name')
-            ->join('users', 'time_keep_calendar.user_id', '=', 'users.id')
+            ->join('users', 'Time_keep_Calendar.user_id', '=', 'users.id')
             ->whereMonth('date_of_work', $motnh)
             ->whereYear('date_of_work', $year)
-            ->where(function ($query) use ($id) {
-                if ($id) {
-                    $query->where('user_id', $id);
-                } else {
-                    $query->where('user_id', 3);
-                }
-            })
+            ->where('user_id', $id)
             // ->where('user_id', $id)
             // ->orwhere('user_id', Auth::user()->id)
             ->get()->toArray();
@@ -315,5 +306,118 @@ class DashboardController extends Controller
             ->where('status', 1)
             ->where('date', Carbon::now()->toDateString())
             ->get();
+    }
+    public function luong_theo_thang(Request $request)
+    {
+        $arrMonth = [];
+        if ($request->date_time) {
+            $motnh = date('m');
+            $year = date('Y', strtotime($request->date_time));
+            // $day = date('d', strtotime($request->date_time));
+        } else {
+            $motnh = date('m');
+            $year = date('Y');
+            $day = date('d');
+            $to_day = Carbon::now()->toDateString();
+        }
+        for ($motnh = 1; $motnh <= 12; $motnh++) {
+            $time = mktime(12, 0, 0, $motnh, 1, $year);
+            if (date('Y', $time) == $year) {
+                $arrMonth[] = date('Y-m-d', $time);
+            }
+        }
+        $get_thu_nhap = DB::table('total_salary')
+            ->select('department_id', 'date', 'department.name', 'total_net_salary')
+            ->Join('users', 'total_salary.user_id', '=', 'users.id')
+            ->Join('department', 'users.department_id', '=', 'department.id')
+            ->whereYear('total_salary.date', $year)
+            ->where('department_id', 1)
+            ->groupBy('department_id')
+            ->first();
+        $tong = [];
+        $Arrseries = [];
+        $Arrseries['name'] = $get_thu_nhap->name;
+        foreach ($arrMonth as $day) {
+            $x = date('m', strtotime($get_thu_nhap->date));
+            $y = date('m', strtotime($day));
+            $chuyenthang = explode('-', $day, 3);
+            if ($x == $y) {
+                $series['series'] = [
+                    'luong' => $get_thu_nhap->total_net_salary,
+                    'date' => 'Tháng ' . $chuyenthang[1]
+                ];
+            } else {
+                $series['series'] = [
+                    'luong' => 0,
+                    'date' => 'Tháng ' . $chuyenthang[1]
+                ];
+            }
+            $Arrseries['series'][] = $series['series'];
+        }
+        array_push($tong, $Arrseries);
+        $get_phong_ban_2 = DB::table('total_salary')
+            ->select('department_id', 'date', 'department.name', 'total_net_salary')
+            ->Join('users', 'total_salary.user_id', '=', 'users.id')
+            ->Join('department', 'users.department_id', '=', 'department.id')
+            ->whereYear('total_salary.date', $year)
+            ->where('department_id', 2)
+            ->groupBy('department_id')
+            ->first();
+        $ArrService_2 = [];
+        $ArrService_2['name'] = $get_phong_ban_2->name;
+        foreach ($arrMonth as $day) {
+
+            $x = date('m', strtotime($get_phong_ban_2->date));
+            $y = date('m', strtotime($day));
+            $chuyenthang = explode('-', $day, 3);
+            if ($x == $y) {
+                $series['series'] = [
+                    'luong' => $get_phong_ban_2->total_net_salary,
+                    'date' => 'Tháng ' . $chuyenthang[1]
+                ];
+            } else {
+                $series['series'] = [
+                    'luong' => 0,
+                    'date' => 'Tháng ' . $chuyenthang[1]
+                ];
+            }
+            $ArrService_2['series'][] = $series['series'];
+        }
+        array_push($tong, $ArrService_2);
+
+        $get_phong_ban_3 = DB::table('total_salary')
+            ->select('department_id', 'date', 'department.name', 'total_net_salary')
+            ->Join('users', 'total_salary.user_id', '=', 'users.id')
+            ->Join('department', 'users.department_id', '=', 'department.id')
+            ->whereYear('total_salary.date', $year)
+            ->where('department_id', 3)
+            ->groupBy('department_id')
+            ->first();
+        $ArrService_3 = [];
+        $ArrService_3['name'] = $get_phong_ban_3->name;
+        foreach ($arrMonth as $day) {
+
+            $x = date('m', strtotime($get_phong_ban_3->date));
+            $y = date('m', strtotime($day));
+            $chuyenthang = explode('-', $day, 3);
+            if ($x == $y) {
+                $series['series'] = [
+                    'luong' => $get_phong_ban_3->total_net_salary,
+                    'date' => 'Tháng ' . $chuyenthang[1]
+                ];
+            } else {
+                $series['series'] = [
+                    'luong' => 0,
+                    'date' => 'Tháng ' . $chuyenthang[1]
+                ];
+            }
+            $ArrService_3['series'][] = $series['series'];
+        }
+        array_push($tong, $ArrService_3);
+        return response()->json([
+            'status' => true,
+            'message' => 'lấy thành công',
+            'data' => $tong
+        ]);
     }
 }

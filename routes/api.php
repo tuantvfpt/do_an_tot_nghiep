@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::post('forget_password', [UserController::class, 'forget_password'])->name('forget_password');
 Route::post('/login', [AuthController::class, 'login']);
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => 'auth',], function () {
     Route::group(['prefix' => 'auth'], function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/logout', [AuthController::class, 'logout']);
@@ -41,12 +41,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('list_comfig', [DashboardController::class, 'list_comfig'])->name('list_comfig');
         Route::post('comfig/{id}', [DashboardController::class, 'comfig'])->name('comfig');
         Route::get('show_calendar', [DashboardController::class, 'show_lich'])->name('show_lich');
+        Route::get('luong_theo_thang', [DashboardController::class, 'luong_theo_thang'])->name('luong_theo_thang');
         Route::get('get_user_late_early', [DashboardController::class, 'get_user_late_early'])->name('get_user_late_early');
     });
     Route::group(['prefix' => 'user/'], function () {
         Route::get('/', [UserController::class, 'getAll'])->name('getAllUser');
         Route::get('getdetail/{id}', [UserController::class, 'getUser'])->name('getUser');
-        Route::get('getlist', [UserController::class, 'getlist'])->name('getListChucVuPhongBan');
         Route::post('update/{id}', [UserController::class, 'update'])->name('update');
         Route::post('create', [UserController::class, 'addSaveUser'])->name('addUser');
         Route::post('delete/{id}', [UserController::class, 'delete'])->name('delete');
