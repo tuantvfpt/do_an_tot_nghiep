@@ -29,7 +29,6 @@ class UserController extends Controller
         'full_name' => 'required',
         'position_id' => 'required',
         'department_id' => 'required',
-        'password' => 'required',
         'role_id' => 'required',
     ];
     public function __construct(User $users)
@@ -129,6 +128,11 @@ class UserController extends Controller
                 $userinfo->user_id = $users->id;
                 $userinfo->full_name = $request->full_name;
                 $userinfo->phone = $request->phone;
+                $userinfo->sex = $request->sex;
+                $userinfo->address = $request->address;
+                $userinfo->id_card = $request->id_card;
+                $userinfo->phone = $request->phone;
+                $userinfo->marital_status = $request->marital_status;
                 if ($request->hasFile('avatar')) {
                     $file = $request->file('avatar');
                     $newname = rand() . '.' . $file->getClientOriginalExtension();

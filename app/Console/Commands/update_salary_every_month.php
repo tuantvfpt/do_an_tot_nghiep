@@ -42,7 +42,6 @@ class update_salary_every_month extends Command
      */
     public function handle()
     {
-
         $startmonth = Carbon::now()->startOfMonth()->toDateString();
         $endmonth = Carbon::now()->endOfMonth()->toDateString();
         $getlist = TongThuNhap::wherebetween('date', [$startmonth, $endmonth])->get();
@@ -70,20 +69,21 @@ class update_salary_every_month extends Command
                     }
                 }
             }
-            if (($checkthue5->Taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue10->Taxable_income)) {
-                $tongluong = $total_gross_salary - (($total_gross_salary * $checkthue5->Tax_percentage) / 100);
-            } elseif (($checkthue10->Taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue15->Taxable_income)) {
-                $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue10->Tax_percentage) / 100 - 250000);
-            } elseif (($checkthue15->Taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue20->Taxable_income)) {
-                $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue15->Tax_percentage) / 100 - 750000);
-            } elseif (($checkthue20->Taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue25->Taxable_income)) {
-                $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue20->Tax_percentage) / 100 - 1650000);
-            } elseif (($checkthue25->Taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue30->Taxable_income)) {
-                $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue25->Tax_percentage) / 100 - 3250000);
-            } elseif (($checkthue25->Taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue30->Taxable_income)) {
-                $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue30->Tax_percentage) / 100 - 5850000);
-            } elseif (($checkthue35->Taxable_income) < $total_gross_salary) {
-                $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue35->Tax_percentage) / 100 - 9850000);
+
+            if (($checkthue5->taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue10->taxable_income)) {
+                $tongluong = $total_gross_salary - (($total_gross_salary * $checkthue5->tax_percentage) / 100);
+            } elseif (($checkthue10->taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue15->taxable_income)) {
+                $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue10->tax_percentage) / 100 - 250000);
+            } elseif (($checkthue15->taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue20->taxable_income)) {
+                $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue15->tax_percentage) / 100 - 750000);
+            } elseif (($checkthue20->taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue25->taxable_income)) {
+                $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue20->tax_percentage) / 100 - 1650000);
+            } elseif (($checkthue25->taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue30->taxable_income)) {
+                $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue25->tax_percentage) / 100 - 3250000);
+            } elseif (($checkthue25->taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue30->taxable_income)) {
+                $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue30->tax_percentage) / 100 - 5850000);
+            } elseif (($checkthue35->taxable_income) < $total_gross_salary) {
+                $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue35->tax_percentage) / 100 - 9850000);
             } else {
                 $tongluong = $total_gross_salary;
             }
