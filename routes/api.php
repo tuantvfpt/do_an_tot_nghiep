@@ -37,6 +37,7 @@ Route::group(['middleware' => 'auth',], function () {
 
     Route::group(['prefix' => 'dashboard'], function () {
         Route::get('list_comfig', [DashboardController::class, 'list_comfig'])->name('list_comfig');
+        Route::get('total_user_team_work_leave', [DashboardController::class, 'total_user_team_work_leave'])->name('total_user_team_work_leave');
         Route::post('comfig/{id}', [DashboardController::class, 'comfig'])->name('comfig');
         Route::get('show_calendar', [DashboardController::class, 'show_lich'])->name('show_lich');
         Route::get('luong_theo_thang', [DashboardController::class, 'luong_theo_thang'])->name('luong_theo_thang');

@@ -68,7 +68,7 @@ class PrizefineController extends Controller
             'status' => false,
             'message' => 'lấy chi tiết thành công',
             'data' => $getdetail
-        ], 404);
+        ], 200);
     }
     public function create(Request $request)
     {
