@@ -154,7 +154,7 @@ class CalendarLeaveController extends Controller
         $user_id = Auth::user()->id;
         $check = Calendar_leave::where('date', $today)->where('user_id', $user_id)->first();
         $dateDiff = date_diff(date_create($request->time_start), date_create($request->time_end));
-        $x = $dateDiff->d;
+        $x = $dateDiff->d + 1;
         $user_off = new Calendar_leave();
         if ($check && $check->status == 0) {
             $user_off = Calendar_leave::find($check->id);
@@ -173,7 +173,7 @@ class CalendarLeaveController extends Controller
             $user_off->number_mode_leave = 0;
         }
         $mode = company_mode::where('user_id', Auth::user()->id)->whereYear('date', $today)->first();
-        if ($mode->total_day - $request->number_day >= 0 && $request->number_day <= $x && ($mode->total_day_off + $request->number_day <= $mode->total_day)) {
+        if ($mode->total_day - $request->number_day >= 0 && ($request->number_day <= $x) && ($mode->total_day_off + $request->number_day <= $mode->total_day)) {
             $user_off->save();
             $response = response()->json([
                 'status' => true,
@@ -182,7 +182,7 @@ class CalendarLeaveController extends Controller
             ])->setStatusCode(200);
         } else {
             $response = response()->json([
-                'status' => true,
+                'status' => false,
                 'message' => "Đã sảy ra lỗi khi nhập ngày nghỉ phép",
                 'data' => $user_off
             ])->setStatusCode(404);
