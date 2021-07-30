@@ -316,7 +316,7 @@ class DashboardController extends Controller
             }
         }
         $get_thu_nhap = DB::table('total_salary')
-            ->select('department_id', 'date', 'department.name', 'total_net_salary')
+            ->selectRaw('department_id,date,department.name,Sum(total_net_salary) as total_net_salary')
             ->Join('users', 'total_salary.user_id', '=', 'users.id')
             ->Join('department', 'users.department_id', '=', 'department.id')
             ->whereYear('total_salary.date', $year)
@@ -345,7 +345,7 @@ class DashboardController extends Controller
         }
         array_push($tong, $Arrseries);
         $get_phong_ban_2 = DB::table('total_salary')
-            ->select('department_id', 'date', 'department.name', 'total_net_salary')
+            ->selectRaw('department_id,date,department.name,Sum(total_net_salary) as total_net_salary')
             ->Join('users', 'total_salary.user_id', '=', 'users.id')
             ->Join('department', 'users.department_id', '=', 'department.id')
             ->whereYear('total_salary.date', $year)
@@ -375,7 +375,7 @@ class DashboardController extends Controller
         array_push($tong, $ArrService_2);
 
         $get_phong_ban_3 = DB::table('total_salary')
-            ->select('department_id', 'date', 'department.name', 'total_net_salary')
+            ->selectRaw('department_id,date,department.name,Sum(total_net_salary) as total_net_salary')
             ->Join('users', 'total_salary.user_id', '=', 'users.id')
             ->Join('department', 'users.department_id', '=', 'department.id')
             ->whereYear('total_salary.date', $year)
