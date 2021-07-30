@@ -92,18 +92,11 @@ class DashboardController extends Controller
             ->groupBy('department_id')
             ->get();
         $total_user_in_department->load('phongban_userinfo');
-        $total = [$total_user_off, $total_user, $total_department, $total_user_work, $total_user_in_department];
-        return $total
-            ?
-            response()->json([
-                'status' => true,
-                'message' => 'Lấy thông tin thành công',
-                'data' => $total
-            ], 200) :
-            response()->json([
-                'status' => false,
-                'message' => 'lấy thông tin không thành công'
-            ], 404);
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy thông tin thành công',
+            'data' => $total_user, $total_department, $total_user_work, $total_user_off, $total_user_in_department
+        ], 200);
     }
     public function get_user_late_early()
     {

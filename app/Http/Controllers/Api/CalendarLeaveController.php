@@ -156,7 +156,7 @@ class CalendarLeaveController extends Controller
         $dateDiff = date_diff(date_create($request->time_start), date_create($request->time_end));
         $x = $dateDiff->d;
         $user_off = new Calendar_leave();
-        if ($check) {
+        if ($check && $check->status == 0) {
             $user_off = Calendar_leave::find($check->id);
         }
         $user_off->user_id = $user_id;

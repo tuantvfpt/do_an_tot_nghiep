@@ -59,11 +59,11 @@ class PrizefineController extends Controller
     }
     public function getDetail($id)
     {
-        $getdetail = Prize_user::find($id);
-        if ($getdetail) {
-            $getdetail->load('prize_id');
-            $getdetail->load('user_id');
-        }
+        $getdetail = Prize::select('prize_fine.*', 'users.user_account',)
+            ->Join('prize_fine_user', 'prize_fine_user.prize_fine_id', '=', 'prize_fine.id')
+            ->Join('users', 'users.id', '=', 'prize_fine_user.user_id')
+            ->where('prize_fine.id', $id)
+            ->first();
         return response()->json([
             'status' => false,
             'message' => 'lấy chi tiết thành công',
