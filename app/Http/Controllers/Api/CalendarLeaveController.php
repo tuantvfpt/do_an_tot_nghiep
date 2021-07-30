@@ -173,7 +173,7 @@ class CalendarLeaveController extends Controller
             $user_off->number_mode_leave = 0;
         }
         $mode = company_mode::where('user_id', Auth::user()->id)->whereYear('date', $today)->first();
-        if ($mode->total_day - $request->number_day >= 0 && ($mode->total_day_off + $request->number_day <= $mode->total_day)) {
+        if ($mode->total_day - $request->number_day >= 0 && $request->number_day <= $x && ($mode->total_day_off + $request->number_day <= $mode->total_day)) {
             $user_off->save();
             $response = response()->json([
                 'status' => true,
