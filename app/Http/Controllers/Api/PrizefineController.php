@@ -23,7 +23,8 @@ class PrizefineController extends Controller
         $prize_fine_money = $this->Prize->select('prize_fine.*', 'users.user_account',)
             ->Join('prize_fine_user', 'prize_fine_user.prize_fine_id', '=', 'prize_fine.id')
             ->Join('users', 'users.id', '=', 'prize_fine_user.user_id')
-            ->where('prize_fine.deleted_at', null);
+            ->where('prize_fine.deleted_at', null)
+            ->orderby('id', 'desc');
         if (Gate::allows('view')) {
             if (!empty($request->keyword)) {
                 $prize_fine_money =  $prize_fine_money->Where(function ($query) use ($request) {

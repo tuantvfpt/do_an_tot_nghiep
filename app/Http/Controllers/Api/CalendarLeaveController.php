@@ -32,7 +32,9 @@ class CalendarLeaveController extends Controller
             $lich_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
                 ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
                 ->join('user_info', 'users.id', '=', 'user_info.user_id')
-                ->where('calendar_for_leave.deleted_at', null);
+                ->where('calendar_for_leave.deleted_at', null)
+                ->orderby('id', 'desc');
+
             if (!empty($request->keyword)) {
                 $lich_nghi =  $lich_nghi->Where(function ($query) use ($request) {
                     $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
@@ -67,7 +69,8 @@ class CalendarLeaveController extends Controller
             ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
             ->where('calendar_for_leave.deleted_at', null)
-            ->where('calendar_for_leave.user_id', Auth::user()->id);
+            ->where('calendar_for_leave.user_id', Auth::user()->id)
+            ->orderby('id', 'desc');;
         if (!empty($request->keyword)) {
             $lich_nghi =  $lich_nghi->Where(function ($query) use ($request) {
                 $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
