@@ -79,15 +79,26 @@ class DashboardController extends Controller
     //             'message' => 'lấy thông tin không thành công'
     //         ], 404);
     // }
-    public function total_user_team_work_leave()
+    public function total_user()
     {
-        $today = Carbon::now()->toDateString();
         $total_user = User::selectRaw('count(id) as so_luong_user')->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy thông tin thành công',
+            'data' => $total_user,
+        ], 200);
+    }
+    public function total_phong_ban()
+    {
         $total_department = phongban::selectRaw('count(id) as so_luong_phong_ban')->get();
-        $total_user_work = LichChamCong::selectRaw('count(id) as nhan_vien_di_lam')
-            ->where('date_of_work', $today)->get();
-        $total_user_off = Calendar_leave::selectRaw('count(id) as nhan_vien_nghi_lam')
-            ->where('date', $today)->where('status', 1)->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy thông tin thành công',
+            'data' => $total_department,
+        ], 200);
+    }
+    public function total_user_in_phong_ban()
+    {
         $total_user_in_department = User::selectRaw('count(id) as total_user,department_id')
             ->groupBy('department_id')
             ->get();
@@ -95,44 +106,121 @@ class DashboardController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Lấy thông tin thành công',
-            'data' => $total_user, $total_department, $total_user_work, $total_user_off, $total_user_in_department
+            'data' => $total_user_in_department,
         ], 200);
     }
-    public function get_user_late_early()
+    public function total_user_work()
     {
-        // get user đi làm muộn và sớm
-        $mocgio = "8:15:00";
-        $data_user_di_lam_som = User::selectRaw('DISTINCT time_keep_calendar.user_id as user_id,users.id,count(time_keep_calendar.user_id) as 
-        tong_ngay_di_som,users.user_account')
-            ->join('time_keep_calendar', 'time_keep_calendar.user_id', '=', 'users.id')
-            ->with([
-                'userinfo'
-            ])->where('time_keep_calendar.deleted_at', null)
-            ->where('time_of_check_in', '<=', $mocgio)
-            ->groupBy('user_id', 'users.id', 'users.user_account')->get();
-        //data đi làm sớm
-        // data đi làm muộn
-        $data_user_di_lam_muon = User::selectRaw('DISTINCT time_keep_calendar.user_id as user_id,users.id,count(time_keep_calendar.user_id) as 
-        tong_ngay_di_muon,users.user_account')
-            ->join('time_keep_calendar', 'time_keep_calendar.user_id', '=', 'users.id')
-            ->with([
-                'userinfo'
-            ])->where('time_keep_calendar.deleted_at', null)
-            ->where('time_of_check_in', '>', $mocgio)
-            ->groupBy('user_id', 'users.id', 'users.user_account')->get();
-        // lay cac ngay trong thang
-        return $data_user_di_lam_muon || $data_user_di_lam_som
-            ?
-            response()->json([
-                'status' => true,
-                'message' => 'Lấy thông tin thành công',
-                'data' => $data_user_di_lam_muon, $data_user_di_lam_som
-            ], 200) :
-            response()->json([
-                'status' => false,
-                'message' => 'lấy thông tin không thành công'
-            ], 404);
+        $today = Carbon::now()->toDateString();
+        $total_user_work = LichChamCong::selectRaw('count(id) as nhan_vien_di_lam')
+            ->where('date_of_work', $today)->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy thông tin thành công',
+            'data' => $total_user_work,
+        ], 200);
     }
+    public function total_user_off()
+    {
+        $today = Carbon::now()->toDateString();
+        $total_user_off = Calendar_leave::selectRaw('count(id) as nhan_vien_nghi_lam')
+            ->join('')
+            ->where('date', $today)->where('status', 1)->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy thông tin thành công',
+            'data' => $total_user_off,
+        ], 200);
+    }
+    public function total_work_by_user()
+    {
+        $today = Carbon::now()->toDateString();
+        $total_user_work = LichChamCong::selectRaw('count(id) as tong_ngay_di_lam')
+            ->whereMonth('date_of_work', date('m', strtotime($today)))
+            ->where('user_id', Auth::user()->id)
+            ->groupBy('user_id')
+            ->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy thông tin thành công',
+            'data' => $total_user_work,
+        ], 200);
+    }
+    public function total_leave_have_gross_by_user()
+    {
+        $today = Carbon::now()->toDateString();
+        $total_user_work = company_mode::selectRaw(('total_day - total_day_off as tongsongaynghi'))
+            ->whereYear('date', date('Y', strtotime($today)))
+            ->where('user_id', Auth::user()->id)
+            ->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy thông tin thành công',
+            'data' => $total_user_work,
+        ], 200);
+    }
+    public function total_day_off_by_user()
+    {
+        $today = Carbon::now()->toDateString();
+        $total_user_off = Calendar_leave::selectRaw('count(id) as nhan_vien_nghi_lam')
+            ->whereMonth('date', date('m', strtotime($today)))
+            ->where('user_id', Auth::user()->id)
+            ->where('status', 1)->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy thông tin thành công',
+            'data' => $total_user_off,
+        ], 200);
+    }
+    public function total_salary_by_user()
+    {
+        $today = Carbon::now()->toDateString();
+        $total_user_off = TongThuNhap::selectRaw('total_net_salary')
+            ->whereMonth('date', date('m', strtotime($today)))
+            ->where('user_id', Auth::user()->id)
+            ->where('status', 1)->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy thông tin thành công',
+            'data' => $total_user_off,
+        ], 200);
+    }
+    // public function get_user_late_early()
+    // {
+    //     // get user đi làm muộn và sớm
+    //     $mocgio = "8:15:00";
+    //     $data_user_di_lam_som = User::selectRaw('DISTINCT time_keep_calendar.user_id as user_id,users.id,count(time_keep_calendar.user_id) as 
+    //     tong_ngay_di_som,users.user_account')
+    //         ->join('time_keep_calendar', 'time_keep_calendar.user_id', '=', 'users.id')
+    //         ->with([
+    //             'userinfo'
+    //         ])->where('time_keep_calendar.deleted_at', null)
+    //         ->where('time_of_check_in', '<=', $mocgio)
+    //         ->groupBy('user_id', 'users.id', 'users.user_account')->get();
+    //     //data đi làm sớm
+    //     // data đi làm muộn
+    //     $data_user_di_lam_muon = User::selectRaw('DISTINCT time_keep_calendar.user_id as user_id,users.id,count(time_keep_calendar.user_id) as 
+    //     tong_ngay_di_muon,users.user_account')
+    //         ->join('time_keep_calendar', 'time_keep_calendar.user_id', '=', 'users.id')
+    //         ->with([
+    //             'userinfo'
+    //         ])->where('time_keep_calendar.deleted_at', null)
+    //         ->where('time_of_check_in', '>', $mocgio)
+    //         ->groupBy('user_id', 'users.id', 'users.user_account')->get();
+    //     // lay cac ngay trong thang
+    //     return $data_user_di_lam_muon || $data_user_di_lam_som
+    //         ?
+    //         response()->json([
+    //             'status' => true,
+    //             'message' => 'Lấy thông tin thành công',
+    //             'data' => $data_user_di_lam_muon, $data_user_di_lam_som
+    //         ], 200) :
+    //         response()->json([
+    //             'status' => false,
+    //             'message' => 'lấy thông tin không thành công'
+    //         ], 404);
+    // }
     public function show_lich(Request $request)
     {
         $id = Auth::user()->id;
@@ -321,25 +409,29 @@ class DashboardController extends Controller
             ->Join('department', 'users.department_id', '=', 'department.id')
             ->whereYear('total_salary.date', $year)
             ->where('department_id', 1)
-            ->groupBy('department_id')
-            ->first();
+            ->groupBy('department_id', 'total_salary.date')
+            ->get()->toArray();
         $tong = [];
         $Arrseries = [];
-        $Arrseries['name'] = $get_thu_nhap->name;
+
         foreach ($arrMonth as $day) {
-            $x = date('m', strtotime($get_thu_nhap->date));
-            $y = date('m', strtotime($day));
-            $chuyenthang = explode('-', $day, 3);
-            if ($x == $y) {
-                $series['series'] = [
-                    'luong' => $get_thu_nhap->total_net_salary,
-                    'date' => 'Tháng ' . $chuyenthang[1]
-                ];
-            } else {
-                $series['series'] = [
-                    'luong' => 0,
-                    'date' => 'Tháng ' . $chuyenthang[1]
-                ];
+            foreach ($get_thu_nhap as $item) {
+                $x = date('m', strtotime($item->date));
+                $y = date('m', strtotime($day));
+                $chuyenthang = explode('-', $day, 3);
+                $Arrseries['name'] = $item->name;
+                if ($x == $y) {
+                    $series['series'] = [
+                        'luong' => $item->total_net_salary,
+                        'date' => 'Tháng ' . $chuyenthang[1]
+                    ];
+                    break;
+                } else {
+                    $series['series'] = [
+                        'luong' => 0,
+                        'date' => 'Tháng ' . $chuyenthang[1]
+                    ];
+                }
             }
             $Arrseries['series'][] = $series['series'];
         }
@@ -350,55 +442,59 @@ class DashboardController extends Controller
             ->Join('department', 'users.department_id', '=', 'department.id')
             ->whereYear('total_salary.date', $year)
             ->where('department_id', 2)
-            ->groupBy('department_id')
-            ->first();
+            ->groupBy('department_id', 'total_salary.date')
+            ->get()->toArray();
         $ArrService_2 = [];
-        $ArrService_2['name'] = $get_phong_ban_2->name;
         foreach ($arrMonth as $day) {
-
-            $x = date('m', strtotime($get_phong_ban_2->date));
-            $y = date('m', strtotime($day));
-            $chuyenthang = explode('-', $day, 3);
-            if ($x == $y) {
-                $series['series'] = [
-                    'luong' => $get_phong_ban_2->total_net_salary,
-                    'date' => 'Tháng ' . $chuyenthang[1]
-                ];
-            } else {
-                $series['series'] = [
-                    'luong' => 0,
-                    'date' => 'Tháng ' . $chuyenthang[1]
-                ];
+            foreach ($get_phong_ban_2 as $item) {
+                $x = date('m', strtotime($item->date));
+                $y = date('m', strtotime($day));
+                $chuyenthang = explode('-', $day, 3);
+                $ArrService_2['name'] = $item->name;
+                if ($x == $y) {
+                    $series['series'] = [
+                        'luong' => $item->total_net_salary,
+                        'date' => 'Tháng ' . $chuyenthang[1]
+                    ];
+                    break;
+                } else {
+                    $series['series'] = [
+                        'luong' => 0,
+                        'date' => 'Tháng ' . $chuyenthang[1]
+                    ];
+                }
             }
             $ArrService_2['series'][] = $series['series'];
         }
         array_push($tong, $ArrService_2);
-
         $get_phong_ban_3 = DB::table('total_salary')
             ->selectRaw('department_id,date,department.name,Sum(total_net_salary) as total_net_salary')
             ->Join('users', 'total_salary.user_id', '=', 'users.id')
             ->Join('department', 'users.department_id', '=', 'department.id')
             ->whereYear('total_salary.date', $year)
             ->where('department_id', 3)
-            ->groupBy('department_id')
-            ->first();
+            ->groupBy('department_id', 'total_salary.date')
+            ->get();
         $ArrService_3 = [];
-        $ArrService_3['name'] = $get_phong_ban_3->name;
         foreach ($arrMonth as $day) {
+            foreach ($get_phong_ban_3 as $item) {
+                $x = date('m', strtotime($item->date));
+                $y = date('m', strtotime($day));
+                $chuyenthang = explode('-', $day, 3);
+                $ArrService_3['name'] = $item->name;
 
-            $x = date('m', strtotime($get_phong_ban_3->date));
-            $y = date('m', strtotime($day));
-            $chuyenthang = explode('-', $day, 3);
-            if ($x == $y) {
-                $series['series'] = [
-                    'luong' => $get_phong_ban_3->total_net_salary,
-                    'date' => 'Tháng ' . $chuyenthang[1]
-                ];
-            } else {
-                $series['series'] = [
-                    'luong' => 0,
-                    'date' => 'Tháng ' . $chuyenthang[1]
-                ];
+                if ($x == $y) {
+                    $series['series'] = [
+                        'luong' => $item->total_net_salary,
+                        'date' => 'Tháng ' . $chuyenthang[1]
+                    ];
+                    break;
+                } else {
+                    $series['series'] = [
+                        'luong' => 0,
+                        'date' => 'Tháng ' . $chuyenthang[1]
+                    ];
+                }
             }
             $ArrService_3['series'][] = $series['series'];
         }

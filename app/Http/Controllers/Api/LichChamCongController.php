@@ -34,7 +34,8 @@ class LichChamCongController extends Controller
         $lich_cham_cong = LichChamCong::select('time_keep_calendar.*', 'user_info.full_name')
             ->Join('users', 'time_keep_calendar.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
-            ->where('time_keep_calendar.deleted_at', null);
+            ->where('time_keep_calendar.deleted_at', null)
+            ->orderby('id', 'desc');
         if (Gate::allows('view')) {
             if (!empty($request->keyword)) {
                 $lich_cham_cong =  $lich_cham_cong->Where(function ($query) use ($request) {
@@ -245,7 +246,8 @@ class LichChamCongController extends Controller
             ->Join('users', 'time_keep_calendar.user_id', '=', 'users.id')
             ->join('user_info', 'users.id', '=', 'user_info.user_id')
             ->where('time_keep_calendar.deleted_at', null)
-            ->where('time_keep_calendar.user_id', Auth::user()->id);
+            ->where('time_keep_calendar.user_id', Auth::user()->id)
+            ->orderBy('time_keep_calendar.id', 'desc');
         if (!empty($request->keyword)) {
             $lich_cham_cong =  $lich_cham_cong->Where(function ($query) use ($request) {
                 $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");

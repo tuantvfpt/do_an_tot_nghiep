@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-Route::post('forget_password', [UserController::class, 'forget_password'])->name('forget_password');
+Route::get('forget_password', [UserController::class, 'forget_password'])->name('forget_password');
 Route::post('/login', [AuthController::class, 'login']);
 Route::group(['middleware' => 'auth',], function () {
     Route::group(['prefix' => 'auth'], function () {
@@ -37,11 +37,21 @@ Route::group(['middleware' => 'auth',], function () {
 
     Route::group(['prefix' => 'dashboard'], function () {
         Route::get('list_comfig', [DashboardController::class, 'list_comfig'])->name('list_comfig');
-        Route::get('total_user_team_work_leave', [DashboardController::class, 'total_user_team_work_leave'])->name('total_user_team_work_leave');
         Route::post('comfig/{id}', [DashboardController::class, 'comfig'])->name('comfig');
         Route::get('show_calendar', [DashboardController::class, 'show_lich'])->name('show_lich');
         Route::get('luong_theo_thang', [DashboardController::class, 'luong_theo_thang'])->name('luong_theo_thang');
         Route::get('get_user_late_early', [DashboardController::class, 'get_user_late_early'])->name('get_user_late_early');
+        Route::get('total_leave_have_gross_by_user', [DashboardController::class, 'total_leave_have_gross_by_user'])->name('total_leave_have_gross_by_user');
+        Route::get('total_day_off_by_user', [DashboardController::class, 'total_day_off_by_user'])->name('total_day_off_by_user');
+        Route::get('total_salary_by_user', [DashboardController::class, 'total_salary_by_user'])->name('total_salary_by_user');
+        Route::get('total_user', [DashboardController::class, 'total_user'])->name('total_user');
+        Route::get('total_phong_ban', [DashboardController::class, 'total_phong_ban'])->name('total_phong_ban');
+        Route::get('total_user_in_phong_ban', [DashboardController::class, 'total_user_in_phong_ban'])->name('total_user_in_phong_ban');
+        Route::get('total_user_work', [DashboardController::class, 'total_user_work'])->name('total_user_work');
+        Route::get('total_user_off', [DashboardController::class, 'total_user_off'])->name('total_user_off');
+        Route::get('total_work_by_user', [DashboardController::class, 'total_work_by_user'])->name('total_work_by_user');
+        Route::get('total_user_off', [DashboardController::class, 'total_user_off'])->name('total_user_off');
+        Route::get('total_user_off', [DashboardController::class, 'total_user_off'])->name('total_user_off');
     });
     Route::group(['prefix' => 'user/'], function () {
         Route::get('/', [UserController::class, 'getAll'])->name('getAllUser');
