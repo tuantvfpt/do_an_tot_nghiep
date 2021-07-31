@@ -208,4 +208,18 @@ class CalendarLeaveController extends Controller
             'data' => $detail
         ])->setStatusCode(200);
     }
+    public function delete($id)
+    {
+        $lich_nghi = Calendar_leave::find($id);
+        if ($lich_nghi) {
+            $lich_nghi->delete();
+        }
+        return  $lich_nghi ? response()->json([
+            'status' => true,
+            'message' => 'Xóa thành công',
+        ], 200) : response()->json([
+            'status' => false,
+            'message' => 'Xóa thất bại'
+        ], 403);
+    }
 }

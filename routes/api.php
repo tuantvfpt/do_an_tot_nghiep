@@ -48,7 +48,7 @@ Route::group(['middleware' => 'auth',], function () {
         Route::get('getdetail/{id}', [UserController::class, 'getUser'])->name('getUser');
         Route::post('update/{id}', [UserController::class, 'update'])->name('update');
         Route::post('create', [UserController::class, 'addSaveUser'])->name('addUser');
-        Route::post('delete/{id}', [UserController::class, 'delete'])->name('delete');
+        Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
         Route::post('changepassword', [UserController::class, 'changepassword'])->name('changepassword');
         Route::get('getListUser', [UserController::class, 'ListUsers'])->name('getListUser');
         Route::get('listAll', [UserController::class, 'ListAll'])->name('ListAll');
@@ -58,14 +58,14 @@ Route::group(['middleware' => 'auth',], function () {
         Route::get('getdetail/{id}', [PhongBanController::class, 'getphongban'])->name('getphongban');
         Route::post('create', [PhongBanController::class, 'addSave'])->name('addSave');
         Route::post('update/{id}', [PhongBanController::class, 'update'])->name('update');
-        Route::post('delete/{id}', [PhongBanController::class, 'delete'])->name('delete');
+        Route::delete('delete/{id}', [PhongBanController::class, 'delete'])->name('delete');
     });
     Route::group(['prefix' => 'chucvu'], function () {
         Route::get('/', [ChucVuController::class, 'getAll'])->name('getAll');
         Route::get('getdetail/{id}', [ChucVuController::class, 'getchucvu'])->name('getchucvu');
         Route::post('create', [ChucVuController::class, 'addSave'])->name('addSave');
         Route::post('update/{id}', [ChucVuController::class, 'update'])->name('update');
-        Route::post('delete/{id}', [ChucVuController::class, 'delete'])->name('delete');
+        Route::delete('delete/{id}', [ChucVuController::class, 'delete'])->name('delete');
     });
     Route::group(['prefix' => 'lichchamcong'], function () {
         Route::get('/', [LichChamCongController::class, 'getAll'])->name('getAll');
@@ -90,6 +90,7 @@ Route::group(['middleware' => 'auth',], function () {
         // Route::post('comfig/{id}', [CalendarLeaveController::class, 'comfig'])->name('comfig');
         Route::get('getdetail/{id}', [CalendarLeaveController::class, 'getdetail'])->name('getdetail');
         Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
+        Route::delete('delete/{id}', [CalendarLeaveController::class, 'delete'])->name('delete');
         // Route::post('update_day', [CalendarLeaveController::class, 'update_day'])->name('update_day');
         Route::get('total_day', [CalendarLeaveController::class, 'get_company_leave'])->name('get_company_leave');
         Route::post('update_leave/{id}', [CalendarLeaveController::class, 'update_calenda'])->name('update_calenda');
@@ -100,6 +101,6 @@ Route::group(['middleware' => 'auth',], function () {
         Route::get('getdetail/{id}', [PrizefineController::class, 'getdetail'])->name('getdetail_prize');
         Route::post('create', [PrizefineController::class, 'create'])->name('create');
         Route::post('update/{id}', [PrizefineController::class, 'update'])->name('update');
-        Route::post('delete/{id}', [PrizefineController::class, 'delete'])->name('delete');
+        Route::delete('delete/{id}', [PrizefineController::class, 'delete'])->name('delete');
     });
 });
