@@ -341,4 +341,13 @@ class UserController extends Controller
         }
         return $response;
     }
+    public function get_user_current()
+    {
+        $user_current = Auth::user();
+        return response()->json([
+            'status' => true,
+            'message' => 'lấy thông tin thành công',
+            'data' => $user_current
+        ], 202);
+    }
 }

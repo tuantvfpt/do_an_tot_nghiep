@@ -62,6 +62,7 @@ Route::group(['middleware' => 'auth',], function () {
         Route::post('changepassword', [UserController::class, 'changepassword'])->name('changepassword');
         Route::get('getListUser', [UserController::class, 'ListUsers'])->name('getListUser');
         Route::get('listAll', [UserController::class, 'ListAll'])->name('ListAll');
+        Route::get('my_info', [UserController::class, 'get_user_current'])->name('get_user_current');
     });
     Route::group(['prefix' => 'phongban'], function () {
         Route::get('/', [PhongBanController::class, 'getAll'])->name('getAll');
