@@ -17,18 +17,31 @@ class Fakedata extends Seeder
      */
     public function run()
     {
+        // $user = User::all();
+        // foreach ($user as $user) {
+        //     $item = [
+        //         'total_gross_salary' => "4550000",
+        //         'total_net_salary' => "4550000",
+        //         'status' => 1,
+        //         'user_id' => $user->id,
+        //         'date' => "2021-03-28",
+        //         'updated_at' => Carbon::now(),
+        //         'created_at' => Carbon::now(),
+        //     ];
+        //     DB::table('total_salary')->insert($item);
+        // }
         $user = User::all();
         foreach ($user as $user) {
             $item = [
-                'total_gross_salary' => "4550000",
-                'total_net_salary' => "4550000",
+                'time_of_check_in' => '08:00:00',
+                'time_of_check_out' => '17:00:00',
                 'status' => 1,
                 'user_id' => $user->id,
-                'date' => "2021-03-28",
+                'date_of_work' => "2021-08-06",
                 'updated_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
             ];
-            DB::table('total_salary')->insert($item);
+            DB::table('time_keep_calendar')->insert($item);
         }
         // for ($i = 1; $i < 30; $i++) {
         //     $item = [

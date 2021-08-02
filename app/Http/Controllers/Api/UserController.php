@@ -29,7 +29,6 @@ class UserController extends Controller
         'full_name' => 'required',
         'position_id' => 'required',
         'department_id' => 'required',
-        'role_id' => 'required',
     ];
     public function __construct(User $users)
     {
@@ -144,6 +143,15 @@ class UserController extends Controller
                 $userinfo->date_of_join = Carbon::now('Asia/Ho_Chi_Minh');
                 $userinfo->save();
             }
+            $to_name =  $request->full_name;
+            $to_email = $request->email;
+            $data = array('name' => 'Dear' . $to_name, 'body' => 'Công ty rất cảm ơn bạn đã gia nhập công ty.
+            Mong bạn và công ty có thể hợp tác tốt để phát triển công ty đi lên.' . 'Đây là email và mật khẩu của bạn để
+            truy cập vào Web của công ty.' . 'Email:' . $to_email . 'Mật khẩu:' . $request->user_account);
+            Mail::send('emails.mail', $data, function ($message) use ($to_name, $to_email) {
+                $message->to($to_email, $to_name)->subject('Công ty Hr');
+                $message->from('tuantong.datus@gmail.com');
+            });
             $response =  $users ?
                 response()->json([
                     'status' => true,

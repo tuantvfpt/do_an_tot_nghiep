@@ -50,8 +50,6 @@ Route::group(['middleware' => 'auth',], function () {
         Route::get('total_user_work', [DashboardController::class, 'total_user_work'])->name('total_user_work');
         Route::get('total_user_off', [DashboardController::class, 'total_user_off'])->name('total_user_off');
         Route::get('total_work_by_user', [DashboardController::class, 'total_work_by_user'])->name('total_work_by_user');
-        Route::get('total_user_off', [DashboardController::class, 'total_user_off'])->name('total_user_off');
-        Route::get('total_user_off', [DashboardController::class, 'total_user_off'])->name('total_user_off');
     });
     Route::group(['prefix' => 'user/'], function () {
         Route::get('/', [UserController::class, 'getAll'])->name('getAllUser');
@@ -87,6 +85,7 @@ Route::group(['middleware' => 'auth',], function () {
         Route::get('/getListByUser', [LichChamCongController::class, 'getListByUser'])->name('getListByUser');
         Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
         Route::get('/getListOt', [LichChamCongController::class, 'list_OT'])->name('getListOt');
+        Route::get('/BieuDoLichDiLam', [LichChamCongController::class, 'BieuDoLichDiLam'])->name('BieuDoLichDiLam');
         // Route::post('total_gross_salary', [LichChamCongController::class, 'total_gross_salary'])->name('total_gross_salary');
     });
     Route::group(['prefix' => 'luong'], function () {

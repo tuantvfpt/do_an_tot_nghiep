@@ -359,7 +359,6 @@ class DashboardController extends Controller
                 ->join('user_info', 'users.id', '=', 'user_info.user_id')
                 ->where('calendar_for_leave.deleted_at', null)
                 ->where('status', 0)
-                ->where('date', Carbon::now()->toDateString())
                 ->get();
             $response = response()->json([
                 'status' => true,

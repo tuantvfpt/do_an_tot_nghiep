@@ -58,6 +58,24 @@ class LichChamCongController extends Controller
             ]
         ])->setStatusCode(200);
     }
+    public function BieuDoLichDiLam()
+    {
+        $startmonth = Carbon::now()->startOfMonth()->toDateString();
+        $endmonth = Carbon::now()->endOfMonth()->toDateString();
+        $mocgio = "8:15:00";
+        $total_dung_gio = LichChamCong::selectRaw('date_of_work,Count(id) as total_user')
+            ->wherebetween('date_of_work', [$startmonth, $endmonth])
+            ->where('time_of_check_in', '<=', $mocgio)
+            ->groupby('date_of_work')
+            ->orderby('id', 'desc')
+            ->limit(5)
+            ->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'lấy dữ liệu thành công',
+            'data' => $total_dung_gio,
+        ], 200);
+    }
     public function getdetail($id)
     {
         $check = LichChamCong::where('user_id', Auth::user()->id)
