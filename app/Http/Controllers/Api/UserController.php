@@ -50,10 +50,10 @@ class UserController extends Controller
             });
         }
         if (!empty($request->chucvu)) {
-            $users =  $users->where('department_id', $request->chucvu);
+            $users =  $users->where('position_id', $request->chucvu);
         }
         if (!empty($request->phongban)) {
-            $users = $users->where('position_id', $request->phongban);
+            $users = $users->where('department_id', $request->phongban);
         }
         $users = $users->paginate(($request->limit != null) ? $request->limit : 8);
         return  response()->json([
@@ -217,8 +217,8 @@ class UserController extends Controller
                     $file->move("images", $newname);
                     $userinfo->avatar = "images/" . $newname;
                 }
+                $userinfo->save();
             }
-            $users->save();
             $response =   $users || $userinfo  ?
                 response()->json([
                     'status' => true,

@@ -158,37 +158,47 @@ class CalendarLeaveController extends Controller
         $check = Calendar_leave::where('date', $today)->where('user_id', $user_id)->first();
         $dateDiff = date_diff(date_create($request->time_start), date_create($request->time_end));
         $x = $dateDiff->d + 1;
-        $user_off = new Calendar_leave();
-        if ($check && $check->status == 0) {
-            $user_off = Calendar_leave::find($check->id);
-        }
-        $user_off->user_id = $user_id;
-        $user_off->time_start = $request->time_start;
-        $user_off->time_end = $request->time_end;
-        $user_off->note = $request->note;
-        $user_off->date = Carbon::now()->toDateString();
-        $user_off->status = 0;
-        $user_off->mode_leave = $request->mode_leave;
-        $user_off->number_day_leave = $x;
-        if ($request->mode_leave) {
-            $user_off->number_mode_leave = $request->number_day;
-        } else {
-            $user_off->number_mode_leave = 0;
-        }
-        $mode = company_mode::where('user_id', Auth::user()->id)->whereYear('date', $today)->first();
-        if ($mode->total_day - $request->number_day >= 0 && ($request->number_day <= $x) && ($mode->total_day_off + $request->number_day <= $mode->total_day)) {
-            $user_off->save();
-            $response = response()->json([
-                'status' => true,
-                'message' => "Bạn đã đăng kí lịch nghỉ thành công",
-                'data' => $user_off
-            ])->setStatusCode(200);
-        } else {
+        $check_ngay_nghi = Calendar_leave::whereBetween('time_start', [$request->time_start, $request->time_end])
+            ->whereBetween('time_end', [$request->time_start, $request->time_end])
+            ->where('user_id', Auth::user()->id)->first();
+        if ($check_ngay_nghi) {
             $response = response()->json([
                 'status' => false,
-                'message' => "Đã sảy ra lỗi khi nhập ngày nghỉ phép",
-                'data' => $user_off
+                'message' => "Đã có sự nhầm lẫn khi chọn ngày nghỉ",
             ])->setStatusCode(404);
+        } else {
+            $user_off = new Calendar_leave();
+            if ($check && $check->status == 0) {
+                $user_off = Calendar_leave::find($check->id);
+            }
+            $user_off->user_id = $user_id;
+            $user_off->time_start = $request->time_start;
+            $user_off->time_end = $request->time_end;
+            $user_off->note = $request->note;
+            $user_off->date = Carbon::now()->toDateString();
+            $user_off->status = 0;
+            $user_off->mode_leave = $request->mode_leave;
+            $user_off->number_day_leave = $x;
+            if ($request->mode_leave) {
+                $user_off->number_mode_leave = $request->number_day;
+            } else {
+                $user_off->number_mode_leave = 0;
+            }
+            $mode = company_mode::where('user_id', Auth::user()->id)->whereYear('date', $today)->first();
+            if ($mode->total_day - $request->number_day >= 0 && ($request->number_day <= $x) && ($mode->total_day_off + $request->number_day <= $mode->total_day)) {
+                $user_off->save();
+                $response = response()->json([
+                    'status' => true,
+                    'message' => "Bạn đã đăng kí lịch nghỉ thành công",
+                    'data' => $user_off
+                ])->setStatusCode(200);
+            } else {
+                $response = response()->json([
+                    'status' => false,
+                    'message' => "Đã sảy ra lỗi khi nhập ngày nghỉ phép",
+                    'data' => $user_off
+                ])->setStatusCode(404);
+            }
         }
         return $response;
     }

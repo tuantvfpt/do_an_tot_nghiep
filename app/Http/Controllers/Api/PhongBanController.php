@@ -19,31 +19,23 @@ class PhongBanController extends Controller
     ];
     public function getAll(Request $request)
     {
-        if (Gate::allows('view')) {
-            $phongban = $this->phongban;
-            if (!empty($request->keyword)) {
-                $phongban =  $phongban->Where(function ($query) use ($request) {
-                    $query->where('name', 'like', "%" . $request->keyword . "%");
-                });
-            }
-            $phongban = $phongban->paginate(($request->limit != null) ? $request->limit : 10);
-            $response =  response()->json([
-                'status' => true,
-                'message' => 'Lấy danh sách phòng ban thành công',
-                'data' => $phongban->items(),
-                'meta' => [
-                    'total'      => $phongban->total(),
-                    'perPage'    => $phongban->perPage(),
-                    'currentPage' => $phongban->currentPage()
-                ]
-            ], 200);
-        } else {
-            $response =  response()->json([
-                'status' => false,
-                'message' => 'Bạn không được phép',
-            ], 403);
+        $phongban = $this->phongban;
+        if (!empty($request->keyword)) {
+            $phongban =  $phongban->Where(function ($query) use ($request) {
+                $query->where('name', 'like', "%" . $request->keyword . "%");
+            });
         }
-        return $response;
+        $phongban = $phongban->paginate(($request->limit != null) ? $request->limit : 10);
+        return  response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách phòng ban thành công',
+            'data' => $phongban->items(),
+            'meta' => [
+                'total'      => $phongban->total(),
+                'perPage'    => $phongban->perPage(),
+                'currentPage' => $phongban->currentPage()
+            ]
+        ], 200);
     }
     public function getphongban($id)
     {

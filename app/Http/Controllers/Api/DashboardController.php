@@ -124,7 +124,6 @@ class DashboardController extends Controller
     {
         $today = Carbon::now()->toDateString();
         $total_user_off = Calendar_leave::selectRaw('count(id) as nhan_vien_nghi_lam')
-            ->join('')
             ->where('date', $today)->where('status', 1)->get();
 
         return response()->json([

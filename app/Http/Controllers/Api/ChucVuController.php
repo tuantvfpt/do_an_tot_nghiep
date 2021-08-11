@@ -19,31 +19,23 @@ class ChucVuController extends Controller
     ];
     public function getAll(Request $request)
     {
-        if (Gate::allows('view')) {
-            $chucvu = $this->chucvu;
-            if (!empty($request->keyword)) {
-                $chucvu =  $chucvu->Where(function ($query) use ($request) {
-                    $query->where('name', 'like', "%" . $request->keyword . "%");
-                });
-            }
-            $chucvu = $chucvu->paginate(($request->limit != null) ? $request->limit : 10);
-            $response =  response()->json([
-                'status' => true,
-                'message' => 'Lấy danh sách phòng ban thành công',
-                'data' => $chucvu->items(),
-                'meta' => [
-                    'total'      => $chucvu->total(),
-                    'perPage'    => $chucvu->perPage(),
-                    'currentPage' => $chucvu->currentPage()
-                ]
-            ], 200);
-        } else {
-            $response =  response()->json([
-                'status' => false,
-                'message' => 'Bạn không được phép',
-            ], 403);
+        $chucvu = $this->chucvu;
+        if (!empty($request->keyword)) {
+            $chucvu =  $chucvu->Where(function ($query) use ($request) {
+                $query->where('name', 'like', "%" . $request->keyword . "%");
+            });
         }
-        return $response;
+        $chucvu = $chucvu->paginate(($request->limit != null) ? $request->limit : 10);
+        return  response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách phòng ban thành công',
+            'data' => $chucvu->items(),
+            'meta' => [
+                'total'      => $chucvu->total(),
+                'perPage'    => $chucvu->perPage(),
+                'currentPage' => $chucvu->currentPage()
+            ]
+        ], 200);
     }
     public function getchucvu($id, Request $request)
     {
