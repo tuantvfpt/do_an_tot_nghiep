@@ -86,11 +86,19 @@ class LuongController extends Controller
                     ->whereYear('date', date('Y', strtotime($luong->date)))
                     ->where('fine_money', null)
                     ->first();
+                $data = [
+                    'luong' => $luong,
+                    'tong_ngay_lam' => $tong_ngay_lam,
+                    'tong_ngay_xin_nghi' => $tong_ngay_xin_nghi,
+                    'get_fine_money' => $get_fine_money,
+                    'get_pize_money' => $get_pize_money,
+                ];
             }
+
             $response = $luong ? response()->json([
                 'status' => true,
                 'message' => 'Lấy chi tiết lương thành công',
-                'data' => $luong, $tong_ngay_lam, $tong_ngay_xin_nghi, $get_fine_money, $get_pize_money
+                'data' => $data
             ])->setStatusCode(200) : response()->json([
                 'status' => false,
                 'message' => 'Lấy chi tiết lương thấy bại',

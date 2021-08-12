@@ -141,7 +141,7 @@ class DashboardController extends Controller
             ->groupBy('user_id')
             ->get();
         return response()->json([
-            'status' => true,
+            'status' => true,ph
             'message' => 'Lấy thông tin thành công',
             'data' => $total_user_work,
         ], 200);

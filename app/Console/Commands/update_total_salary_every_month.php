@@ -87,7 +87,7 @@ class update_total_salary_every_month extends Command
                         $b = 0;
                     } elseif (strtotime($item->time_of_check_in) - strtotime($muoibagio) > 0) {
                         $b = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
-                    } elseif (strtotime($item->time_of_check_out) - strtotime($muoibagio) > 0 && (strtotime($item->time_of_check_out) <= (strtotime($muoibaygio)))) {
+                    } elseif (strtotime($item->time_of_check_out) - strtotime($muoibagio) > 0) {
                         $b = strtotime($item->time_of_check_out) - strtotime($muoibagio);
                     } elseif (strtotime($item->time_of_check_out) - strtotime($muoibaygio) > 0) {
                         $c = (strtotime($item->time_of_check_out) - strtotime($muoibaygio)) * 2;
