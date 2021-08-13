@@ -42,7 +42,7 @@ class UserController extends Controller
             ->leftJoin('department', 'department.id', '=', 'users.department_id')
             ->leftJoin('position', 'position.id', '=', 'users.position_id')
             ->leftJoin('user_info', 'user_info.user_id', '=', 'users.id')
-            ->where('user_info.deleted_at', null);
+            ->orderby('id', 'ASC');
         if (!empty($request->keyword)) {
             $users =  $users->Where(function ($query) use ($request) {
                 $query->Orwhere('user_info.full_name', 'like', "%" . $request->keyword . "%")

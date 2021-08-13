@@ -497,6 +497,38 @@ class DashboardController extends Controller
             $ArrService_3['series'][] = $series['series'];
         }
         array_push($tong, $ArrService_3);
+        $get_phong_ban_4 = DB::table('total_salary')
+            ->selectRaw('department_id,date,department.name,Sum(total_net_salary) as total_net_salary')
+            ->Join('users', 'total_salary.user_id', '=', 'users.id')
+            ->Join('department', 'users.department_id', '=', 'department.id')
+            ->whereYear('total_salary.date', $year)
+            ->where('department_id', 4)
+            ->groupBy('department_id', 'total_salary.date')
+            ->get();
+        $ArrService_4 = [];
+        foreach ($arrMonth as $day) {
+            foreach ($get_phong_ban_4 as $item) {
+                $x = date('m', strtotime($item->date));
+                $y = date('m', strtotime($day));
+                $chuyenthang = explode('-', $day, 3);
+                $ArrService_4['name'] = $item->name;
+
+                if ($x == $y) {
+                    $series['series'] = [
+                        'luong' => $item->total_net_salary,
+                        'date' => 'Tháng ' . $chuyenthang[1]
+                    ];
+                    break;
+                } else {
+                    $series['series'] = [
+                        'luong' => 0,
+                        'date' => 'Tháng ' . $chuyenthang[1]
+                    ];
+                }
+            }
+            $ArrService_4['series'][] = $series['series'];
+        }
+        array_push($tong, $ArrService_4);
         return response()->json([
             'status' => true,
             'message' => 'lấy thành công',

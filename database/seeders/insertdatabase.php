@@ -19,7 +19,7 @@ class insertdatabase extends Seeder
      */
     public function run()
     {
-        //
+        
         DB::table('tax')->insert([
             [
                 'tax_bracket' => 'Bậc I',
@@ -68,25 +68,40 @@ class insertdatabase extends Seeder
 
             ],
             [
-                'name' => 'Nhân Viên',
+                'name' => 'Employee',
 
             ],
+            [
+                'name' => 'Leader'
+            ],
+            [
+                'name' => 'diemdanh'
+            ]
         ]);
         DB::table('position')->insert([
             [
-                'name' => 'Tester',
+                'name' => 'Giám Đốc',
+
+            ],
+            [
+                'name' => 'Leader',
+
+            ],
+            [
+                'name' => 'Kế Toán',
 
             ],
             [
                 'name' => 'Developer',
 
             ],
+
             [
-                'name' => 'PHP_BackEnd',
+                'name' => 'Tester',
 
             ],
             [
-                'name' => 'FontEnd',
+                'name' => 'Employee',
 
             ],
         ]);
@@ -95,6 +110,7 @@ class insertdatabase extends Seeder
                 'name' => 'Phòng Test',
 
             ],
+
             [
                 'name' => 'Phòng FontEnd',
 
@@ -104,11 +120,7 @@ class insertdatabase extends Seeder
 
             ],
             [
-                'name' => 'Phòng giám đốc',
-
-            ],
-            [
-                'name' => 'Phòng hành chính',
+                'name' => 'Phòng Nhân Sư',
 
             ],
         ]);
@@ -117,25 +129,41 @@ class insertdatabase extends Seeder
                 'user_account' => 'Admin',
                 'email' => 'tuantvph09673@fpt.edu.vn',
                 'position_id' => '1',
-                'department_id' => '1',
+                'department_id' => '3',
                 'password' => Hash::make('123456'),
                 'role_id' => 1
             ],
             [
-                'user_account' => 'Hr',
+                'user_account' => 'KeToan',
                 'email' => 'tuantong.datus@gmail.com',
-                'position_id' => '2',
-                'department_id' => '2',
+                'position_id' => '3',
+                'department_id' => '4',
                 'password' => Hash::make('123456'),
                 'role_id' => 2
             ],
             [
-                'user_account' => 'VanTuan',
+                'user_account' => 'Leader_Test',
                 'email' => 'tuantong32.datus@gmail.com',
-                'position_id' => '3',
+                'position_id' => '2',
+                'department_id' => '1',
+                'password' => Hash::make('123456'),
+                'role_id' => 4
+            ],
+            [
+                'user_account' => 'Leader_FontEnd',
+                'email' => 'tuantong31.datus@gmail.com',
+                'position_id' => '2',
+                'department_id' => '2',
+                'password' => Hash::make('123456'),
+                'role_id' => 4
+            ],
+            [
+                'user_account' => 'Leader_BackEnd',
+                'email' => 'tuantong30.datus@gmail.com',
+                'position_id' => '2',
                 'department_id' => '3',
                 'password' => Hash::make('123456'),
-                'role_id' => 3
+                'role_id' => 4
             ]
         ];
 
