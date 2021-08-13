@@ -215,7 +215,7 @@ class UserController extends Controller
                     $file = $request->file('avatar');
                     $newname = rand() . '.' . $file->getClientOriginalExtension();
                     $file->move("images", $newname);
-                    $userinfo->avatar = "images/" . $newname;
+                    $userinfo->avatar = "http://127.0.0.1:8000/" . "images/" . $newname;
                 }
                 $userinfo->save();
             }

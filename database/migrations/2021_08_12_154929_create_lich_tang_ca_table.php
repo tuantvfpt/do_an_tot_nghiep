@@ -18,11 +18,13 @@ class CreateLichTangCaTable extends Migration
             $table->string('name_leader', 28)->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('lich_cham_cong_id')->nullable();
             $table->date('date');
             $table->Time('time_tang_ca');
-            $table->Time('note')->nullable();
+            $table->string('note', 256)->nullable();
             $table->integer('status')->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

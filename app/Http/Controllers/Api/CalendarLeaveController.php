@@ -62,6 +62,36 @@ class CalendarLeaveController extends Controller
         }
         return  $response;
     }
+    public function getAllDelete(Request $request)
+    {
+        $lich_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name')
+            ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
+            ->join('user_info', 'users.id', '=', 'user_info.user_id')
+            ->whereNotNull('calendar_for_leave.deleted_at')
+            ->withTrashed()
+            ->where('calendar_for_leave.user_id', Auth::user()->id)
+            ->orderby('id', 'desc')->get();
+        dd($lich_nghi);
+        if (!empty($request->keyword)) {
+            $lich_nghi =  $lich_nghi->Where(function ($query) use ($request) {
+                $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
+            });
+        }
+        if (!empty($request->date)) {
+            $lich_nghi =  $lich_nghi->whereMonth('calendar_for_leave.date', date('m', strtotime($request->date)));
+        }
+        $lich_nghi = $lich_nghi->paginate(($request->limit != null) ? $request->limit : 10);
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách đã xóa thành công',
+            'data' => $lich_nghi->items(),
+            'meta' => [
+                'total'      => $lich_nghi->total(),
+                'perPage'    => $lich_nghi->perPage(),
+                'currentPage' => $lich_nghi->currentPage()
+            ]
+        ])->setStatusCode(200);
+    }
     public function GetAllByUser(Request $request)
     {
 
@@ -233,6 +263,20 @@ class CalendarLeaveController extends Controller
         ], 200) : response()->json([
             'status' => false,
             'message' => 'Xóa thất bại'
+        ], 403);
+    }
+    public function khoi_phuc($id)
+    {
+        $khoi_phuc = Calendar_leave::withTrashed()->find($id);
+        if ($khoi_phuc) {
+            $khoi_phuc->restore();
+        }
+        return  $khoi_phuc ? response()->json([
+            'status' => true,
+            'message' => 'Khôi phục thành công',
+        ], 200) : response()->json([
+            'status' => false,
+            'message' => 'Khôi phục thất bại'
         ], 403);
     }
 }

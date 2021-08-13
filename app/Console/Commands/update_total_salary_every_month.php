@@ -94,6 +94,7 @@ class update_total_salary_every_month extends Command
                         $b = strtotime($muoibaygio) - strtotime($muoibagio) + $c;
                     }
                 }
+                
                 $tongtimecheckin += ($x + $b);
             }
             $tongtimelam = $tongtimecheckin / 3600;

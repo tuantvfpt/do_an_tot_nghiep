@@ -58,6 +58,47 @@ class PrizefineController extends Controller
                 'message' => 'lấy prize_fine_money thất bại',
             ], 404);
     }
+    public function getAllDelete(Request $request)
+    {
+        $prize_fine_money = $this->Prize->select('prize_fine.*', 'users.user_account',)
+            ->Join('prize_fine_user', 'prize_fine_user.prize_fine_id', '=', 'prize_fine.id')
+            ->Join('users', 'users.id', '=', 'prize_fine_user.user_id')
+            ->withTrashed()
+            ->whereNotNull('prize_fine.deleted_at')
+            ->orderby('id', 'desc');
+        if (Gate::allows('view')) {
+            if (!empty($request->keyword)) {
+                $prize_fine_money =  $prize_fine_money->Where(function ($query) use ($request) {
+                    $query->Orwhere('prize_fine.name', 'like', "%" . $request->keyword . "%")
+                        ->Orwhere('users.user_account', 'like', "%" . $request->keyword . "%");
+                });
+            }
+        } else {
+            $prize_fine_money->where('prize_fine_user.user_id', Auth::user()->id);
+            if (!empty($request->keyword)) {
+                $prize_fine_money =  $prize_fine_money->Where(function ($query) use ($request) {
+                    $query->Orwhere('prize_fine.name', 'like', "%" . $request->keyword . "%")
+                        ->Orwhere('users.user_account', 'like', "%" . $request->keyword . "%");
+                });
+            }
+        }
+        $prize_fine_money = $prize_fine_money->paginate(($request->limit != null) ? $request->limit : 10);
+        return $prize_fine_money ?
+            response()->json([
+                'status' => true,
+                'message' => 'lấy prize_fine_money thành công',
+                'data' => $prize_fine_money->items(),
+                'meta' => [
+                    'total'      => $prize_fine_money->total(),
+                    'perPage'    => $prize_fine_money->perPage(),
+                    'currentPage' => $prize_fine_money->currentPage()
+                ]
+            ], 200) :
+            response()->json([
+                'status' => false,
+                'message' => 'lấy prize_fine_money thất bại',
+            ], 404);
+    }
     public function getDetail($id)
     {
         $getdetail = Prize::select('prize_fine.*', 'users.user_account',)
@@ -190,6 +231,38 @@ class PrizefineController extends Controller
                 response()->json([
                     'status' => false,
                     'message' => 'xóa prize_fine_money thất bại',
+                ], 404);
+        } else {
+            $response =  response()->json([
+                'status' => false,
+                'message' => 'Bạn không được phép',
+            ], 403);
+        }
+        return $response;
+    }
+    public function khoi_phuc($id)
+    {
+        if (Gate::allows('delete')) {
+            $prize_fine_money_user = Prize_user::withTrashed()->where('prize_fine_id', $id)->first();
+            $prize_fine_money_user = Prize_user::withTrashed()->find($prize_fine_money_user->id);
+            $prize_fine_money = Prize::withTrashed()->find($id);
+            if ($prize_fine_money) {
+                $prize_fine_money_user->restore();
+                $prize_fine_money->restore();
+            }
+            $data = [
+                'prize_fine_money_user' => $prize_fine_money_user,
+                'prize_fine_money' => $prize_fine_money
+            ];
+            $response =  $prize_fine_money_user || $prize_fine_money ?
+                response()->json([
+                    'status' => true,
+                    'message' => 'Khôi phục prize_fine_money thành công',
+                    'data' => $data
+                ], 200) :
+                response()->json([
+                    'status' => false,
+                    'message' => 'Khôi phục prize_fine_money thất bại',
                 ], 404);
         } else {
             $response =  response()->json([

@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\LuongController;
 use App\Http\Controllers\Api\PhongBanController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\LichTangCaController;
 use App\Http\Controllers\Api\PrizefineController;
 use Illuminate\Support\Facades\Route;
 
@@ -91,17 +92,24 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'luong'], function () {
         Route::get('/', [LuongController::class, 'getAll'])->name('getAll');
         Route::get('getdetail/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
-        Route::post('tinhluong', [LuongController::class, 'tinhluong'])->name('tinhluong');
+        Route::post('luong', [LuongController::class, 'luong'])->name('luong');
         Route::get('getSalaryByUser', [LuongController::class, 'getSalaryByUser'])->name('getSalaryByUser');
         Route::post('tra_luong/{id}', [LuongController::class, 'tra_luong'])->name('tra_luong');
     });
+    Route::group(['prefix' => 'tangca'], function () {
+        Route::get('danh_sach_tang_ca_by_user', [LichTangCaController::class, 'danh_sach_tang_ca_by_user'])->name('danh_sach_tang_ca_by_user');
+        Route::post('xac_nhan_tang_ca/{id}', [LichTangCaController::class, 'xac_nhan_tang_ca'])->name('xac_nhan_tang_ca');
+        Route::post('luong', [LichTangCaController::class, 'luong'])->name('luong');
+        Route::get('getSalaryByUser', [LichTangCaController::class, 'getSalaryByUser'])->name('getSalaryByUser');
+        Route::post('tra_luong/{id}', [LichTangCaController::class, 'tra_luong'])->name('tra_luong');
+    });
     Route::group(['prefix' => 'lichxinnghi'], function () {
         Route::get('/', [CalendarLeaveController::class, 'getAll'])->name('getAll');
-        // Route::post('comfig/{id}', [CalendarLeaveController::class, 'comfig'])->name('comfig');
+        Route::get('getAllDelete', [CalendarLeaveController::class, 'getAllDelete'])->name('getAllDelete');
         Route::get('getdetail/{id}', [CalendarLeaveController::class, 'getdetail'])->name('getdetail');
         Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
         Route::delete('delete/{id}', [CalendarLeaveController::class, 'delete'])->name('delete');
-        // Route::post('update_day', [CalendarLeaveController::class, 'update_day'])->name('update_day');
+        Route::post('khoi_phuc/{id}', [CalendarLeaveController::class, 'khoi_phuc'])->name('khoi_phuc');
         Route::get('total_day', [CalendarLeaveController::class, 'get_company_leave'])->name('get_company_leave');
         Route::post('update_leave/{id}', [CalendarLeaveController::class, 'update_calenda'])->name('update_calenda');
         Route::get('/getAllByUser', [CalendarLeaveController::class, 'getAllByUser'])->name('getAllByUser');
@@ -112,5 +120,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('create', [PrizefineController::class, 'create'])->name('create');
         Route::post('update/{id}', [PrizefineController::class, 'update'])->name('update');
         Route::delete('delete/{id}', [PrizefineController::class, 'delete'])->name('delete');
+        Route::get('getAllDelete', [PrizefineController::class, 'getAllDelete'])->name('getAllDelete');
+        Route::post('khoi_phuc/{id}', [PrizefineController::class, 'khoi_phuc'])->name('khoi_phuc');
     });
 });
