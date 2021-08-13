@@ -300,8 +300,8 @@ class LichChamCongController extends Controller
                 $list_OT =  $list_OT->whereMonth('date_of_work', date('m', strtotime($request->date)));
             }
         } elseif (Gate::allows('leader')) {
-            $check = User::where('id', Auth::user()->id);
-            $list_OT =  $list_OT->where('users.position_id', $check->position_id);
+            $check = User::where('id', Auth::user()->id)->first();
+            $list_OT =  $list_OT->where('users.department_id', $check->department_id);
         } else {
             $list_OT =  $list_OT->where('time_keep_calendar.user_id', Auth::user()->id);
         }
