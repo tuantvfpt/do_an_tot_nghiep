@@ -99,7 +99,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'tangca'], function () {
         Route::get('danh_sach_tang_ca_by_user', [LichTangCaController::class, 'danh_sach_tang_ca_by_user'])->name('danh_sach_tang_ca_by_user');
         Route::post('xac_nhan_tang_ca/{id}', [LichTangCaController::class, 'xac_nhan_tang_ca'])->name('xac_nhan_tang_ca');
-        Route::post('luong', [LichTangCaController::class, 'luong'])->name('luong');
+        Route::post('addTangCa', [LichTangCaController::class, 'addTangCa'])->name('addTangCa');
         Route::get('getSalaryByUser', [LichTangCaController::class, 'getSalaryByUser'])->name('getSalaryByUser');
         Route::post('tra_luong/{id}', [LichTangCaController::class, 'tra_luong'])->name('tra_luong');
     });

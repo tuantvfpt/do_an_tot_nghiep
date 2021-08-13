@@ -16,20 +16,28 @@ class LichTangCaController extends Controller
     {
         if (Gate::allows('leader')) {
             $today = Carbon::now()->toDateString();
-            foreach ($request->all() as $key) {
+            $dataArR = [];
+            foreach ($request->listUsers2 as $value) {
+                $a = [
+                    'id' => $value['id']
+                ];
+                array_push($dataArR, $a);
+            }
+            foreach ($dataArR as $value) {
                 $update = new lichTangCa();
                 $update->name_leader = Auth::user()->user_account;
-                $update->user_id = $key;
+                $update->user_id = $value['id'];
                 $update->date = $today;
                 $update->time_tang_ca = $request->time_tang_ca;
                 $update->note = $request->note;
                 $update->status = 0;
-                $response =  response()->json([
-                    'status' => true,
-                    'message' => 'Cập nhật OT thành công',
-                    'data' => $update,
-                ], 200);
+                $update->save();
             }
+            $response =  response()->json([
+                'status' => true,
+                'message' => 'Cập nhật OT thành công',
+                'data' => $update,
+            ], 200);
         } else {
             $response = response()->json([
                 'status' => false,
