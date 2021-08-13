@@ -142,11 +142,23 @@ class LuongController extends Controller
     }
     public function tra_luong($id)
     {
-        $luong = LichChamCong::find($id);
-        if ($luong) {
-            $luong->status = 1;
+        if (Gate::allows('create')) {
+            $luong = TongThuNhap::find($id);
+            if ($luong) {
+                $luong->status = 1;
+                $luong->save();
+            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Trả lương cho nhân viên thành công',
+                'data' => $luong
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => true,
+                'message' => 'Không có quyền truy cập',
+            ], 200);
         }
-        $luong->save();
     }
     public function luong()
     {
@@ -220,7 +232,7 @@ class LuongController extends Controller
                 }
                 $totaltimetangca += $tangca;
             }
-            dd($totaltimetangca/3600);
+            dd($totaltimetangca / 3600);
             $tongtimelam = $tongtimecheckin / 3600 + $totaltimetangca / 3600;
 
             $luongcoban = $user->basic_salary;
