@@ -101,7 +101,7 @@ class PrizefineController extends Controller
     }
     public function getDetail($id)
     {
-        $getdetail = Prize::select('prize_fine.*', 'users.user_account',)
+        $getdetail = Prize::select('prize_fine.*', 'users.user_account', 'prize_fine_user.user_id',)
             ->Join('prize_fine_user', 'prize_fine_user.prize_fine_id', '=', 'prize_fine.id')
             ->Join('users', 'users.id', '=', 'prize_fine_user.user_id')
             ->where('prize_fine.id', $id)

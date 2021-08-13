@@ -40,7 +40,7 @@ class LichTangCaController extends Controller
     }
     public function danh_sach_tang_ca_by_user()
     {
-        $list = lichTangCa::where('user_id', Auth::user()->id)->orderby('id', 'DESC')->get();
+        $list = lichTangCa::where('user_id', Auth::user()->id)->orderby('id', 'DESC')->where('status', 0)->get();
         return response()->json([
             'status' => true,
             'message' => 'Danh sach tăng ca',
