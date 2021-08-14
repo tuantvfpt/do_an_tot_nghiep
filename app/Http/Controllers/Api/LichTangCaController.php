@@ -177,7 +177,7 @@ class LichTangCaController extends Controller
     }
     public function destroy($id)
     {
-        $lich_tang_ca = lichTangCa::find($id);
+        $lich_tang_ca = lichTangCa::withTrashed()->find($id);
         if ($lich_tang_ca) {
             $lich_tang_ca->forceDelete();
         }

@@ -275,8 +275,8 @@ class PrizefineController extends Controller
     public function destroy($id)
     {
         if (Gate::allows('delete')) {
-            $prize_fine_money_user = Prize_user::where('prize_fine_id', $id);
-            $prize_fine_money = Prize::find($id);
+            $prize_fine_money_user = Prize_user::withTrashed()->where('prize_fine_id', $id);
+            $prize_fine_money = Prize::withTrashed()->find($id);
             if ($prize_fine_money) {
                 $prize_fine_money_user->forceDelete();
                 $prize_fine_money->forceDelete();

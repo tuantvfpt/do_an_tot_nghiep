@@ -71,7 +71,6 @@ class CalendarLeaveController extends Controller
             ->withTrashed()
             ->where('calendar_for_leave.user_id', Auth::user()->id)
             ->orderby('id', 'desc')->get();
-        dd($lich_nghi);
         if (!empty($request->keyword)) {
             $lich_nghi =  $lich_nghi->Where(function ($query) use ($request) {
                 $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
@@ -281,7 +280,7 @@ class CalendarLeaveController extends Controller
     }
     public function destroy($id)
     {
-        $lich_nghi = Calendar_leave::find($id);
+        $lich_nghi = Calendar_leave::withTrashed()->find($id);
         if ($lich_nghi) {
             $lich_nghi->forceDelete();
         }

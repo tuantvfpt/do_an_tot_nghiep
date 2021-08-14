@@ -78,14 +78,12 @@ class LuongController extends Controller
                     ->where('user_id', $luong->user_id)
                     ->whereMonth('date', date('m', strtotime($luong->date)))
                     ->whereYear('date', date('Y', strtotime($luong->date)))
-                    ->where('prize_money', null)
                     ->first();
                 $get_pize_money = Prize_user::selectRaw('SUM(prize_fine.prize_money) as total_money_prize')
                     ->join('prize_fine', 'prize_fine.id', '=', 'prize_fine_user.prize_fine_id')
                     ->where('user_id', $luong->user_id)
                     ->whereMonth('date', date('m', strtotime($luong->date)))
                     ->whereYear('date', date('Y', strtotime($luong->date)))
-                    ->where('fine_money', null)
                     ->first();
                 $data = [
                     'luong' => $luong,
