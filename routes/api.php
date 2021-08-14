@@ -85,6 +85,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('update_OT', [LichChamCongController::class, 'update_OT'])->name('update_OT');
         Route::get('/getListByUser', [LichChamCongController::class, 'getListByUser'])->name('getListByUser');
         Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
+        Route::post('update_status', [LichChamCongController::class, 'update_status'])->name('update_status');
         Route::get('/getListOt', [LichChamCongController::class, 'list_OT'])->name('getListOt');
         Route::get('/BieuDoLichDiLam', [LichChamCongController::class, 'BieuDoLichDiLam'])->name('BieuDoLichDiLam');
         // Route::post('total_gross_salary', [LichChamCongController::class, 'total_gross_salary'])->name('total_gross_salary');

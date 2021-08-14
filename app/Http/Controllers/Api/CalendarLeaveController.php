@@ -70,7 +70,7 @@ class CalendarLeaveController extends Controller
             ->whereNotNull('calendar_for_leave.deleted_at')
             ->withTrashed()
             ->where('calendar_for_leave.user_id', Auth::user()->id)
-            ->orderby('id', 'desc')->get();
+            ->orderby('id', 'desc');
         if (!empty($request->keyword)) {
             $lich_nghi =  $lich_nghi->Where(function ($query) use ($request) {
                 $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");

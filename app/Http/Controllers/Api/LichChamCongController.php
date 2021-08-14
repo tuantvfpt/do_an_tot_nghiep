@@ -317,4 +317,15 @@ class LichChamCongController extends Controller
             ]
         ])->setStatusCode(200);
     }
+    public function update_status($id)
+    {
+        $update = LichChamCong::find($id);
+        $update->status = 0;
+        $update->save();
+        return  response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách chấm công thành công',
+            'data' => $update
+        ])->setStatusCode(200);
+    }
 }
