@@ -220,17 +220,17 @@ class PrizefineController extends Controller
             $prize_fine_money_user = Prize_user::where('prize_fine_id', $id);
             $prize_fine_money = Prize::find($id);
             if ($prize_fine_money) {
-                $prize_fine_money->delete();
                 $prize_fine_money_user->delete();
+                $prize_fine_money->delete();
             }
             $response =  $prize_fine_money_user || $prize_fine_money ?
                 response()->json([
                     'status' => true,
-                    'message' => 'xóa prize_fine_money thành công',
+                    'message' => 'bỏ vào thùng rác thành công',
                 ], 200) :
                 response()->json([
                     'status' => false,
-                    'message' => 'xóa prize_fine_money thất bại',
+                    'message' => 'bỏ vào thùng rác thất bại',
                 ], 404);
         } else {
             $response =  response()->json([
@@ -263,6 +263,32 @@ class PrizefineController extends Controller
                 response()->json([
                     'status' => false,
                     'message' => 'Khôi phục prize_fine_money thất bại',
+                ], 404);
+        } else {
+            $response =  response()->json([
+                'status' => false,
+                'message' => 'Bạn không được phép',
+            ], 403);
+        }
+        return $response;
+    }
+    public function destroy($id)
+    {
+        if (Gate::allows('delete')) {
+            $prize_fine_money_user = Prize_user::where('prize_fine_id', $id);
+            $prize_fine_money = Prize::find($id);
+            if ($prize_fine_money) {
+                $prize_fine_money_user->forceDelete();
+                $prize_fine_money->forceDelete();
+            };
+            $response =  $prize_fine_money_user || $prize_fine_money ?
+                response()->json([
+                    'status' => true,
+                    'message' => 'xóa prize_fine_money thành công',
+                ], 200) :
+                response()->json([
+                    'status' => false,
+                    'message' => 'xóa prize_fine_money thất bại',
                 ], 404);
         } else {
             $response =  response()->json([

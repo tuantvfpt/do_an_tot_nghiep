@@ -98,10 +98,12 @@ Route::group(['middleware' => 'auth'], function () {
     });
     Route::group(['prefix' => 'tangca'], function () {
         Route::get('danh_sach_tang_ca_by_user', [LichTangCaController::class, 'danh_sach_tang_ca_by_user'])->name('danh_sach_tang_ca_by_user');
+        Route::get('danh_sach_tang_ca_by_leader', [LichTangCaController::class, 'danh_sach_tang_ca_by_leader'])->name('danh_sach_tang_ca_by_leader');
         Route::post('xac_nhan_tang_ca/{id}', [LichTangCaController::class, 'xac_nhan_tang_ca'])->name('xac_nhan_tang_ca');
         Route::post('addTangCa', [LichTangCaController::class, 'addTangCa'])->name('addTangCa');
-        Route::get('getSalaryByUser', [LichTangCaController::class, 'getSalaryByUser'])->name('getSalaryByUser');
-        Route::post('tra_luong/{id}', [LichTangCaController::class, 'tra_luong'])->name('tra_luong');
+        Route::delete('delete/{id}', [LichTangCaController::class, 'delete'])->name('delete');
+        Route::delete('destroy/{id}', [LichTangCaController::class, 'destroy'])->name('destroy');
+        Route::post('khoi_phuc/{id}', [LichTangCaController::class, 'khoi_phuc'])->name('khoi_phuc');
     });
     Route::group(['prefix' => 'lichxinnghi'], function () {
         Route::get('/', [CalendarLeaveController::class, 'getAll'])->name('getAll');
@@ -109,6 +111,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('getdetail/{id}', [CalendarLeaveController::class, 'getdetail'])->name('getdetail');
         Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
         Route::delete('delete/{id}', [CalendarLeaveController::class, 'delete'])->name('delete');
+        Route::delete('destroy/{id}', [CalendarLeaveController::class, 'destroy'])->name('destroy');
         Route::post('khoi_phuc/{id}', [CalendarLeaveController::class, 'khoi_phuc'])->name('khoi_phuc');
         Route::get('total_day', [CalendarLeaveController::class, 'get_company_leave'])->name('get_company_leave');
         Route::post('update_leave/{id}', [CalendarLeaveController::class, 'update_calenda'])->name('update_calenda');
@@ -120,6 +123,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('create', [PrizefineController::class, 'create'])->name('create');
         Route::post('update/{id}', [PrizefineController::class, 'update'])->name('update');
         Route::delete('delete/{id}', [PrizefineController::class, 'delete'])->name('delete');
+        Route::delete('destroy/{id}', [PrizefineController::class, 'destroy'])->name('destroy');
         Route::get('getAllDelete', [PrizefineController::class, 'getAllDelete'])->name('getAllDelete');
         Route::post('khoi_phuc/{id}', [PrizefineController::class, 'khoi_phuc'])->name('khoi_phuc');
     });
