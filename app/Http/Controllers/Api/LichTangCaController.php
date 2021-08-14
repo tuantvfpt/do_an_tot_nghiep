@@ -79,6 +79,38 @@ class LichTangCaController extends Controller
             ]
         ])->setStatusCode(200);
     }
+    public function getAllDelete(Request $request)
+    {
+        $list_OT = lichTangCa::select('lich_tang_ca.*', 'user_info.full_name')
+            ->Join('users', 'lich_tang_ca.user_id', '=', 'users.id')
+            ->whereNotNull('lich_tang_ca.deleted_at')
+            ->withTrashed()
+            ->join('user_info', 'users.id', '=', 'user_info.user_id');
+        if (Gate::allows('view')) {
+            if (!empty($request->keyword)) {
+                $list_OT =  $list_OT->Where(function ($query) use ($request) {
+                    $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
+                });
+            }
+            if (!empty($request->date)) {
+                $list_OT =  $list_OT->whereMonth('lich_tang_ca.date', date('m', strtotime($request->date)));
+            }
+        } elseif (Gate::allows('leader')) {
+            $check = User::where('id', Auth::user()->id)->first();
+            $list_OT =  $list_OT->where('users.department_id', $check->department_id);
+        }
+        $list_OT = $list_OT->paginate(($request->limit != null) ? $request->limit : 10);
+        return  response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách chấm công thành công',
+            'data' => $list_OT->items(),
+            'meta' => [
+                'total'      => $list_OT->total(),
+                'perPage'    => $list_OT->perPage(),
+                'currentPage' => $list_OT->currentPage()
+            ]
+        ])->setStatusCode(200);
+    }
     public function danh_sach_tang_ca_by_user()
     {
         $list = lichTangCa::where('user_id', Auth::user()->id)->orderby('id', 'DESC')->where('status', 0)->get();

@@ -103,6 +103,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('addTangCa', [LichTangCaController::class, 'addTangCa'])->name('addTangCa');
         Route::delete('delete/{id}', [LichTangCaController::class, 'delete'])->name('delete');
         Route::delete('destroy/{id}', [LichTangCaController::class, 'destroy'])->name('destroy');
+        Route::get('getAllDelete', [LichTangCaController::class, 'getAllDelete'])->name('getAllDelete');
         Route::post('khoi_phuc/{id}', [LichTangCaController::class, 'khoi_phuc'])->name('khoi_phuc');
     });
     Route::group(['prefix' => 'lichxinnghi'], function () {
