@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\LuongController;
 use App\Http\Controllers\Api\PhongBanController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\LichChamCongImport;
 use App\Http\Controllers\Api\LichTangCaController;
 use App\Http\Controllers\Api\PrizefineController;
 use Illuminate\Support\Facades\Route;
@@ -88,6 +89,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('update_status', [LichChamCongController::class, 'update_status'])->name('update_status');
         Route::get('/getListOt', [LichChamCongController::class, 'list_OT'])->name('getListOt');
         Route::get('/BieuDoLichDiLam', [LichChamCongController::class, 'BieuDoLichDiLam'])->name('BieuDoLichDiLam');
+        Route::post('import', [LichChamCongImport::class, 'import'])->name('import');
         // Route::post('total_gross_salary', [LichChamCongController::class, 'total_gross_salary'])->name('total_gross_salary');
     });
     Route::group(['prefix' => 'luong'], function () {
