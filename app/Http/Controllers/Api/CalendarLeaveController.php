@@ -34,7 +34,6 @@ class CalendarLeaveController extends Controller
                 ->join('user_info', 'users.id', '=', 'user_info.user_id')
                 ->where('calendar_for_leave.deleted_at', null)
                 ->orderby('id', 'desc');
-
             if (!empty($request->keyword)) {
                 $lich_nghi =  $lich_nghi->Where(function ($query) use ($request) {
                     $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
@@ -43,16 +42,17 @@ class CalendarLeaveController extends Controller
             if (!empty($request->date)) {
                 $lich_nghi =  $lich_nghi->whereMonth('calendar_for_leave.date', date('m', strtotime($request->date)));
             }
-            $lich_nghi = $lich_nghi->paginate(($request->limit != null) ? $request->limit : 10);
+            $lich_nghi = $lich_nghi->get();
             $response = response()->json([
                 'status' => true,
                 'message' => 'Lấy danh sách nghỉ thành công',
-                'data' => $lich_nghi->items(),
-                'meta' => [
-                    'total'      => $lich_nghi->total(),
-                    'perPage'    => $lich_nghi->perPage(),
-                    'currentPage' => $lich_nghi->currentPage()
-                ]
+                'data' => $lich_nghi
+                // ->items(),
+                // 'meta' => [
+                //     'total'      => $lich_nghi->total(),
+                //     'perPage'    => $lich_nghi->perPage(),
+                //     'currentPage' => $lich_nghi->currentPage()
+                // ]
             ])->setStatusCode(200);
         } else {
             $response = response()->json([

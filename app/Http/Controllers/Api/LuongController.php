@@ -22,7 +22,7 @@ class LuongController extends Controller
     {
 
         if (Gate::allows('view')) {
-            $luong = TongThuNhap::select('total_salary.*', 'user_info.full_name')
+            $luong = TongThuNhap::select('user_info.full_name', 'total_salary.*')
                 ->Join('users', 'total_salary.user_id', '=', 'users.id')
                 ->join('user_info', 'users.id', '=', 'user_info.user_id')
                 ->where('total_salary.deleted_at', null)
@@ -35,16 +35,18 @@ class LuongController extends Controller
             if (!empty($request->date)) {
                 $luong =  $luong->whereMonth('total_salary.date', date('m', strtotime($request->date)));
             }
-            $luong = $luong->paginate(($request->limit != null) ? $request->limit : 10);
+            $luong = $luong->get();
+            // ->paginate(($request->limit != null) ? $request->limit : 10);
             $response =  response()->json([
                 'status' => true,
                 'message' => 'Lấy danh sách lương thành công thành công',
-                'data' => $luong->items(),
-                'meta' => [
-                    'total'      => $luong->total(),
-                    'perPage'    => $luong->perPage(),
-                    'currentPage' => $luong->currentPage()
-                ]
+                'data' => $luong
+                // ->items(),
+                // 'meta' => [
+                //     'total'      => $luong->total(),
+                //     'perPage'    => $luong->perPage(),
+                //     'currentPage' => $luong->currentPage()
+                // ]
             ])->setStatusCode(200);
         } else {
             $response = response()->json([

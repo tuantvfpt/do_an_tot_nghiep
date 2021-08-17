@@ -67,16 +67,18 @@ class LichTangCaController extends Controller
         } else {
             $list_OT =  $list_OT->where('lich_tang_ca.user_id', Auth::user()->id);
         }
-        $list_OT = $list_OT->paginate(($request->limit != null) ? $request->limit : 10);
+        $list_OT = $list_OT->get();
+        // ->paginate(($request->limit != null) ? $request->limit : 10);
         return  response()->json([
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',
-            'data' => $list_OT->items(),
-            'meta' => [
-                'total'      => $list_OT->total(),
-                'perPage'    => $list_OT->perPage(),
-                'currentPage' => $list_OT->currentPage()
-            ]
+            'data' => $list_OT
+            // ->items(),
+            // 'meta' => [
+            //     'total'      => $list_OT->total(),
+            //     'perPage'    => $list_OT->perPage(),
+            //     'currentPage' => $list_OT->currentPage()
+            // ]
         ])->setStatusCode(200);
     }
     public function getAllDelete(Request $request)

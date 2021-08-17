@@ -41,17 +41,19 @@ class PrizefineController extends Controller
                 });
             }
         }
-        $prize_fine_money = $prize_fine_money->paginate(($request->limit != null) ? $request->limit : 10);
+        $prize_fine_money = $prize_fine_money->get();
+        // ->paginate(($request->limit != null) ? $request->limit : 10);
         return $prize_fine_money ?
             response()->json([
                 'status' => true,
                 'message' => 'lấy prize_fine_money thành công',
-                'data' => $prize_fine_money->items(),
-                'meta' => [
-                    'total'      => $prize_fine_money->total(),
-                    'perPage'    => $prize_fine_money->perPage(),
-                    'currentPage' => $prize_fine_money->currentPage()
-                ]
+                'data' => $prize_fine_money
+                // ->items(),
+                // 'meta' => [
+                //     'total'      => $prize_fine_money->total(),
+                //     'perPage'    => $prize_fine_money->perPage(),
+                //     'currentPage' => $prize_fine_money->currentPage()
+                // ]
             ], 200) :
             response()->json([
                 'status' => false,
