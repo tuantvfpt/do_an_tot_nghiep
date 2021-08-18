@@ -191,4 +191,46 @@ class LichTangCaController extends Controller
             'message' => 'Xóa thất bại'
         ], 403);
     }
+    public function TrashAll(Request $request)
+    {
+        $ArrID = $request->all();
+        foreach ($ArrID as $value) {
+            $lich_tang_ca = lichTangCa::find($value);
+            if ($lich_tang_ca) {
+                $lich_tang_ca->delete();
+            }
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Bỏ vào thùng rác',
+        ], 200);
+    }
+    public function DestroyAll(Request $request)
+    {
+        $ArrID = $request->all();
+        foreach ($ArrID as $value) {
+            $lich_tang_ca = lichTangCa::withTrashed()->find($value);
+            if ($lich_tang_ca) {
+                $lich_tang_ca->forceDelete();
+            }
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Xóa thành công',
+        ], 200);
+    }
+    public function khoi_phuc_all(Request $request)
+    {
+        $ArrID = $request->all();
+        foreach ($ArrID as $value) {
+            $khoi_phuc = lichTangCa::withTrashed()->find($value);
+            if ($khoi_phuc) {
+                $khoi_phuc->restore();
+            }
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Khôi phục thành công',
+        ], 200);
+    }
 }

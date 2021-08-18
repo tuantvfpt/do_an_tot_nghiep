@@ -300,4 +300,53 @@ class PrizefineController extends Controller
         }
         return $response;
     }
+    public function destroyall(Request $request)
+    {
+        $ArrID = $request->all();
+        foreach ($ArrID as $value) {
+            $prize_fine_money_user = Prize_user::withTrashed()->where('prize_fine_id', $value);
+            $prize_fine_money = Prize::withTrashed()->find($value);
+            if ($prize_fine_money) {
+                $prize_fine_money_user->forceDelete();
+                $prize_fine_money->forceDelete();
+            };
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Bỏ vào thùng rác',
+        ], 200);
+    }
+    public function TrashAll(Request $request)
+    {
+        $ArrID = $request->all();
+        foreach ($ArrID as $value) {
+            $prize_fine_money_user = Prize_user::where('prize_fine_id', $value);
+            $prize_fine_money = Prize::find($value);
+            if ($prize_fine_money) {
+                $prize_fine_money_user->Delete();
+                $prize_fine_money->Delete();
+            };
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Xóa thành công',
+        ], 200);
+    }
+    public function khoi_phuc_all(Request $request)
+    {
+        $ArrID = $request->all();
+        foreach ($ArrID as $value) {
+            $prize_fine_money_user = Prize_user::withTrashed()->where('prize_fine_id', $value)->first();
+            $prize_fine_money_user = Prize_user::withTrashed()->find($prize_fine_money_user->id);
+            $prize_fine_money = Prize::withTrashed()->find($value);
+            if ($prize_fine_money) {
+                $prize_fine_money_user->restore();
+                $prize_fine_money->restore();
+            }
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Khôi phục thành công',
+        ], 200);
+    }
 }

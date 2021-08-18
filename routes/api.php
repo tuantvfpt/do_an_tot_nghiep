@@ -105,9 +105,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('xac_nhan_tang_ca/{id}', [LichTangCaController::class, 'xac_nhan_tang_ca'])->name('xac_nhan_tang_ca');
         Route::post('addTangCa', [LichTangCaController::class, 'addTangCa'])->name('addTangCa');
         Route::delete('delete/{id}', [LichTangCaController::class, 'delete'])->name('delete');
+        Route::delete('delete_all', [LichTangCaController::class, 'TrashAll'])->name('TrashAll');
         Route::delete('destroy/{id}', [LichTangCaController::class, 'destroy'])->name('destroy');
+        Route::delete('destroyAll', [LichTangCaController::class, 'DestroyAll'])->name('DestroyAll');
         Route::get('getAllDelete', [LichTangCaController::class, 'getAllDelete'])->name('getAllDelete');
         Route::post('khoi_phuc/{id}', [LichTangCaController::class, 'khoi_phuc'])->name('khoi_phuc');
+        Route::post('khoi_phuc_all', [LichTangCaController::class, 'khoi_phuc_all'])->name('khoi_phuc_all');
     });
     Route::group(['prefix' => 'lichxinnghi'], function () {
         Route::get('/', [CalendarLeaveController::class, 'getAll'])->name('getAll');
@@ -116,6 +119,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('create', [CalendarLeaveController::class, 'create'])->name('create');
         Route::delete('delete/{id}', [CalendarLeaveController::class, 'delete'])->name('delete');
         Route::delete('destroy/{id}', [CalendarLeaveController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy_all', [CalendarLeaveController::class, 'destroyAll'])->name('destroyAll');
         Route::post('khoi_phuc/{id}', [CalendarLeaveController::class, 'khoi_phuc'])->name('khoi_phuc');
         Route::get('total_day', [CalendarLeaveController::class, 'get_company_leave'])->name('get_company_leave');
         Route::post('update_leave/{id}', [CalendarLeaveController::class, 'update_calenda'])->name('update_calenda');
@@ -127,8 +131,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('create', [PrizefineController::class, 'create'])->name('create');
         Route::post('update/{id}', [PrizefineController::class, 'update'])->name('update');
         Route::delete('delete/{id}', [PrizefineController::class, 'delete'])->name('delete');
+        Route::delete('trashAll', [PrizefineController::class, 'TrashAll'])->name('TrashAll');
         Route::delete('destroy/{id}', [PrizefineController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy_all', [PrizefineController::class, 'destroyall'])->name('destroyall');
         Route::get('getAllDelete', [PrizefineController::class, 'getAllDelete'])->name('getAllDelete');
         Route::post('khoi_phuc/{id}', [PrizefineController::class, 'khoi_phuc'])->name('khoi_phuc');
+        Route::post('khoi_phuc_all', [PrizefineController::class, 'khoi_phuc_all'])->name('khoi_phuc_all');
     });
 });

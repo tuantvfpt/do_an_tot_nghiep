@@ -292,4 +292,18 @@ class CalendarLeaveController extends Controller
             'message' => 'Xóa thất bại'
         ], 403);
     }
+    public function destroyAll(Request $request)
+    {
+        $ArrID = $request->all();
+        foreach ($ArrID as $value) {
+            $lich_nghi = Calendar_leave::withTrashed()->find($value);
+            if ($lich_nghi) {
+                $lich_nghi->forceDelete();
+            }
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Xóa thành công',
+        ], 200);
+    }
 }
