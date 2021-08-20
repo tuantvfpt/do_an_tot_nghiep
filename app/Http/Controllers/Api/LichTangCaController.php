@@ -137,7 +137,7 @@ class LichTangCaController extends Controller
             }
             $tangca->save();
             $response =  response()->json([
-                'status' => false,
+                'status' => true,
                 'message' => 'Cập nhật trạng thái thành công',
                 'data' => $tangca
             ], 200);

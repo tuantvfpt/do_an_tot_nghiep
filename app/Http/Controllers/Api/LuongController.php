@@ -207,7 +207,11 @@ class LuongController extends Controller
                     if (strtotime($item->time_of_check_out) - strtotime($muoibagio) < 0) {
                         $b = 0;
                     } elseif (strtotime($item->time_of_check_in) - strtotime($muoibagio) > 0) {
-                        $b = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                        if (strtotime($item->time_of_check_out) - strtotime($muoibaygio) < 0) {
+                            $b = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                        } else {
+                            $b = strtotime($muoibaygio) - strtotime($item->time_of_check_in);
+                        }
                     } else {
                         if (strtotime($item->time_of_check_out) - strtotime($muoibaygio) < 0) {
                             $b = strtotime($item->time_of_check_out) - strtotime($muoibagio);
@@ -237,15 +241,21 @@ class LuongController extends Controller
                     if (strtotime($item->time_of_check_out) - strtotime($muoibagio) < 0) {
                         $b = 0;
                     } elseif (strtotime($item->time_of_check_in) - strtotime($muoibagio) > 0) {
-                        $b = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                        if (strtotime($item->time_of_check_out) - strtotime($muoibaygio) > 0) {
+                            $c = (strtotime($item->time_of_check_out) - strtotime($muoibaygio)) * 2;
+                            $b = strtotime($muoibaygio) - strtotime($item->time_of_check_in) + $c;
+                        } else {
+                            $b = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                        }
                     } elseif (strtotime($item->time_of_check_out) - strtotime($muoibagio) > 0) {
-                        $b = strtotime($item->time_of_check_out) - strtotime($muoibagio);
-                    } elseif (strtotime($item->time_of_check_out) - strtotime($muoibaygio) > 0) {
-                        $c = (strtotime($item->time_of_check_out) - strtotime($muoibaygio)) * 2;
-                        $b = strtotime($muoibaygio) - strtotime($muoibagio) + $c;
+                        if (strtotime($item->time_of_check_out) - strtotime($muoibaygio) > 0) {
+                            $c = (strtotime($item->time_of_check_out) - strtotime($muoibaygio)) * 2;
+                            $b = strtotime($muoibaygio) - strtotime($muoibagio) + $c;
+                        } else {
+                            $b = strtotime($item->time_of_check_out) - strtotime($muoibagio);
+                        }
                     }
                 }
-
                 $tongtimecheckin += ($x + $b);
             }
             foreach ($tangca as $tangca) {
