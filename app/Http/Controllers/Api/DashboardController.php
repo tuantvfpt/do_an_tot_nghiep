@@ -124,8 +124,10 @@ class DashboardController extends Controller
     {
         $today = Carbon::now()->toDateString();
         $total_user_off = Calendar_leave::selectRaw('count(id) as nhan_vien_nghi_lam')
-            ->where('date', $today)->where('status', 1)->get();
-
+            ->where('status', 1)
+            ->wherebetween('time_start', ['time_start', 'time_end'])
+            ->get();
+        dd($total_user_off);
         return response()->json([
             'status' => true,
             'message' => 'Lấy thông tin thành công',
@@ -164,6 +166,7 @@ class DashboardController extends Controller
         $today = Carbon::now()->toDateString();
         $total_user_off = Calendar_leave::selectRaw('count(id) as nhan_vien_nghi_lam')
             ->whereMonth('date', date('m', strtotime($today)))
+            ->wherebetween($today, ['time_start', 'time_end'])
             ->where('user_id', Auth::user()->id)
             ->where('status', 1)->get();
         return response()->json([
@@ -372,16 +375,16 @@ class DashboardController extends Controller
         }
         return $response;
     }
-    public function list_user_leave()
-    {
-        $lich_xin_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name', 'user_info.avatar')
-            ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
-            ->join('user_info', 'users.id', '=', 'user_info.user_id')
-            ->where('calendar_for_leave.deleted_at', null)
-            ->where('status', 1)
-            ->where('date', Carbon::now()->toDateString())
-            ->get();
-    }
+    // public function list_user_leave()
+    // {
+    //     $lich_xin_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name', 'user_info.avatar')
+    //         ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
+    //         ->join('user_info', 'users.id', '=', 'user_info.user_id')
+    //         ->where('calendar_for_leave.deleted_at', null)
+    //         ->where('status', 1)
+    //         ->where('date', Carbon::now()->toDateString())
+    //         ->get();
+    // }
     public function luong_theo_thang(Request $request)
     {
         $arrMonth = [];

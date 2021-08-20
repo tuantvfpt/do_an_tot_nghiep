@@ -129,21 +129,30 @@ class PrizefineController extends Controller
                     'message' => $validator->errors()
                 ], 400);
             }
-            $prize_fine_money = new Prize;
-            if ($request->thuong) {
-                $prize_fine_money->name = $request->name;
-                $prize_fine_money->prize_money = $request->prize_fine_money;
-            } elseif ($request->phat) {
-                $prize_fine_money->name = $request->name;
-                $prize_fine_money->fine_money = $request->prize_fine_money;
+            $dataArR = [];
+            foreach ($request->user_id as $value) {
+                $a = [
+                    'id' => $value['id']
+                ];
+                array_push($dataArR, $a);
             }
-            $prize_fine_money->save();
-            if ($prize_fine_money->id) {
-                $prize_fine_money_user = new Prize_user();
-                $prize_fine_money_user->prize_fine_id = $prize_fine_money->id;
-                $prize_fine_money_user->user_id = $request->user_id;
-                $prize_fine_money_user->date = Carbon::now()->toDateString();
-                $prize_fine_money_user->save();
+            foreach ($dataArR as $value) {
+                $prize_fine_money = new Prize;
+                if ($request->thuong) {
+                    $prize_fine_money->name = $request->name;
+                    $prize_fine_money->prize_money = $request->prize_fine_money;
+                } elseif ($request->phat) {
+                    $prize_fine_money->name = $request->name;
+                    $prize_fine_money->fine_money = $request->prize_fine_money;
+                }
+                $prize_fine_money->save();
+                if ($prize_fine_money->id) {
+                    $prize_fine_money_user = new Prize_user();
+                    $prize_fine_money_user->prize_fine_id = $prize_fine_money->id;
+                    $prize_fine_money_user->user_id = $value['id'];
+                    $prize_fine_money_user->date = Carbon::now()->toDateString();
+                    $prize_fine_money_user->save();
+                }
             }
             $response =  $prize_fine_money ?
                 response()->json([

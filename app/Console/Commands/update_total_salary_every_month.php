@@ -51,18 +51,27 @@ class update_total_salary_every_month extends Command
                 ->where('date_of_work', '>=', $startmonth)
                 ->where('date_of_work', '<=', $endmonth)
                 ->get();
+            $tamgio = "8:00:00";
             $muoihaigio = "12:00:00";
             $muoibagio = "13:00:00";
             $muoibaygio = "17:00:00";
             $tongtimecheckin = 0;
             foreach ($tongtime as $item) {
                 if ($item->check_ot == 0) {
-                    if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
-                        $x = 0;
-                    } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
-                        $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
-                    } else {
-                        $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
+                    if (strtotime($item->time_of_check_in) - strtotime($tamgio) > 0)
+                        if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
+                            $x = 0;
+                        } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
+                            $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                        } else {
+                            $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
+                        }
+                    elseif (strtotime($item->time_of_check_in) - strtotime($tamgio) < 0) {
+                        if (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
+                            $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                        } else {
+                            $x = strtotime($muoihaigio) - strtotime($item->tamgio);
+                        }
                     }
                     if (strtotime($item->time_of_check_out) - strtotime($muoibagio) < 0) {
                         $b = 0;
@@ -76,12 +85,20 @@ class update_total_salary_every_month extends Command
                         }
                     }
                 } else {
-                    if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
-                        $x = 0;
-                    } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
-                        $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
-                    } else {
-                        $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
+                    if (strtotime($item->time_of_check_in) - strtotime($tamgio) > 0)
+                        if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
+                            $x = 0;
+                        } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
+                            $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                        } else {
+                            $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
+                        }
+                    elseif (strtotime($item->time_of_check_in) - strtotime($tamgio) < 0) {
+                        if (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
+                            $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                        } else {
+                            $x = strtotime($muoihaigio) - strtotime($item->tamgio);
+                        }
                     }
                     if (strtotime($item->time_of_check_out) - strtotime($muoibagio) < 0) {
                         $b = 0;
@@ -94,7 +111,7 @@ class update_total_salary_every_month extends Command
                         $b = strtotime($muoibaygio) - strtotime($muoibagio) + $c;
                     }
                 }
-                
+
                 $tongtimecheckin += ($x + $b);
             }
             $tongtimelam = $tongtimecheckin / 3600;

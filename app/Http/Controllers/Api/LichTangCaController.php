@@ -133,7 +133,7 @@ class LichTangCaController extends Controller
                 $tangca->status = 1;
                 $tangca->lich_cham_cong_id = $check->id;
             } else {
-                $tangca->status = 2;
+                $tangca->status = 0;
             }
             $tangca->save();
             $response =  response()->json([
