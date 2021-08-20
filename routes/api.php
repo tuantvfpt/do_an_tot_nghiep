@@ -96,7 +96,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('getdetail/{id}', [LuongController::class, 'getdetail'])->name('getdetail');
         Route::post('luong', [LuongController::class, 'luong'])->name('luong');
         Route::get('getSalaryByUser', [LuongController::class, 'getSalaryByUser'])->name('getSalaryByUser');
-        Route::post('tra_luong/{id}', [LuongController::class, 'tra_luong'])->name('tra_luong');
+        // Route::post('luong', [LuongController::class, 'luong'])->name('tra_luong');
     });
     Route::group(['prefix' => 'tangca'], function () {
         Route::get('danh_sach_tang_ca_by_user', [LichTangCaController::class, 'danh_sach_tang_ca_by_user'])->name('danh_sach_tang_ca_by_user');

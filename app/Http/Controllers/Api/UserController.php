@@ -320,6 +320,7 @@ class UserController extends Controller
     public function ListAll()
     {
         $list = User::all();
+        $list->load('userinfo');
         return response()->json([
             'status' => true,
             'message' => 'Lấy dữ liệu thành công',

@@ -172,28 +172,38 @@ class LuongController extends Controller
                 ->where('date_of_work', '>=', $startmonth)
                 ->where('date_of_work', '<=', $endmonth)
                 ->get();
+            $tangca = lichTangCa::select('lich_tang_ca.*', 'time_keep_calendar.time_of_check_out')
+                ->join('time_keep_calendar', 'time_keep_calendar.id', '=', 'lich_tang_ca.lich_cham_cong_id')
+                ->where('lich_tang_ca.user_id', $user->id)
+                ->where('date', '>=', $startmonth)
+                ->where('date', '<=', $endmonth)
+                ->get();
             $tamgio = "8:00:00";
             $muoihaigio = "12:00:00";
             $muoibagio = "13:00:00";
             $muoibaygio = "17:00:00";
             $tongtimecheckin = 0;
+            $totaltimetangca = 0;
             foreach ($tongtime as $item) {
                 if ($item->check_ot == 0) {
-                    if (strtotime($item->time_of_check_in) - strtotime($tamgio) > 0)
-                        if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
-                            $x = 0;
-                        } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
+                    //check_in
+                    if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
+                        $x = 0;
+                    } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
+                        if (strtotime($item->time_of_check_in) - strtotime($tamgio) < 0) {
+                            $x = strtotime($item->time_of_check_out) - strtotime($tamgio);
+                        } else {
                             $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                        }
+                    } else {
+                        $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
+                        if (strtotime($item->time_of_check_in) - strtotime($tamgio) < 0) {
+                            $x = strtotime($muoihaigio) - strtotime($tamgio);
                         } else {
                             $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
                         }
-                    elseif (strtotime($item->time_of_check_in) - strtotime($tamgio) < 0) {
-                        if (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
-                            $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
-                        } else {
-                            $x = strtotime($muoihaigio) - strtotime($item->tamgio);
-                        }
                     }
+                    // check_out
                     if (strtotime($item->time_of_check_out) - strtotime($muoibagio) < 0) {
                         $b = 0;
                     } elseif (strtotime($item->time_of_check_in) - strtotime($muoibagio) > 0) {
@@ -206,21 +216,24 @@ class LuongController extends Controller
                         }
                     }
                 } else {
-                    if (strtotime($item->time_of_check_in) - strtotime($tamgio) > 0)
-                        if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
-                            $x = 0;
-                        } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
+                    //check_in
+                    if (strtotime($muoihaigio) - strtotime($item->time_of_check_in) < 0) {
+                        $x = 0;
+                    } elseif (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
+                        if (strtotime($item->time_of_check_in) - strtotime($tamgio) < 0) {
+                            $x = strtotime($item->time_of_check_out) - strtotime($tamgio);
+                        } else {
                             $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
+                        }
+                    } else {
+                        $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
+                        if (strtotime($item->time_of_check_in) - strtotime($tamgio) < 0) {
+                            $x = strtotime($muoihaigio) - strtotime($tamgio);
                         } else {
                             $x = strtotime($muoihaigio) - strtotime($item->time_of_check_in);
                         }
-                    elseif (strtotime($item->time_of_check_in) - strtotime($tamgio) < 0) {
-                        if (strtotime($item->time_of_check_out) - strtotime($muoihaigio) < 0) {
-                            $x = strtotime($item->time_of_check_out) - strtotime($item->time_of_check_in);
-                        } else {
-                            $x = strtotime($muoihaigio) - strtotime($item->tamgio);
-                        }
                     }
+                    // check_out
                     if (strtotime($item->time_of_check_out) - strtotime($muoibagio) < 0) {
                         $b = 0;
                     } elseif (strtotime($item->time_of_check_in) - strtotime($muoibagio) > 0) {
@@ -235,7 +248,15 @@ class LuongController extends Controller
 
                 $tongtimecheckin += ($x + $b);
             }
-            $tongtimelam = $tongtimecheckin / 3600;
+            foreach ($tangca as $tangca) {
+                if (strtotime($tangca->time_tang_ca) - strtotime($tangca->time_of_check_out) > 0) {
+                    $tangca = ((strtotime($tangca->time_of_check_out) - strtotime($muoibaygio)) * 2);
+                } else {
+                    $tangca = ((strtotime($tangca->time_tang_ca) - strtotime($muoibaygio)) * 2);
+                }
+                $totaltimetangca += $tangca;
+            }
+            $tongtimelam = $tongtimecheckin / 3600 + $totaltimetangca / 3600;
             $luongcoban = $user->basic_salary;
             $timecodinh = 8;
             if (($tongtimelam - $timecodinh * 22) > 0) {
