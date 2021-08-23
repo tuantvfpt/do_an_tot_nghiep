@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\LichChamCong;
+use App\Models\thong_bao;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -40,7 +41,8 @@ class LichChamCongController extends Controller
                 });
             }
             if (!empty($request->date)) {
-                $lich_cham_cong =  $lich_cham_cong->whereMonth('date_of_work', date('m', strtotime($request->date)));
+                $lich_cham_cong =  $lich_cham_cong->whereMonth('date_of_work', $request->date)
+                    ->whereYear('date_of_work', $request->year);
             }
         }
         $lich_cham_cong = $lich_cham_cong->get();
@@ -48,7 +50,7 @@ class LichChamCongController extends Controller
         return  response()->json([
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',
-            'data' => $lich_cham_cong
+            'data' => $lich_cham_cong,
             // ->items(),
             // 'meta' => [
             //     'total'      => $lich_cham_cong->total(),
@@ -242,6 +244,13 @@ class LichChamCongController extends Controller
                     $update = LichChamCong::find($update_OT->id);
                     $update->check_ot = 1;
                     $update->save();
+                    if ($update) {
+                        $thong_bao = new thong_bao();
+                        $thong_bao->action_id = $update->id;
+                        $thong_bao->type = 2;
+                        $thong_bao->date = Carbon::now()->toDateString();
+                        $thong_bao->save();
+                    }
                     $response =  response()->json([
                         'status' => true,
                         'message' => 'Cập nhật OT thành công',
@@ -273,8 +282,7 @@ class LichChamCongController extends Controller
         if (!empty($request->date)) {
             $lich_cham_cong =  $lich_cham_cong->whereMonth('date_of_work', date('m', strtotime($request->date)));
         }
-        $lich_cham_cong = $lich_cham_cong->get();
-        // ->paginate(($request->limit != null) ? $request->limit : 10);
+        $lich_cham_cong = $lich_cham_cong->paginate(($request->limit != null) ? $request->limit : 10);
         return  response()->json([
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',
@@ -326,7 +334,7 @@ class LichChamCongController extends Controller
     public function update_status($id)
     {
         $update = LichChamCong::find($id);
-        $update->status = 0;
+        $update->check_ot = 0;
         $update->save();
         return  response()->json([
             'status' => true,

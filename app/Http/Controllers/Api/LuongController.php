@@ -33,7 +33,7 @@ class LuongController extends Controller
                 });
             }
             if (!empty($request->date)) {
-                $luong =  $luong->whereMonth('total_salary.date', date('m', strtotime($request->date)));
+                $luong =  $luong->whereMonth('total_salary.date', $request->date)->whereYear('total_salary.date', $request->year);
             }
             $luong = $luong->get();
             // ->paginate(($request->limit != null) ? $request->limit : 10);

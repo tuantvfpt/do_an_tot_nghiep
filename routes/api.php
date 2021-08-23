@@ -51,6 +51,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('total_user_work', [DashboardController::class, 'total_user_work'])->name('total_user_work');
         Route::get('total_user_off', [DashboardController::class, 'total_user_off'])->name('total_user_off');
         Route::get('total_work_by_user', [DashboardController::class, 'total_work_by_user'])->name('total_work_by_user');
+        Route::get('count_notyfi', [DashboardController::class, 'count_notyfi'])->name('count_notyfi');
+        Route::get('list_notyfi', [DashboardController::class, 'list_notyfi'])->name('list_notyfi');
+        Route::get('detail_notyfi', [DashboardController::class, 'detail_notyfi'])->name('detail_notyfi');
     });
     Route::group(['prefix' => 'user/'], function () {
         Route::get('/', [UserController::class, 'getAll'])->name('getAllUser');
@@ -136,5 +139,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('getAllDelete', [PrizefineController::class, 'getAllDelete'])->name('getAllDelete');
         Route::post('khoi_phuc/{id}', [PrizefineController::class, 'khoi_phuc'])->name('khoi_phuc');
         Route::post('khoi_phuc_all', [PrizefineController::class, 'khoi_phuc_all'])->name('khoi_phuc_all');
+    });
+    Route::group(['prefix' => 'thong_bao'], function () {
+        Route::get('/', [PrizefineController::class, 'index'])->name('getAll');
+        Route::get('getdetail/{id}', [PrizefineController::class, 'getdetail'])->name('getdetail_prize');
     });
 });

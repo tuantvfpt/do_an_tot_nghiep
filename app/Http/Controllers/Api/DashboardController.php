@@ -7,6 +7,7 @@ use App\Models\Calendar_leave;
 use App\Models\company_mode;
 use App\Models\LichChamCong;
 use App\Models\phongban;
+use App\Models\thong_bao;
 use App\Models\TongThuNhap;
 use App\Models\User;
 use Carbon\Carbon;
@@ -537,5 +538,36 @@ class DashboardController extends Controller
             'message' => 'lấy thành công',
             'data' => $tong
         ]);
+    }
+    public function count_notyfi()
+    {
+        $today = Carbon::now()->toDateString();
+        $notyfi = thong_bao::where('date', $today)->where('read_at', null)->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $notyfi
+        ])->setStatusCode(200);
+    }
+    public function list_notyfi()
+    {
+        $list = thong_bao::all();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $list
+        ])->setStatusCode(200);
+    }
+    public function detail_notyfi($id)
+    {
+        $today = Carbon::now();
+        $detail = thong_bao::find($id);
+        $detail->read_at = $today;
+        $detail->save();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu chi tiết thành công',
+            'data' => $detail
+        ])->setStatusCode(200);
     }
 }

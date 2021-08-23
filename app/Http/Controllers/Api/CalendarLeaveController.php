@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Calendar_leave;
 use App\Models\company_mode;
 use App\Models\LichChamCong;
+use App\Models\thong_bao;
 use App\Models\TongThuNhap;
 use App\Models\User;
 use Carbon\Carbon;
@@ -216,6 +217,13 @@ class CalendarLeaveController extends Controller
             $mode = company_mode::where('user_id', Auth::user()->id)->whereYear('date', $today)->first();
             if ($mode->total_day - $request->number_day >= 0 && ($request->number_day <= $x) && ($mode->total_day_off + $request->number_day <= $mode->total_day)) {
                 $user_off->save();
+                if ($user_off) {
+                    $thong_bao = new thong_bao();
+                    $thong_bao->action_id = $user_off->id;
+                    $thong_bao->type = 2;
+                    $thong_bao->date = Carbon::now()->toDateString();
+                    $thong_bao->save();
+                }
                 $response = response()->json([
                     'status' => true,
                     'message' => "Bạn đã đăng kí lịch nghỉ thành công",

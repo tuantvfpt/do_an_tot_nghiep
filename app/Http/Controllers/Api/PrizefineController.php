@@ -32,13 +32,8 @@ class PrizefineController extends Controller
                         ->Orwhere('users.user_account', 'like', "%" . $request->keyword . "%");
                 });
             }
-        } else {
-            $prize_fine_money->where('prize_fine_user.user_id', Auth::user()->id);
-            if (!empty($request->keyword)) {
-                $prize_fine_money =  $prize_fine_money->Where(function ($query) use ($request) {
-                    $query->Orwhere('prize_fine.name', 'like', "%" . $request->keyword . "%")
-                        ->Orwhere('users.user_account', 'like', "%" . $request->keyword . "%");
-                });
+            if (!empty($request->date)) {
+                $prize_fine_money =  $prize_fine_money->whereMonth('date', $request->date)->whereYear('date', $request->year);
             }
         }
         $prize_fine_money = $prize_fine_money->get();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\LichChamCong;
 use App\Models\lichTangCa;
+use App\Models\thong_bao;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -33,10 +34,17 @@ class LichTangCaController extends Controller
                 $update->note = $request->note;
                 $update->status = 0;
                 $update->save();
+                if ($update) {
+                    $thong_bao = new thong_bao();
+                    $thong_bao->action_id = $update->id;
+                    $thong_bao->type = 2;
+                    $thong_bao->date = Carbon::now()->toDateString();
+                    $thong_bao->save();
+                }
             }
             $response =  response()->json([
                 'status' => true,
-                'message' => 'Cập nhật OT thành công',
+                'message' => 'Thêm danh sách OT thành công',
                 'data' => $update,
             ], 200);
         } else {
