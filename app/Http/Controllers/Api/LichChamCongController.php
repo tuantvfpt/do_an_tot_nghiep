@@ -248,7 +248,7 @@ class LichChamCongController extends Controller
                         $thong_bao = new thong_bao();
                         $thong_bao->action_id = $update->id;
                         $thong_bao->type = 2;
-                        $thong_bao->date = Carbon::now()->toDateString();
+                        $thong_bao->date_notyfi = Carbon::now()->toDateString();
                         $thong_bao->save();
                     }
                     $response =  response()->json([
