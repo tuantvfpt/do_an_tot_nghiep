@@ -37,7 +37,7 @@ class LichTangCaController extends Controller
                 if ($update) {
                     $thong_bao = new thong_bao();
                     $thong_bao->action_id = $update->id;
-                    $thong_bao->type = 2;
+                    $thong_bao->type = 3;
                     $thong_bao->date = Carbon::now()->toDateString();
                     $thong_bao->save();
                 }
