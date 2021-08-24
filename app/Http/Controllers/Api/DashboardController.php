@@ -551,7 +551,7 @@ class DashboardController extends Controller
     }
     public function list_notyfi()
     {
-        $list = thong_bao::select('thong_bao.*', 'type_thong_bao.*')
+        $list = thong_bao::select('thong_bao.*', 'type_thong_bao.name')
             ->join('type_thong_bao', 'thong_bao.type', '=', 'type_thong_bao.id')->orderby('thong_bao.id', 'DESC')->get();
         return response()->json([
             'status' => true,
