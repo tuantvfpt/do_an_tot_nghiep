@@ -552,7 +552,7 @@ class DashboardController extends Controller
     public function list_notyfi()
     {
         $list = thong_bao::select('thong_bao.*', 'type_thong_bao.*')
-            ->join('type_thong_bao', 'thong_bao.type', '=', 'type_thong_bao.id')->orderby('id', 'DESC')->get();
+            ->join('type_thong_bao', 'thong_bao.type', '=', 'type_thong_bao.id')->orderby('thong_bao.id', 'DESC')->get();
         return response()->json([
             'status' => true,
             'message' => 'Lấy dữ liệu thành công',
@@ -564,21 +564,21 @@ class DashboardController extends Controller
         $today = Carbon::now();
         $check = thong_bao::find($id);
         if ($check->type == '1') {
-            $detail = thong_bao::select('thong_bao.*', 'calendar_for_leave.*', 'user_info.full_name')->where('id', $id)
+            $detail = thong_bao::select('thong_bao.*', 'calendar_for_leave.*', 'user_info.full_name')->where('thong_bao.id', $id)
                 ->join('calendar_for_leave', 'thong_bao.action_id', '=', 'calendar_for_leave.id')
                 ->join('users', 'calendar_for_leave.user_id', '=', 'users.id')
                 ->join('user_info', 'users.id', '=', 'user_info.user_id')
                 ->first();
         }
         if ($check->type == '2') {
-            $detail = thong_bao::select('thong_bao.*', 'time_keep_calendar.*', 'user_info.full_name')->where('id', $id)
+            $detail = thong_bao::select('thong_bao.*', 'time_keep_calendar.*', 'user_info.full_name')->where('thong_bao.id', $id)
                 ->join('time_keep_calendar', 'thong_bao.action_id', '=', 'time_keep_calendar.id')
                 ->join('users', 'time_keep_calendar.user_id', '=', 'users.id')
                 ->join('user_info', 'users.id', '=', 'user_info.user_id')
                 ->first();
         }
         if ($check->type == '3') {
-            $detail = thong_bao::select('thong_bao.*', 'lich_tang_ca.*', 'user_info.full_name')->where('id', $id)
+            $detail = thong_bao::select('thong_bao.*', 'lich_tang_ca.*', 'user_info.full_name')->where('thong_bao.id', $id)
                 ->join('lich_tang_ca', 'thong_bao.action_id', '=', 'lich_tang_ca.id')
                 ->join('users', 'lich_tang_ca.user_id', '=', 'users.id')
                 ->join('user_info', 'users.id', '=', 'user_info.user_id')

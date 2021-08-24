@@ -220,7 +220,7 @@ class CalendarLeaveController extends Controller
                 if ($user_off) {
                     $thong_bao = new thong_bao();
                     $thong_bao->action_id = $user_off->id;
-                    $thong_bao->type = 2;
+                    $thong_bao->type = 1;
                     $thong_bao->date = Carbon::now()->toDateString();
                     $thong_bao->save();
                 }
