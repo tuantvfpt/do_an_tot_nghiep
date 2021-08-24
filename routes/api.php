@@ -53,7 +53,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('total_work_by_user', [DashboardController::class, 'total_work_by_user'])->name('total_work_by_user');
         Route::get('count_notyfi', [DashboardController::class, 'count_notyfi'])->name('count_notyfi');
         Route::get('list_notyfi', [DashboardController::class, 'list_notyfi'])->name('list_notyfi');
-        Route::get('detail_notyfi', [DashboardController::class, 'detail_notyfi'])->name('detail_notyfi');
+        Route::get('detail_notyfi/{id}', [DashboardController::class, 'detail_notyfi'])->name('detail_notyfi');
     });
     Route::group(['prefix' => 'user/'], function () {
         Route::get('/', [UserController::class, 'getAll'])->name('getAllUser');

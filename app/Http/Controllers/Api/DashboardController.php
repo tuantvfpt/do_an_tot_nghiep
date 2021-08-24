@@ -542,7 +542,7 @@ class DashboardController extends Controller
     public function count_notyfi()
     {
         $today = Carbon::now()->toDateString();
-        $notyfi = thong_bao::where('date', $today)->where('read_at', null)->get();
+        $notyfi = thong_bao::where('date_notyfi', $today)->where('read_at', null)->get();
         return response()->json([
             'status' => true,
             'message' => 'Lấy dữ liệu thành công',
