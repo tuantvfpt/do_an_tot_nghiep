@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class LuongController extends Controller
 {
@@ -378,5 +379,23 @@ class LuongController extends Controller
     //     ->sum('total_salary.total_net_salary');
     //     dd($list6month);
     // }
-
+    public function import(Request $request)
+    {
+        // if ($_FILES["file_tb"]["name"] != '') {
+        //     $allowed_extension = array('xls', 'xlsx');
+        //     $file_array = explode(".", $_FILES['file_tb']['name']);
+        //     $file_extension = end($file_array);
+        //     if (in_array($file_extension, $allowed_extension)) {
+        //         $reader = IOFactory::createReader('Xlsx');
+        //         $spreadsheet = $reader->load($_FILES['file_tb']['tmp_name']);
+        //         $data = $spreadsheet->getActiveSheet()->toArray();
+        //         unset($data[0]);
+        //     }
+        // }
+        return response()->json([
+            'status' => true,
+            'message' => 'import dữ liệu thành công',
+            'data' => $request->all(),
+        ], 200);
+    }
 }
