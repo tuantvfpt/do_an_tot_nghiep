@@ -16,13 +16,13 @@ class LichChamCongImport extends Controller
     }
     public function import(Request $request)
     {
-        if ($_FILES["file_tb"]["name"] != '') {
+        if ($_FILES["file"]["name"] != '') {
             $allowed_extension = array('xls', 'xlsx');
-            $file_array = explode(".", $_FILES['file_tb']['name']);
+            $file_array = explode(".", $_FILES['file']['name']);
             $file_extension = end($file_array);
             if (in_array($file_extension, $allowed_extension)) {
                 $reader = IOFactory::createReader('Xlsx');
-                $spreadsheet = $reader->load($_FILES['file_tb']['tmp_name']);
+                $spreadsheet = $reader->load($_FILES['file']['tmp_name']);
                 $data = $spreadsheet->getActiveSheet()->toArray();
                 unset($data[0]);
             }

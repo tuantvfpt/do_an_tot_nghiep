@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\LichChamCongImport;
 use App\Http\Controllers\Api\LichTangCaController;
 use App\Http\Controllers\Api\PrizefineController;
+use App\Models\LichChamCong;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -146,3 +147,5 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('getdetail/{id}', [PrizefineController::class, 'getdetail'])->name('getdetail_prize');
     });
 });
+Route::get('import', [LichChamCongImport::class, 'index'])->name('import');
+Route::post('import', [LichChamCongImport::class, 'import'])->name('import');

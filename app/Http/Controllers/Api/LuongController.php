@@ -27,7 +27,8 @@ class LuongController extends Controller
                 ->Join('users', 'total_salary.user_id', '=', 'users.id')
                 ->join('user_info', 'users.id', '=', 'user_info.user_id')
                 ->where('total_salary.deleted_at', null)
-                ->orderby('total_salary.date', 'desc');
+                ->orderby('total_salary.date', 'desc')
+                ->orderby('id', 'asc');
             if (!empty($request->keyword)) {
                 $luong =  $luong->Where(function ($query) use ($request) {
                     $query->where('user_info.full_name', 'like', "%" . $request->keyword . "%");
@@ -381,21 +382,33 @@ class LuongController extends Controller
     // }
     public function import(Request $request)
     {
-        // if ($_FILES["file_tb"]["name"] != '') {
-        //     $allowed_extension = array('xls', 'xlsx');
-        //     $file_array = explode(".", $_FILES['file_tb']['name']);
-        //     $file_extension = end($file_array);
-        //     if (in_array($file_extension, $allowed_extension)) {
-        //         $reader = IOFactory::createReader('Xlsx');
-        //         $spreadsheet = $reader->load($_FILES['file_tb']['tmp_name']);
-        //         $data = $spreadsheet->getActiveSheet()->toArray();
-        //         unset($data[0]);
-        //     }
-        // }
-        return response()->json([
-            'status' => true,
-            'message' => 'import dữ liệu thành công',
-            'data' => $request->all(),
-        ], 200);
+        if ($_FILES["file"]['name'] != '') {
+            $allowed_extension = array('xls', 'xlsx');
+            $file_array = explode(".", $_FILES['file']['name']);
+            $file_extension = end($file_array);
+            if (in_array($file_extension, $allowed_extension)) {
+                $reader = IOFactory::createReader('Xlsx');
+                $spreadsheet = $reader->load($_FILES['file']['tmp_name']);
+                $data = $spreadsheet->getActiveSheet()->toArray();
+                unset($data[0]);
+            }
+            foreach ($data as $item) {
+                $time = strtotime($item['6']);
+                $newdate = date('Y-m-d', $time);
+                $check_luong = TongThuNhap::where('user_id', $item['1'])->where('date', $newdate)->first();
+                if ($check_luong) {
+                    $update_luong = TongThuNhap::find($check_luong->id);
+                    if ($item['7'] = 'Đã Thanh Toán') {
+                        $update_luong->status = 1;
+                    }
+                    $update_luong->save();
+                }
+            }
+            return response()->json([
+                'status' => true,
+                'message' => 'import dữ liệu thành công',
+                'data' => $update_luong,
+            ], 200);
+        }
     }
 }

@@ -136,26 +136,24 @@ class LichTangCaController extends Controller
         $check = LichChamCong::where('user_id', Auth::user()->id)
             ->whereDate('date_of_work', $tangca->date)
             ->first();
-        if ($tangca && $check) {
-            if ($request->comfirm == 'yes') {
-                $tangca->status = 1;
-                $tangca->lich_cham_cong_id = $check->id;
-            } else {
-                $tangca->status = 0;
-            }
-            $tangca->save();
+        if ($tangca && $request->comfirm == 'yes') {
+            $tangca->status = 1;
+            $tangca->lich_cham_cong_id = $check->id;
             $response =  response()->json([
                 'status' => true,
                 'message' => 'Cập nhật trạng thái thành công',
                 'data' => $tangca
             ], 200);
         } else {
+            $tangca->status = 2;
             $response =  response()->json([
-                'status' => false,
-                'message' => 'Không tồn tại',
-            ], 404);
+                'status' => true,
+                'message' => 'không đông ý tăng ca thành công',
+                'data' => $tangca
+            ], 200);
         }
-        return $response;
+        $tangca->save();
+        return  $response;
     }
     public function delete($id)
     {
