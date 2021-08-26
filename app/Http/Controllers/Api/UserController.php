@@ -7,6 +7,7 @@ use App\Http\Requests\UserRequest;
 use App\Models\Calendar_leave;
 use App\Models\company_mode;
 use App\Models\LichChamCong;
+use App\Models\lichTangCa;
 use App\Models\Prize_user;
 use App\Models\TongThuNhap;
 use App\Models\User;
@@ -307,6 +308,7 @@ class UserController extends Controller
                 ->Join('time_keep_calendar', 'users.id', '=', 'time_keep_calendar.user_id')
                 ->where('department_id', $check->department_id)
                 ->where('date_of_work', $today)
+                ->where('time_keep_calendar.check_ot', 0)
                 ->groupby('time_keep_calendar.user_id')
                 ->get();
             $list->load('userinfo');
@@ -317,6 +319,32 @@ class UserController extends Controller
             ]);
         }
     }
+    // public function ListUsers_by_hour()
+    // {
+    //     $today = Carbon::now()->toDateString();
+    //     $check = User::where('id', Auth::user()->id)->where('role_id', 4)->first();
+    //     if ($check) {
+    //         $list = User::select('time_keep_calendar.*', 'users.id')
+    //             ->leftjoin('time_keep_calendar', 'users.id', '=', 'time_keep_calendar.user_id')
+    //             ->where('department_id', $check->department_id)
+    //             ->where('date_of_work', $today)
+    //             ->where('time_keep_calendar.check_ot', 0)
+    //             ->groupby('time_keep_calendar.user_id')
+    //             ->get();
+    //         $list->load('userinfo');
+    //         $arrList = [];
+    //         foreach ($list as $list) {
+    //             $check_lich_tang_ca = lichTangCa::where('lich_cham_cong_id', $list->lich_cham_cong_id)->where('date', $today)->first();
+    //             if (!$check_lich_tang_ca) {
+    //             }
+    //         }
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Lấy dữ liệu thành công',
+    //             'data' => $list
+    //         ]);
+    //     }
+    // }
     public function ListAll()
     {
         $list = User::all();
@@ -358,7 +386,8 @@ class UserController extends Controller
     }
     public function get_user_current()
     {
-        $user_current = Auth::user();
+        $user_current = User::where('id', Auth::user()->id)->first();
+        $user_current->load('userinfo');
         return response()->json([
             'status' => true,
             'message' => 'lấy thông tin thành công',

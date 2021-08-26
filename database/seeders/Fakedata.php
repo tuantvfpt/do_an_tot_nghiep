@@ -50,9 +50,9 @@ class Fakedata extends Seeder
             $item = [
                 'time_of_check_in' => "8:00:00",
                 'time_of_check_out' => "17:00:00",
-                'date_of_work' => "2021-07-" . $i,
+                'date_of_work' => "2021-08-16",
                 'status' => 1,
-                'check_ot' => 1,
+                'check_ot' => 0,
                 'user_id' => $i,
             ];
             DB::table('time_keep_calendar')->insert($item);

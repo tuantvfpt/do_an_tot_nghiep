@@ -189,12 +189,12 @@ class CalendarLeaveController extends Controller
         $dateDiff = date_diff(date_create($request->time_start), date_create($request->time_end));
         $x = $dateDiff->d + 1;
         $check_ngay_nghi = Calendar_leave::whereBetween('time_start', [$request->time_start, $request->time_end])
-            ->whereBetween('time_end', [$request->time_start, $request->time_end])
+            ->OrwhereBetween('time_end', [$request->time_start, $request->time_end])
             ->where('user_id', Auth::user()->id)->first();
         if ($check_ngay_nghi) {
             $response = response()->json([
                 'status' => false,
-                'message' => "Đã có sự nhầm lẫn khi chọn ngày nghỉ",
+                'message' => "Bạn đã chọn ngày nghỉ này rồi",
             ])->setStatusCode(404);
         } else {
             $user_off = new Calendar_leave();
@@ -232,7 +232,7 @@ class CalendarLeaveController extends Controller
             } else {
                 $response = response()->json([
                     'status' => false,
-                    'message' => "Đã sảy ra lỗi khi nhập ngày nghỉ phép",
+                    'message' => "Bạn đã nhập quá số ngày nghỉ cho phép",
                     'data' => $user_off
                 ])->setStatusCode(404);
             }

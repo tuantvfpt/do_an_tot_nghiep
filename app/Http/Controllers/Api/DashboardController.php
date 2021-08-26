@@ -141,7 +141,6 @@ class DashboardController extends Controller
         $total_user_work = LichChamCong::selectRaw('count(id) as tong_ngay_di_lam')
             ->whereMonth('date_of_work', date('m', strtotime($today)))
             ->where('user_id', Auth::user()->id)
-            ->groupBy('user_id')
             ->get();
         return response()->json([
             'status' => true,
@@ -167,7 +166,6 @@ class DashboardController extends Controller
         $today = Carbon::now()->toDateString();
         $total_user_off = Calendar_leave::selectRaw('count(id) as nhan_vien_nghi_lam')
             ->whereMonth('date', date('m', strtotime($today)))
-            ->wherebetween($today, ['time_start', 'time_end'])
             ->where('user_id', Auth::user()->id)
             ->where('status', 1)->get();
         return response()->json([
@@ -178,7 +176,7 @@ class DashboardController extends Controller
     }
     public function total_salary_by_user()
     {
-        $today = Carbon::now()->toDateString();
+        $today = Carbon::now()->subMonth(1)->toDateString();
         $total_user_off = TongThuNhap::selectRaw('total_net_salary')
             ->whereMonth('date', date('m', strtotime($today)))
             ->where('user_id', Auth::user()->id)
@@ -228,13 +226,8 @@ class DashboardController extends Controller
     {
         $id = Auth::user()->id;
         $arrDay = [];
-        if ($request->date_time) {
-            $motnh = date('m', strtotime($request->date_time));
-            $year = date('Y', strtotime($request->date_time));
-        } else {
-            $motnh = date('m');
-            $year = date('Y');
-        }
+        $motnh = date('m');
+        $year = date('Y');
         for ($day = 1; $day <= 31; $day++) {
             $time = mktime(12, 0, 0, $motnh, $day, $year);
             if (date('m', $time) == $motnh) {
@@ -256,35 +249,32 @@ class DashboardController extends Controller
         if (count($get_lich_lam) > 0) {
             foreach ($arrDay as $day) {
                 $arrthu = explode('-', $day, 2);
-
                 foreach ($get_lich_lam as $key => $value) {
                     if ($value['date_of_work'] == $arrthu[1]) {
-                        $lich_lam = 'đi làm';
+                        $lich_lam = '1';
                         break;
                     } elseif ($arrthu[0] == $chunhat || $arrthu[0] == $thubay) {
                         $lich_lam = null;
                     } else {
-                        $lich_lam = 'vắng';
+                        $lich_lam = '0';
                     }
                     $arr_lich_lam['user'] = $value['name'];
                 }
                 $arr_lich_lam["total_di_lam"][] = $lich_lam;
                 $arr_lich_lam["ngay"][] = $arrthu[1];
+                $response =  response()->json([
+                    'status' => true,
+                    'message' => 'Lấy thông tin lịch đi làm thành công',
+                    'data' => $arr_lich_lam,
+                ], 200);
             }
         } else {
-            $error = "Không có dữ liệu";
-        }
-        return $arr_lich_lam
-            ?
-            response()->json([
-                'status' => true,
-                'message' => 'Lấy thông tin lịch đi làm thành công',
-                'data' => $arr_lich_lam,
-            ], 200) :
-            response()->json([
+            $response = response()->json([
                 'status' => false,
-                'message' => $error,
+                'message' => 'Không có dữ liệu đi làm trong tháng',
             ], 404);
+        }
+        return $response;
     }
     public function comfig($id, Request $request)
     {

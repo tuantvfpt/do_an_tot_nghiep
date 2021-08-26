@@ -28,7 +28,7 @@ class LichChamCongImport extends Controller
             }
             foreach ($data as $item) {
                 $time = strtotime($item['4']);
-                $newdate = date('Y-d-m', $time);
+                $newdate = date('Y-m-d', $time);
                 $check = User::where('user_account', $item['1'])->first();
                 $check_lich = LichChamCong::where('date_of_work', $newdate)->where('user_id', $check->id)->first();
                 if (isset($check) && empty($check_lich)) {

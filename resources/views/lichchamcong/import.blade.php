@@ -2,7 +2,7 @@
     <div class="row">
         {{ csrf_field() }}
         <div class="col-xs-8">
-            <input type="file" class="form-control" name="file_tb" required="true">
+            <input type="file" class="form-control" name="file" required="true">
         </div>
         <button class="btn btn-sm btn-primary" type="submit">import</button>
     </div>

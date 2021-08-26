@@ -394,11 +394,14 @@ class LuongController extends Controller
             }
             foreach ($data as $item) {
                 $time = strtotime($item['6']);
+                return ($time);
                 $newdate = date('Y-m-d', $time);
                 $check_luong = TongThuNhap::where('user_id', $item['1'])->where('date', $newdate)->first();
                 if ($check_luong) {
                     $update_luong = TongThuNhap::find($check_luong->id);
-                    if ($item['7'] = 'Đã Thanh Toán') {
+                    if ($item['7'] !== 'Đã Thanh Toán') {
+                        $update_luong->status = 0;
+                    } else {
                         $update_luong->status = 1;
                     }
                     $update_luong->save();

@@ -64,6 +64,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
         Route::post('changepassword', [UserController::class, 'changepassword'])->name('changepassword');
         Route::get('getListUser', [UserController::class, 'ListUsers'])->name('getListUser');
+        Route::get('ListUsers_by_hour', [UserController::class, 'ListUsers_by_hour'])->name('ListUsers_by_hour');
         Route::get('listAll', [UserController::class, 'ListAll'])->name('ListAll');
         Route::get('my_info', [UserController::class, 'get_user_current'])->name('get_user_current');
     });

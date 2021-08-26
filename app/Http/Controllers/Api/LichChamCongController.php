@@ -287,12 +287,12 @@ class LichChamCongController extends Controller
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',
             'data' => $lich_cham_cong
-            // ->items(),
-            // 'meta' => [
-            //     'total'      => $lich_cham_cong->total(),
-            //     'perPage'    => $lich_cham_cong->perPage(),
-            //     'currentPage' => $lich_cham_cong->currentPage()
-            // ]
+            ->items(),
+            'meta' => [
+                'total'      => $lich_cham_cong->total(),
+                'perPage'    => $lich_cham_cong->perPage(),
+                'currentPage' => $lich_cham_cong->currentPage()
+            ]
         ])->setStatusCode(200);
     }
     public function list_OT(Request $request)
