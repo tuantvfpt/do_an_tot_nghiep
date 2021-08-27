@@ -152,7 +152,7 @@ class DashboardController extends Controller
             }
         }
         $chunhat = 0;
-        $thubay = 1;
+        $thubay = 6;
         $get_lich_lam = LichChamCong::select('date_of_work', 'users.user_account as name')
             ->join('users', 'time_keep_calendar.user_id', '=', 'users.id')
             ->whereMonth('date_of_work', $motnh)
