@@ -326,18 +326,13 @@ class UserController extends Controller
     //     if ($check) {
     //         $list = User::select('time_keep_calendar.*', 'users.id')
     //             ->leftjoin('time_keep_calendar', 'users.id', '=', 'time_keep_calendar.user_id')
+    //             ->leftjoin('lich_tang_ca', 'time_keep_calendar.id', '=', 'lich_tang_ca.lich_cham_cong_id')
     //             ->where('department_id', $check->department_id)
     //             ->where('date_of_work', $today)
     //             ->where('time_keep_calendar.check_ot', 0)
-    //             ->groupby('time_keep_calendar.user_id')
+    //             ->where('date', null)
     //             ->get();
     //         $list->load('userinfo');
-    //         $arrList = [];
-    //         foreach ($list as $list) {
-    //             $check_lich_tang_ca = lichTangCa::where('lich_cham_cong_id', $list->lich_cham_cong_id)->where('date', $today)->first();
-    //             if (!$check_lich_tang_ca) {
-    //             }
-    //         }
     //         return response()->json([
     //             'status' => true,
     //             'message' => 'Lấy dữ liệu thành công',

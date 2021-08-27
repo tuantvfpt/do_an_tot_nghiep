@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Calendar_leave;
 use App\Models\company_mode;
 use App\Models\LichChamCong;
+use App\Models\lichTangCa;
 use App\Models\phongban;
 use App\Models\thong_bao;
 use App\Models\TongThuNhap;
@@ -19,67 +20,6 @@ use Illuminate\Support\Facades\Mail;
 
 class DashboardController extends Controller
 {
-    // public function index(Request $request)
-    // {
-    //     //get lương
-    //     $now = Carbon::now()->toDateString();
-    //     $selected_year = isset($request->year) ? $request->year : null;
-    //     // $selected_yearBetween = isset($request->yearBetween) ? $request->yearBetween : null;
-    //     // $current_year = date("Y");
-    //     $get_salary =
-    //         TongThuNhap::select(
-    //             DB::raw(' DISTINCT total_salary.user_id as user_id'),
-    //             DB::raw('SUM(total_salary.total_net_salary) as tongluong'),
-    //             DB::raw('users.user_account as name')
-    //         )
-    //         ->join('users', 'total_salary.user_id', '=', 'users.id')
-    //         // ->whereBetween('date', [$thangtruoc, $now])
-    //         ->groupBy('user_id', 'name');
-
-    //     if (Auth::user()->role_id == 1 || Auth::user()->role_id == 2) {
-    //         // get lương cho hr và admin
-    //         if (isset($selected_year)) {
-    //             // get theo year
-    //             $get_salary->whereYear('date', '<', $selected_year + 1);
-    //         }
-
-    //         // if (isset($selected_yearBetween)) {
-    //         //     $get_salary->whereBetween('date', [$request->yearBetween, $now]);
-    //         // }
-    //         // chỉ nhân viên xem được thông kê lương của nhân viên đó
-    //     } else {
-    //         $get_salary->where('user_id', Auth::user()->id);
-    //         if (isset($selected_year)) {
-    //             // get theo year
-    //             $get_salary->whereYear('date', '<', $selected_year + 1)
-    //                 ->where('user_id', Auth::user()->id);
-    //         }
-    //         // if (isset($selected_yearBetween)) {
-    //         //     $get_salary->whereBetween('date', [$selected_yearBetween, $now])
-    //         //         ->where('user_id', Auth::user()->id);
-    //         //     dd($get_salary->get());
-    //         // }
-    //     }
-    //     // get nhân viên theo năm
-    //     $get_user = User::selectRaw('count(id) as so_luong_user');
-    //     $data_user = $get_user->get();
-    //     // get nhân viên theo phòng ban
-    //     $data_user_in_department = User::selectRaw('count(id) as total_user,department_id')
-    //         ->groupBy('department_id')
-    //         ->get();
-    //     $data_salary = $get_salary->get();
-    //     return $data_salary || $data_user || $data_user_in_department
-    //         ?
-    //         response()->json([
-    //             'status' => true,
-    //             'message' => 'Lấy thông tin thành công',
-    //             'data' => $data_salary, $data_user, $data_user_in_department
-    //         ], 200) :
-    //         response()->json([
-    //             'status' => false,
-    //             'message' => 'lấy thông tin không thành công'
-    //         ], 404);
-    // }
     public function total_user()
     {
         $total_user = User::selectRaw('count(id) as so_luong_user')->get();
@@ -187,41 +127,18 @@ class DashboardController extends Controller
             'data' => $total_user_off,
         ], 200);
     }
-    // public function get_user_late_early()
-    // {
-    //     // get user đi làm muộn và sớm
-    //     $mocgio = "8:15:00";
-    //     $data_user_di_lam_som = User::selectRaw('DISTINCT time_keep_calendar.user_id as user_id,users.id,count(time_keep_calendar.user_id) as 
-    //     tong_ngay_di_som,users.user_account')
-    //         ->join('time_keep_calendar', 'time_keep_calendar.user_id', '=', 'users.id')
-    //         ->with([
-    //             'userinfo'
-    //         ])->where('time_keep_calendar.deleted_at', null)
-    //         ->where('time_of_check_in', '<=', $mocgio)
-    //         ->groupBy('user_id', 'users.id', 'users.user_account')->get();
-    //     //data đi làm sớm
-    //     // data đi làm muộn
-    //     $data_user_di_lam_muon = User::selectRaw('DISTINCT time_keep_calendar.user_id as user_id,users.id,count(time_keep_calendar.user_id) as 
-    //     tong_ngay_di_muon,users.user_account')
-    //         ->join('time_keep_calendar', 'time_keep_calendar.user_id', '=', 'users.id')
-    //         ->with([
-    //             'userinfo'
-    //         ])->where('time_keep_calendar.deleted_at', null)
-    //         ->where('time_of_check_in', '>', $mocgio)
-    //         ->groupBy('user_id', 'users.id', 'users.user_account')->get();
-    //     // lay cac ngay trong thang
-    //     return $data_user_di_lam_muon || $data_user_di_lam_som
-    //         ?
-    //         response()->json([
-    //             'status' => true,
-    //             'message' => 'Lấy thông tin thành công',
-    //             'data' => $data_user_di_lam_muon, $data_user_di_lam_som
-    //         ], 200) :
-    //         response()->json([
-    //             'status' => false,
-    //             'message' => 'lấy thông tin không thành công'
-    //         ], 404);
-    // }
+    public function total_user_ot_yesterday()
+    {
+        $yesterday = Carbon::now()->subDays(1)->toDateString();
+        $lichtangca = lichTangCa::where('date', $yesterday)->where('status', 1)->get();
+        $lichlamviectangca = LichChamCong::where('date_of_work', $yesterday)->where('check_ot', 1)->get();
+        $tong = ['tongtangca' => count($lichtangca) + count($lichlamviectangca)];
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy thông tin thành công',
+            'data' => $tong,
+        ], 200);
+    }
     public function show_lich(Request $request)
     {
         $id = Auth::user()->id;
@@ -366,16 +283,6 @@ class DashboardController extends Controller
         }
         return $response;
     }
-    // public function list_user_leave()
-    // {
-    //     $lich_xin_nghi = Calendar_leave::select('calendar_for_leave.*', 'user_info.full_name', 'user_info.avatar')
-    //         ->Join('users', 'calendar_for_leave.user_id', '=', 'users.id')
-    //         ->join('user_info', 'users.id', '=', 'user_info.user_id')
-    //         ->where('calendar_for_leave.deleted_at', null)
-    //         ->where('status', 1)
-    //         ->where('date', Carbon::now()->toDateString())
-    //         ->get();
-    // }
     public function luong_theo_thang(Request $request)
     {
         $arrMonth = [];

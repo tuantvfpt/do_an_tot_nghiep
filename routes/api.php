@@ -55,6 +55,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('count_notyfi', [DashboardController::class, 'count_notyfi'])->name('count_notyfi');
         Route::get('list_notyfi', [DashboardController::class, 'list_notyfi'])->name('list_notyfi');
         Route::get('detail_notyfi/{id}', [DashboardController::class, 'detail_notyfi'])->name('detail_notyfi');
+        Route::get('total_user_ot_yesterday', [DashboardController::class, 'total_user_ot_yesterday'])->name('total_user_ot_yesterday');
     });
     Route::group(['prefix' => 'user/'], function () {
         Route::get('/', [UserController::class, 'getAll'])->name('getAllUser');
@@ -90,7 +91,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('update_OT', [LichChamCongController::class, 'update_OT'])->name('update_OT');
         Route::get('/getListByUser', [LichChamCongController::class, 'getListByUser'])->name('getListByUser');
         Route::post('diemdanh', [LichChamCongController::class, 'diemdanh'])->name('diemdanh');
-        Route::post('update_status', [LichChamCongController::class, 'update_status'])->name('update_status');
+        Route::post('update_status/{id}', [LichChamCongController::class, 'update_status'])->name('update_status');
         Route::get('/getListOt', [LichChamCongController::class, 'list_OT'])->name('getListOt');
         Route::get('/BieuDoLichDiLam', [LichChamCongController::class, 'BieuDoLichDiLam'])->name('BieuDoLichDiLam');
         Route::post('import', [LichChamCongImport::class, 'import'])->name('import');

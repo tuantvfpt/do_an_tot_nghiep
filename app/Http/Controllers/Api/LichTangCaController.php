@@ -122,7 +122,8 @@ class LichTangCaController extends Controller
     }
     public function danh_sach_tang_ca_by_user()
     {
-        $list = lichTangCa::where('user_id', Auth::user()->id)->orderby('id', 'DESC')->where('status', 0)->get();
+        $today = Carbon::now()->toDateString();
+        $list = lichTangCa::where('user_id', Auth::user()->id)->orderby('id', 'DESC')->where('date', $today)->where('status', 0)->get();
         return response()->json([
             'status' => true,
             'message' => 'Danh sach tăng ca',
@@ -135,6 +136,7 @@ class LichTangCaController extends Controller
         $check = LichChamCong::where('user_id', Auth::user()->id)
             ->whereDate('date_of_work', $tangca->date)
             ->first();
+
         if ($tangca && $request->comfirm == 'yes') {
             $tangca->status = 1;
             $tangca->lich_cham_cong_id = $check->id;

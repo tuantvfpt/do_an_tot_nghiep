@@ -286,8 +286,7 @@ class LichChamCongController extends Controller
         return  response()->json([
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',
-            'data' => $lich_cham_cong
-            ->items(),
+            'data' => $lich_cham_cong->items(),
             'meta' => [
                 'total'      => $lich_cham_cong->total(),
                 'perPage'    => $lich_cham_cong->perPage(),
