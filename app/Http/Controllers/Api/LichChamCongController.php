@@ -45,18 +45,16 @@ class LichChamCongController extends Controller
                     ->whereYear('date_of_work', $request->year);
             }
         }
-        $lich_cham_cong = $lich_cham_cong->get();
-        // ->paginate(($request->limit != null) ? $request->limit : 10);
+        $lich_cham_cong = $lich_cham_cong->paginate(($request->limit != null) ? $request->limit : 10);
         return  response()->json([
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',
-            'data' => $lich_cham_cong,
-            // ->items(),
-            // 'meta' => [
-            //     'total'      => $lich_cham_cong->total(),
-            //     'perPage'    => $lich_cham_cong->perPage(),
-            //     'currentPage' => $lich_cham_cong->currentPage()
-            // ]
+            'data' => $lich_cham_cong->items(),
+            'meta' => [
+                'total'      => $lich_cham_cong->total(),
+                'perPage'    => $lich_cham_cong->perPage(),
+                'currentPage' => $lich_cham_cong->currentPage()
+            ]
         ])->setStatusCode(200);
     }
     public function BieuDoLichDiLam()
@@ -316,18 +314,16 @@ class LichChamCongController extends Controller
         } else {
             $list_OT =  $list_OT->where('time_keep_calendar.user_id', Auth::user()->id);
         }
-        $list_OT = $list_OT->get();
-        // ->paginate(($request->limit != null) ? $request->limit : 10);
+        $list_OT = $list_OT->paginate(($request->limit != null) ? $request->limit : 10);
         return  response()->json([
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',
-            'data' => $list_OT
-            // ->items(),
-            // 'meta' => [
-            //     'total'      => $list_OT->total(),
-            //     'perPage'    => $list_OT->perPage(),
-            //     'currentPage' => $list_OT->currentPage()
-            // ]
+            'data' => $list_OT->items(),
+            'meta' => [
+                'total'      => $list_OT->total(),
+                'perPage'    => $list_OT->perPage(),
+                'currentPage' => $list_OT->currentPage()
+            ]
         ])->setStatusCode(200);
     }
     public function update_status($id)

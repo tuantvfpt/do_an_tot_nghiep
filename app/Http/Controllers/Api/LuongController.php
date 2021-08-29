@@ -394,7 +394,6 @@ class LuongController extends Controller
             }
             foreach ($data as $item) {
                 $time = strtotime($item['6']);
-                return ($time);
                 $newdate = date('Y-m-d', $time);
                 $check_luong = TongThuNhap::where('user_id', $item['1'])->where('date', $newdate)->first();
                 if ($check_luong) {
