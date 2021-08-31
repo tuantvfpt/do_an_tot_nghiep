@@ -20,7 +20,7 @@ class PrizefineController extends Controller
     }
     public function index(Request $request)
     {
-        $prize_fine_money = $this->Prize->select('prize_fine.*', 'users.user_account', 'user_info.full_name')
+        $prize_fine_money = $this->Prize->select('prize_fine.*', 'prize_fine_user.date', 'users.user_account', 'user_info.full_name', '')
             ->Join('prize_fine_user', 'prize_fine_user.prize_fine_id', '=', 'prize_fine.id')
             ->Join('users', 'users.id', '=', 'prize_fine_user.user_id')
             ->Join('user_info', 'users.id', '=', 'user_info.user_id')
@@ -57,7 +57,7 @@ class PrizefineController extends Controller
     }
     public function getAllDelete(Request $request)
     {
-        $prize_fine_money = $this->Prize->select('prize_fine.*', 'users.user_account', 'user_info.full_name')
+        $prize_fine_money = $this->Prize->select('prize_fine.*', 'prize_fine_user.date', 'users.user_account', 'user_info.full_name')
             ->Join('prize_fine_user', 'prize_fine_user.prize_fine_id', '=', 'prize_fine.id')
             ->Join('users', 'users.id', '=', 'prize_fine_user.user_id')
             ->Join('user_info', 'users.id', '=', 'user_info.user_id')

@@ -398,10 +398,13 @@ class LuongController extends Controller
                 $check_luong = TongThuNhap::where('user_id', $item['1'])->where('date', $newdate)->first();
                 if ($check_luong) {
                     $update_luong = TongThuNhap::find($check_luong->id);
-                    if ($item['7'] !== 'Đã Thanh Toán') {
-                        $update_luong->status = 0;
-                    } else {
+                    if ($item['7'] == '1') {
                         $update_luong->status = 1;
+                        $update_luong->total_gross_salary = $item['3'];
+                        $update_luong->total_net_salary = $item['4'];
+                        $update_luong->total_salary_leave = $item['5'];
+                    } else {
+                        $update_luong->status = 0;
                     }
                     $update_luong->save();
                 }
