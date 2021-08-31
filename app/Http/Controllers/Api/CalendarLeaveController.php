@@ -191,9 +191,8 @@ class CalendarLeaveController extends Controller
         $check_ngay_nghi = Calendar_leave::where('user_id', Auth::user()->id)->get();
         $check_ngay_nghi_phep = Calendar_leave::wherebetween('time_start', [$request->time_start, $request->time_end])
             ->wherebetween('time_end', [$request->time_start, $request->time_end])->where('user_id', Auth::user()->id)->first();
-
+        $check_khoang = true;
         foreach ($check_ngay_nghi as $check_ngay_nghi) {
-            $check_khoang = true;
             $ngay_bat_dau_xin_nghi = date('d', strtotime($request->time_start));
             $thang_ket_thuc_xin_nghi = date('m', strtotime($request->time_end));
             $thang_ket_thuc_da_xin_nghi = date('m', strtotime($check_ngay_nghi->time_end));
