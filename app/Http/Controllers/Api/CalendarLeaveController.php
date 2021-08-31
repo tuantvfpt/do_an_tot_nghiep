@@ -173,29 +173,48 @@ class CalendarLeaveController extends Controller
 
     public function create(Request $request)
     {
-        $validator = Validator::make(
-            $request->all(),
-            $this->validate
-        );
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validator->errors()
-            ], 400);
-        }
+        // $validator = Validator::make(
+        //     $request->all(),
+        //     $this->validate
+        // );
+        // if ($validator->fails()) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => $validator->errors()
+        //     ], 400);
+        // }
         $today = Carbon::now()->toDateString();
         $user_id = Auth::user()->id;
         $check = Calendar_leave::where('date', $today)->where('user_id', $user_id)->first();
         $dateDiff = date_diff(date_create($request->time_start), date_create($request->time_end));
         $x = $dateDiff->d + 1;
-        $check_ngay_nghi = Calendar_leave::whereBetween('time_start', [$request->time_start, $request->time_end])
-            ->OrwhereBetween('time_end', [$request->time_start, $request->time_end])
-            ->where('user_id', Auth::user()->id)->first();
-        if ($check_ngay_nghi) {
-            $response = response()->json([
+        $check_ngay_nghi = Calendar_leave::where('user_id', Auth::user()->id)->get();
+        $check_ngay_nghi_phep = Calendar_leave::wherebetween('time_start', [$request->time_start, $request->time_end])
+            ->wherebetween('time_end', [$request->time_start, $request->time_end])->where('user_id', Auth::user()->id)->first();
+
+        foreach ($check_ngay_nghi as $check_ngay_nghi) {
+            $check_khoang = true;
+            $ngay_bat_dau_xin_nghi = date('d', strtotime($request->time_start));
+            $thang_ket_thuc_xin_nghi = date('m', strtotime($request->time_end));
+            $thang_ket_thuc_da_xin_nghi = date('m', strtotime($check_ngay_nghi->time_end));
+            $thang_bat_dau_xin_nghi = date('m', strtotime($request->time_start));
+            $thang_bat_dau_da_xin_nghi = date('m', strtotime($check_ngay_nghi->time_start));
+            $ngay_ket_thuc_xin_nghi = date('d', strtotime($request->time_end));
+            $ngay_bat_dau_da_xin_nghi = date('d', strtotime($check_ngay_nghi->time_start));
+            $ngay_ket_thuc_da_xin_nghi = date('d', strtotime($check_ngay_nghi->time_end));
+            for ($i = $ngay_bat_dau_da_xin_nghi; $i <= $ngay_ket_thuc_da_xin_nghi; $i++) {
+                $string = "$i";
+                if ($string == $ngay_bat_dau_xin_nghi && ($thang_bat_dau_da_xin_nghi == $thang_bat_dau_xin_nghi || $thang_ket_thuc_xin_nghi == $thang_ket_thuc_da_xin_nghi)) {
+                    $check_khoang = false;
+                }
+            };
+        }
+        if ($check_khoang == false || $check_ngay_nghi_phep) {
+            return  response()->json([
                 'status' => false,
                 'message' => "Bạn đã chọn ngày nghỉ này rồi",
             ])->setStatusCode(404);
+            die;
         } else {
             $user_off = new Calendar_leave();
             if ($check && $check->status == 0) {
