@@ -209,7 +209,7 @@ class CalendarLeaveController extends Controller
                 }
             };
         }
-        if ($check_khoang == false || $check_ngay_nghi_phep) {
+        if ($check_khoang == false || isset($check_ngay_nghi_phep)) {
             return  response()->json([
                 'status' => false,
                 'message' => "Bạn đã chọn ngày nghỉ này rồi",
