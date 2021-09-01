@@ -203,7 +203,8 @@ class CalendarLeaveController extends Controller
             $ngay_ket_thuc_da_xin_nghi = date('d', strtotime($check_ngay_nghi->time_end));
             for ($i = $ngay_bat_dau_da_xin_nghi; $i <= $ngay_ket_thuc_da_xin_nghi; $i++) {
                 $string = "$i";
-                if (($string == $ngay_bat_dau_xin_nghi || $string == $ngay_ket_thuc_xin_nghi) && ($thang_bat_dau_da_xin_nghi == $thang_bat_dau_xin_nghi || $thang_ket_thuc_xin_nghi == $thang_ket_thuc_da_xin_nghi)) {
+                if (($string == $ngay_bat_dau_xin_nghi || $string == $ngay_ket_thuc_xin_nghi) && ($thang_bat_dau_xin_nghi == $thang_ket_thuc_xin_nghi) && ($thang_bat_dau_da_xin_nghi == $thang_bat_dau_xin_nghi || $thang_ket_thuc_xin_nghi == $thang_ket_thuc_da_xin_nghi)) {
+
                     $check_khoang = false;
                 }
             };

@@ -162,38 +162,31 @@ class DashboardController extends Controller
             // ->orwhere('user_id', Auth::user()->id)
             ->get()->toArray();
         $arr_lich_lam["total_di_lam"] = [];
-        $today = "2021-09-05";
-        if (count($get_lich_lam) > 0) {
-            foreach ($arrDay as $day) {
-                $arrthu = explode('-', $day, 2);
-                foreach ($get_lich_lam as $key => $value) {
-                    if ($value['date_of_work'] == $arrthu[1]) {
-                        $lich_lam = '1';
-                        break;
-                    } elseif ($arrthu[0] == $chunhat || $arrthu[0] == $thubay) {
-                        $lich_lam = null;
+        $today = Carbon::now()->toDateString();
+        foreach ($arrDay as $day) {
+            $arrthu = explode('-', $day, 2);
+            foreach ($get_lich_lam as $key => $value) {
+                if ($value['date_of_work'] == $arrthu[1]) {
+                    $lich_lam = '1';
+                    break;
+                } elseif ($arrthu[0] == $chunhat || $arrthu[0] == $thubay) {
+                    $lich_lam = null;
+                } else {
+                    if ($arrthu[1] <= $today) {
+                        $lich_lam = '0';
                     } else {
-                        if ($arrthu[1] <= $today) {
-                            $lich_lam = '0';
-                        } else {
-                            $lich_lam = null;
-                        }
+                        $lich_lam = null;
                     }
-                    $arr_lich_lam['user'] = $value['name'];
                 }
-                $arr_lich_lam["total_di_lam"][] = $lich_lam;
-                $arr_lich_lam["ngay"][] = $arrthu[1];
-                $response =  response()->json([
-                    'status' => true,
-                    'message' => 'Lấy thông tin lịch đi làm thành công',
-                    'data' => $arr_lich_lam,
-                ], 200);
+                $arr_lich_lam['user'] = $value['name'];
             }
-        } else {
-            $response = response()->json([
-                'status' => false,
-                'message' => 'Không có dữ liệu đi làm trong tháng',
-            ], 404);
+            $arr_lich_lam["total_di_lam"][] = $lich_lam;
+            $arr_lich_lam["ngay"][] = $arrthu[1];
+            $response =  response()->json([
+                'status' => true,
+                'message' => 'Lấy thông tin lịch đi làm thành công',
+                'data' => $arr_lich_lam,
+            ], 200);
         }
         return $response;
     }
