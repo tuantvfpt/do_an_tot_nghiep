@@ -162,7 +162,7 @@ class DashboardController extends Controller
             // ->orwhere('user_id', Auth::user()->id)
             ->get()->toArray();
         $arr_lich_lam["total_di_lam"] = [];
-        $arrX = [];
+        $today = "2021-09-05";
         if (count($get_lich_lam) > 0) {
             foreach ($arrDay as $day) {
                 $arrthu = explode('-', $day, 2);
@@ -173,7 +173,11 @@ class DashboardController extends Controller
                     } elseif ($arrthu[0] == $chunhat || $arrthu[0] == $thubay) {
                         $lich_lam = null;
                     } else {
-                        $lich_lam = '0';
+                        if ($arrthu[1] <= $today) {
+                            $lich_lam = '0';
+                        } else {
+                            $lich_lam = null;
+                        }
                     }
                     $arr_lich_lam['user'] = $value['name'];
                 }
