@@ -22,7 +22,7 @@ class DashboardController extends Controller
 {
     public function total_user()
     {
-        $total_user = User::selectRaw('count(id) as so_luong_user')->get();
+        $total_user = User::selectRaw('count(email) as so_luong_user')->get();
         return response()->json([
             'status' => true,
             'message' => 'Lấy thông tin thành công',

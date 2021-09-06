@@ -46,11 +46,11 @@ class Fakedata extends Seeder
         //     ];
         //     DB::table('time_keep_calendar')->insert($item);
         // }
-        for ($i = 1; $i < 30; $i++) {
+        for ($i = 1; $i <= 25; $i++) {
             $item = [
                 'time_of_check_in' => "8:00:00",
                 'time_of_check_out' => "17:00:00",
-                'date_of_work' => "2021-08-28",
+                'date_of_work' => "2021-09-05",
                 'status' => 1,
                 'check_ot' => 0,
                 'user_id' => $i,

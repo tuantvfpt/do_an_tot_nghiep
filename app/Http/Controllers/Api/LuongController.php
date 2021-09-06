@@ -302,84 +302,64 @@ class LuongController extends Controller
         }
     }
 
-    // public function tinhluong()
-    // {
-    //     $startmonth = Carbon::now()->startOfMonth()->toDateString();
-    //     $endmonth = Carbon::now()->endOfMonth()->toDateString();
-    //     $getlist = TongThuNhap::wherebetween('date', [$startmonth, $endmonth])->get();
-    //     $checkthue5 = BangThue::where('tax_percentage', 5)->first();
-    //     $checkthue10 = BangThue::where('tax_percentage', 10)->first();
-    //     $checkthue15 = BangThue::where('tax_percentage', 15)->first();
-    //     $checkthue20 = BangThue::where('tax_percentage', 20)->first();
-    //     $checkthue25 = BangThue::where('tax_percentage', 25)->first();
-    //     $checkthue30 = BangThue::where('tax_percentage', 30)->first();
-    //     $checkthue35 = BangThue::where('tax_percentage', 35)->first();
-    //     foreach ($getlist as $item) {
-    //         $total_gross_salary = $item->total_gross_salary + $item->total_salary_leave;
-    //         $prize = Prize_user::select(
-    //             DB::raw('prize_money,fine_money')
-    //         )
-    //             ->join('prize_fine', 'prize_fine.id', '=', 'prize_fine_user.prize_fine_id')
-    //             ->where('user_id', $item->user_id)->wherebetween('date', [$startmonth, $endmonth])
-    //             ->get();
-    //         if ($prize) {
-    //             foreach ($prize as $prize) {
-    //                 if ($prize->prize_money != null || $prize->prize_money > 0) {
-    //                     $total_gross_salary += $prize->prize_money;
-    //                 } else {
-    //                     $total_gross_salary =  $total_gross_salary - $prize->fine_money;
-    //                 }
-    //             }
-    //         }
+    public function tinhluong()
+    {
+        $startmonth = Carbon::now()->startOfMonth()->toDateString();
+        $endmonth = Carbon::now()->endOfMonth()->toDateString();
+        $getlist = TongThuNhap::wherebetween('date', [$startmonth, $endmonth])->get();
+        $checkthue5 = BangThue::where('tax_percentage', 5)->first();
+        $checkthue10 = BangThue::where('tax_percentage', 10)->first();
+        $checkthue15 = BangThue::where('tax_percentage', 15)->first();
+        $checkthue20 = BangThue::where('tax_percentage', 20)->first();
+        $checkthue25 = BangThue::where('tax_percentage', 25)->first();
+        $checkthue30 = BangThue::where('tax_percentage', 30)->first();
+        $checkthue35 = BangThue::where('tax_percentage', 35)->first();
+        foreach ($getlist as $item) {
+            $total_gross_salary = $item->total_gross_salary + $item->total_salary_leave;
+            $prize = Prize_user::select(
+                DB::raw('prize_money,fine_money')
+            )
+                ->join('prize_fine', 'prize_fine.id', '=', 'prize_fine_user.prize_fine_id')
+                ->where('user_id', $item->user_id)->wherebetween('date', [$startmonth, $endmonth])
+                ->get();
+            if ($prize) {
+                foreach ($prize as $prize) {
+                    if ($prize->prize_money != null || $prize->prize_money > 0) {
+                        $total_gross_salary += $prize->prize_money;
+                    } else {
+                        $total_gross_salary =  $total_gross_salary - $prize->fine_money;
+                    }
+                }
+            }
+            $mucluong = "11000000";
+            $phanluongtinhthue = $total_gross_salary - $mucluong;
+            if ((($checkthue5->taxable_income) > $phanluongtinhthue) && $phanluongtinhthue >= 0) {
+                $tongluong = $mucluong + $phanluongtinhthue - (($phanluongtinhthue * $checkthue5->tax_percentage) / 100);
+            } elseif (($checkthue5->taxable_income) < $phanluongtinhthue && $phanluongtinhthue <=  ($checkthue10->taxable_income)) {
+                $tongluong = $mucluong + $phanluongtinhthue - (($phanluongtinhthue * $checkthue10->tax_percentage) / 100 - 250000);
+            } elseif (($checkthue10->taxable_income) < $phanluongtinhthue && $phanluongtinhthue <=  ($checkthue15->taxable_income)) {
+                $tongluong = $mucluong + $phanluongtinhthue - (($phanluongtinhthue * $checkthue15->tax_percentage) / 100 - 750000);
+            } elseif (($checkthue15->taxable_income) < $phanluongtinhthue && $phanluongtinhthue <=  ($checkthue20->taxable_income)) {
+                $tongluong = $mucluong + $phanluongtinhthue - (($phanluongtinhthue * $checkthue20->tax_percentage) / 100 - 1650000);
+            } elseif (($checkthue20->taxable_income) < $phanluongtinhthue && $phanluongtinhthue <=  ($checkthue25->taxable_income)) {
+                $tongluong = $mucluong + $phanluongtinhthue - (($phanluongtinhthue * $checkthue25->tax_percentage) / 100 - 3250000);
+            } elseif (($checkthue25->taxable_income) < $phanluongtinhthue && $phanluongtinhthue <=  ($checkthue30->taxable_income)) {
+                $tongluong = $mucluong + $phanluongtinhthue - (($phanluongtinhthue * $checkthue30->tax_percentage) / 100 - 5850000);
+            } elseif (($checkthue35->taxable_income) < $phanluongtinhthue) {
+                $tongluong = $mucluong +  $phanluongtinhthue - (($phanluongtinhthue * $checkthue35->tax_percentage) / 100 - 9850000);
+            } elseif ($phanluongtinhthue < 0) {
+                $tongluong = $total_gross_salary;
+            }
+            if (isset($tongluong)) {
+                $luong_net = TongThuNhap::find($item->id);
+                if ($luong_net) {
+                    $luong_net->total_net_salary = $tongluong;
+                    $luong_net->save();
+                }
+            }
+        }
+    }
 
-    //         if (($checkthue5->taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue10->taxable_income)) {
-    //             $tongluong = $total_gross_salary - (($total_gross_salary * $checkthue5->tax_percentage) / 100);
-    //         } elseif (($checkthue10->taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue15->taxable_income)) {
-    //             $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue10->tax_percentage) / 100 - 250000);
-    //         } elseif (($checkthue15->taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue20->taxable_income)) {
-    //             $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue15->tax_percentage) / 100 - 750000);
-    //         } elseif (($checkthue20->taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue25->taxable_income)) {
-    //             $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue20->tax_percentage) / 100 - 1650000);
-    //         } elseif (($checkthue25->taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue30->taxable_income)) {
-    //             $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue25->tax_percentage) / 100 - 3250000);
-    //         } elseif (($checkthue25->taxable_income) < $total_gross_salary && $total_gross_salary <=  ($checkthue30->taxable_income)) {
-    //             $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue30->tax_percentage) / 100 - 5850000);
-    //         } elseif (($checkthue35->taxable_income) < $total_gross_salary) {
-    //             $tongluong =  $total_gross_salary - (($total_gross_salary * $checkthue35->tax_percentage) / 100 - 9850000);
-    //         } else {
-    //             $tongluong = $total_gross_salary;
-    //         }
-    //         if (isset($tongluong)) {
-    //             $luong_net = TongThuNhap::find($item->id);
-    //             if ($luong_net) {
-    //                 $luong_net->total_net_salary = $tongluong;
-    //                 $luong_net->save();
-    //             }
-    //         }
-    //     }
-    // }
-    // public function getSalary6Month(){
-    //     $currentDateTime = Carbon::now()->toDateString();
-    //     $newDateTime = Carbon::now()->subMonths(6)->toDateString();
-    //     $list6month  = TongThuNhap::select(
-    //         DB::raw('user_id')
-    //     )
-    //     ->join('users', 'users.id', '=', 'total_salary.user_id')
-    //     ->where('user_id','=', 1)->wherebetween('date', [ $newDateTime, $currentDateTime])
-    //     ->sum('total_salary.total_net_salary');
-    //     dd($list6month);
-    // }
-    // public function getSalary1year(){
-    //     $currentDateTime = Carbon::now()->startOfYear()->toDateString();
-    //     $newDateTime = Carbon::now()->endOfYear()->toDateString();
-    //     $list6month  = TongThuNhap::select(
-    //         DB::raw('user_id')
-    //     )
-    //     ->join('users', 'users.id', '=', 'total_salary.user_id')
-    //     ->where('user_id','=', 1)->wherebetween('date', [ $currentDateTime, $newDateTime ])
-    //     ->sum('total_salary.total_net_salary');
-    //     dd($list6month);
-    // }
     public function import(Request $request)
     {
         if ($_FILES["file"]['name'] != '') {
@@ -395,7 +375,9 @@ class LuongController extends Controller
             foreach ($data as $item) {
                 $time = strtotime($item['6']);
                 $newdate = date('Y-m-d', $time);
+                return $newdate;
                 $check_luong = TongThuNhap::where('user_id', $item['1'])->where('date', $newdate)->first();
+
                 if ($check_luong) {
                     $update_luong = TongThuNhap::find($check_luong->id);
                     if ($item['7'] == '1') {

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class LichChamCongController extends Controller
 {
@@ -45,16 +46,11 @@ class LichChamCongController extends Controller
                     ->whereYear('date_of_work', $request->year);
             }
         }
-        $lich_cham_cong = $lich_cham_cong->paginate(($request->limit != null) ? $request->limit : 10);
+        $lich_cham_cong = $lich_cham_cong->get();
         return  response()->json([
             'status' => true,
             'message' => 'Lấy danh sách chấm công thành công',
-            'data' => $lich_cham_cong->items(),
-            'meta' => [
-                'total'      => $lich_cham_cong->total(),
-                'perPage'    => $lich_cham_cong->perPage(),
-                'currentPage' => $lich_cham_cong->currentPage()
-            ]
+            'data' => $lich_cham_cong,
         ])->setStatusCode(200);
     }
     public function BieuDoLichDiLam()
@@ -198,7 +194,12 @@ class LichChamCongController extends Controller
         if (Gate::allows('create')) {
             $validator = Validator::make(
                 $request->all(),
-                $this->validate
+                [
+                    'time_of_check_in' => 'required',
+                    'time_of_check_out' => 'required',
+                    'date_of_work' => 'required',
+                    'user_id' => 'required',
+                ]
             );
             if ($validator->fails()) {
                 return response()->json([
